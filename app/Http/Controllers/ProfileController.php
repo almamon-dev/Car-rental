@@ -67,4 +67,9 @@ class ProfileController extends Controller
     {
         return Inertia::render(component: 'Guest/Home/CarDetails');
     }
+
+    public function carList()
+    {
+        return Inertia::render(component: 'Guest/Home/CarList');
+    }
 }
