@@ -18,7 +18,6 @@ const Pagination = ({ meta }) => {
     } = meta;
 
     // --- Fixed Pagination Logic ---
-    // আমরা সবসময় সর্বোচ্চ ৮টি বা ১০টি বাটন দেখাব যাতে UI মুভ না করে
     const maxVisibleButtons = 8;
     let startPage = Math.max(
         1,
@@ -26,7 +25,6 @@ const Pagination = ({ meta }) => {
     );
     let endPage = startPage + maxVisibleButtons - 1;
 
-    // যদি endPage লাস্ট পেজকে ছাড়িয়ে যায়
     if (endPage > last_page) {
         endPage = last_page;
         startPage = Math.max(1, endPage - maxVisibleButtons + 1);
@@ -116,7 +114,7 @@ const Pagination = ({ meta }) => {
                             onClick={() => handlePageChange(getPageUrl(page))}
                             className={`w-8 h-8 flex items-center justify-center font-medium text-[14px] rounded-[4px] border transition-all ${
                                 current_page === page
-                                    ? "bg-[#4D7C5F] dark:bg-emerald-600 text-white border-[#4D7C5F] dark:border-emerald-600 shadow-sm"
+                                    ? "bg-[#3B82F6] dark:bg-emerald-600 text-white  dark:border-emerald-600 shadow-sm"
                                     : "text-[#64748B] dark:text-gray-400 border-[#E2E8F0] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                             }`}
                         >

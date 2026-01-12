@@ -29,6 +29,7 @@
         "@react-google-maps/api": "^2.20.8",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "framer-motion": "^12.26.1",
         "lodash": "^4.17.21",
         "lucide-react": "^0.562.0",
         "react-hot-toast": "^2.6.0",

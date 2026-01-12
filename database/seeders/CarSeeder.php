@@ -13,7 +13,7 @@ class CarSeeder extends Seeder
     public function run(): void
     {
         // Insert data into cars table
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 50; $i++) {
 
             $carId = DB::table('cars')->insertGetId([
                 'brand_id' => rand(1, 5),

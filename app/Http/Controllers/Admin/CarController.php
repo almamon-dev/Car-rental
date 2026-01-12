@@ -19,52 +19,55 @@ class CarController extends Controller
 {
     public function index(Request $request)
     {
+        // 1. Build the Query
+        $query = Car::with([
+            'brand',
+            'category',
+            'images',
+            'specifications',
+            'priceDetails',
+            'features',
+            'policeDocuments',
+        ]);
 
-        $filters = json_encode($request->all());
-        $cacheKey = 'cars_list_'.md5($filters);
+        // 2. Search Logic
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('make', 'like', "%{$request->search}%")
+                    ->orWhere('model', 'like', "%{$request->search}%")
+                    ->orWhere('description', 'like', "%{$request->search}%");
+            });
+        }
 
-        $cars = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($request) {
-            $query = Car::with(['brand', 'category', 'images', 'specifications', 'priceDetails', 'features', 'policeDocuments']);
+        // 3. Brand & Category Filters
+        if ($request->brand) {
+            $query->whereHas('brand', fn ($q) => $q->where('name', $request->brand));
+        }
+        if ($request->category) {
+            $query->whereHas('category', fn ($q) => $q->where('name', $request->category));
+        }
+        if ($request->status && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
 
-            // Search by Make, Model or Description
-            if ($request->search) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('make', 'like', "%{$request->search}%")
-                        ->orWhere('model', 'like', "%{$request->search}%")
-                        ->orWhere('description', 'like', "%{$request->search}%");
-                });
-            }
+        // 4. Specification Filters
+        if ($request->transmission) {
+            $query->whereHas('specifications', fn ($q) => $q->where('transmission', $request->transmission));
+        }
+        if ($request->fuel_type) {
+            $query->whereHas('specifications', fn ($q) => $q->where('fuel_type', $request->fuel_type));
+        }
 
-            // Advanced Filters
-            if ($request->brand) {
-                $query->whereHas('brand', fn ($q) => $q->where('name', $request->brand));
-            }
-            if ($request->category) {
-                $query->whereHas('category', fn ($q) => $q->where('name', $request->category));
-            }
-            if ($request->status && $request->status !== 'all') {
-                $query->where('status', $request->status);
-            }
+        // 5. Execute Pagination
+        $cars = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
-            // Filtering via Specification Relationship
-            if ($request->transmission) {
-                $query->whereHas('specifications', fn ($q) => $q->where('transmission', $request->transmission));
-            }
-            if ($request->fuel_type) {
-                $query->whereHas('specifications', fn ($q) => $q->where('fuel_type', $request->fuel_type));
-            }
-
-            return $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
-        });
-
-        $counts = Cache::remember('cars_counts_list', now()->addMinutes(60), function () {
-            return [
-                'all' => Car::count(),
-                'available' => Car::where('status', 'available')->count(),
-                'reserved' => Car::where('status', 'reserved')->count(),
-                'sold' => Car::where('status', 'sold')->count(),
-            ];
-        });
+        // 6. Live Counts (Calculated every request)
+        $counts = [
+            'all' => Car::count(),
+            'available' => Car::where('status', 'available')->count(),
+            'reserved' => Car::where('status', 'reserved')->count(),
+            'sold' => Car::where('status', 'sold')->count(),
+        ];
 
         return Inertia::render('Admin/Car/Index', [
             'cars' => $cars,
