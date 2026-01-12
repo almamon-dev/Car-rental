@@ -23,7 +23,7 @@ const FeatureCard = ({ icon: Icon, title }) => (
                 {title}
             </h4>
             <p className="text-gray-500 text-[13px] leading-snug max-w-[180px]">
-                Dreams Rent offers a fleet of high-quality
+                Car Rent offers a fleet of high-quality
             </p>
         </div>
     </div>

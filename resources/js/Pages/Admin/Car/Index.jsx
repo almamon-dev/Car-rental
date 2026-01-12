@@ -1,4 +1,3 @@
-// Cars/Index.jsx
 import React from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
@@ -16,9 +15,10 @@ import {
     ImageOff,
     X,
     ChevronDown,
-    Check,
     Plus,
     Car,
+    MoreVertical,
+    Check,
 } from "lucide-react";
 import DeleteAction from "@/Components/modals/ConfirmDelete";
 
@@ -26,11 +26,9 @@ export default function CarList({
     auth,
     cars,
     brands = [],
-    categories = [],
     filters = {},
     counts = {},
 }) {
-    // Hook initialization
     const {
         search,
         handleSearch,
@@ -45,11 +43,9 @@ export default function CarList({
         isPartialSelected,
         excludedIds,
         getEffectiveSelectedIds,
-        getEffectiveSelectedCount,
         isEffectivelySelected,
     } = TableManager("admin.cars.index", cars.data, filters);
 
-    // Filter sync logic
     const currentStatus = filters.status || "all";
     const currentBrand = filters.brand || "";
     const currentTransmission = filters.transmission || "";
@@ -63,515 +59,491 @@ export default function CarList({
         );
     };
 
-    const getStatusBadge = (status) => {
-        const config = {
-            available: {
-                classes: "bg-emerald-50 text-emerald-700 border-emerald-100",
-                dot: "bg-emerald-500",
-                ping: true,
-            },
-            sold: {
-                classes: "bg-rose-50 text-rose-700 border-rose-100",
-                dot: "bg-rose-500",
-                ping: false,
-            },
-            reserved: {
-                classes: "bg-amber-50 text-amber-700 border-amber-100",
-                dot: "bg-amber-500",
-                ping: false,
-            },
-        };
-        const theme = config[status?.toLowerCase()] || {
-            classes: "bg-slate-50 text-slate-600",
-            dot: "bg-slate-400",
-        };
-        return (
-            <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border shadow-sm transition-all ${theme.classes}`}
-            >
-                <span className="relative flex h-2 w-2 mr-2">
-                    {theme.ping && (
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    )}
-                    <span
-                        className={`relative inline-flex rounded-full h-2 w-2 ${theme.dot}`}
-                    ></span>
-                </span>
-                {status || "Unknown"}
-            </span>
-        );
-    };
-
     const skeletonRows = Array.from({ length: 5 });
 
     return (
         <AdminLayout user={auth.user}>
             <Head title="Manage Cars" />
-            <div className="px-4 bg-[#F8F9FB] min-h-screen font-sans space-y-8 pb-10">
-                <div className="flex justify-between items-center max-w-8xl mx-auto pt-6">
+            <div className="bg-white min-h-screen font-sans">
+                {/* Top Header */}
+                {/* Header Section */}
+                <div className="flex justify-between items-center px-6 py-6 border-b border-gray-50 bg-white">
                     <div>
-                        <h1 className="text-xl md:text-3xl font-bold text-slate-800">
-                            Manage Vehicle
+                        <h1 className="text-xl font-bold text-slate-800">
+                            All Products
                         </h1>
-                        <p className="text-sm text-gray-500">
-                            Manage your vehicles in your inventory and Rent
-                        </p>
                     </div>
+
                     <Link
                         href={route("admin.cars.create")}
-                        className="bg-[#FF9F43] text-white px-4 py-2 rounded-md font-bold text-[13px] flex items-center gap-2 hover:bg-[#e68a2e] transition-colors shadow-sm"
+                        className="group relative flex items-center justify-end h-10 min-w-[40px] transition-all duration-500 ease-in-out"
                     >
-                        <Plus size={16} /> Add Car
+                        <span className="absolute right-12 whitespace-nowrap text-blue-500 font-medium opacity-100 group-hover:text-white group-hover:right-10 transition-all duration-500 ease-in-out z-10 pointer-events-none">
+                            Add New product
+                        </span>
+                        <div className="flex items-center justify-center bg-[#3B82F6] text-white h-10 w-10 group-hover:w-44 rounded-full transition-all duration-500 ease-in-out shadow-md overflow-hidden relative">
+                            <div className="absolute right-0 flex items-center justify-center min-w-[40px] h-10 z-20">
+                                <Plus size={20} />
+                            </div>
+                        </div>
                     </Link>
                 </div>
 
-                {/* Status Tabs */}
-                <div className="flex items-center gap-6 mb-4 px-1 text-sm border-b border-slate-100">
+                {/* Tabs */}
+                <div className="flex items-center gap-8 px-6 text-sm border-b border-slate-100">
                     {["all", "available", "reserved", "sold"].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => handleFilter("status", tab)}
-                            className={`pb-3 transition-all relative font-medium capitalize ${
+                            className={`py-4 transition-all relative font-medium capitalize ${
                                 currentStatus === tab
-                                    ? "text-indigo-600"
-                                    : "text-slate-500 hover:text-slate-700"
+                                    ? "text-blue-500 border-b-2 border-blue-500"
+                                    : "text-slate-500"
                             }`}
                         >
-                            {tab}{" "}
-                            <span className="ml-1 opacity-60">
-                                ({counts[tab] || 0})
-                            </span>
-                            {currentStatus === tab && (
-                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
-                            )}
+                            {tab === "all" ? "All Products" : tab + " Products"}{" "}
+                            ({counts[tab] || 0})
                         </button>
                     ))}
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
-                    {/* BULK SELECTION BAR */}
-                    {(selectedIds.length > 0 || selectAllGlobal) && (
-                        <div className="bg-indigo-600 text-white px-6 py-3 flex items-center justify-between transition-all animate-in slide-in-from-top duration-300 border-b border-indigo-700">
-                            <div className="flex items-center gap-4 text-sm font-medium">
-                                <span className="bg-white text-indigo-600 px-2.5 py-0.5 rounded-full font-bold text-xs">
-                                    {selectAllGlobal
-                                        ? `All (${cars.total})`
-                                        : selectedIds.length}
-                                </span>
-                                <span>
-                                    {selectAllGlobal
-                                        ? `All ${cars.total} vehicles selected`
-                                        : `${selectedIds.length} vehicle${
-                                              selectedIds.length !== 1
-                                                  ? "s"
-                                                  : ""
-                                          } selected on this page`}
-                                </span>
+                {/* Filters Bar */}
+                <div className="flex flex-wrap items-center justify-between p-4 gap-3 bg-white">
+                    <div className="relative flex-1 max-w-md">
+                        <Search
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                            size={16}
+                        />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            placeholder="Search products..."
+                            className="w-full pl-10 pr-4 py-2 bg-[#F3F6F9] border-none rounded-md text-sm outline-none focus:ring-1 focus:ring-blue-200"
+                        />
+                    </div>
 
-                                {/* "Select All Vehicles" লিঙ্ক */}
-                                {!selectAllGlobal &&
-                                    cars.total > cars.data.length &&
-                                    isAllPageSelected && (
-                                        <button
-                                            onClick={setSelectAllGlobal}
-                                            className="ml-4 text-xs bg-indigo-500 hover:bg-indigo-400 px-3 py-1.5 rounded-lg border border-indigo-400 transition-all font-bold shadow-sm hover:shadow-md"
-                                        >
-                                            Select all {cars.total} vehicles in
-                                            fleet
-                                        </button>
-                                    )}
-                            </div>
-
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={clearSelection}
-                                    className="text-xs font-bold hover:underline opacity-90 hover:opacity-100 transition-opacity"
+                    <div className="flex flex-wrap gap-2">
+                        {/* Brand Filter */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-500 flex items-center justify-between min-w-[160px] border border-[#3B82F6]/40 outline-none focus:ring-1 focus:ring-blue-200">
+                                {currentBrand || "All Brands"}
+                                <ChevronDown
+                                    size={14}
+                                    className="ml-2 opacity-50"
+                                />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="start"
+                                className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[160px]"
+                            >
+                                <DropdownMenuItem
+                                    active={currentBrand === ""}
+                                    onClick={() => handleFilter("brand", "all")}
                                 >
-                                    Clear Selection
-                                </button>
-                                <div className="h-6 w-[1px] bg-white/30" />
-                                <DeleteAction
-                                    selectedIds={getEffectiveSelectedIds()}
-                                    selectAllGlobal={selectAllGlobal}
-                                    totalCount={cars.total}
-                                    search={search}
-                                    routeName="admin.cars.bulk-destroy"
-                                    onSuccess={clearSelection}
-                                    isGlobalSelection={selectAllGlobal}
-                                    excludedIds={excludedIds}
-                                />
-                            </div>
-                        </div>
-                    )}
+                                    All Brands
+                                </DropdownMenuItem>
+                                {brands.map((b) => (
+                                    <DropdownMenuItem
+                                        key={b.id}
+                                        active={currentBrand === b.name}
+                                        onClick={() =>
+                                            handleFilter("brand", b.name)
+                                        }
+                                        className="flex justify-between"
+                                    >
+                                        {b.name}
+                                        {currentBrand === b.name && (
+                                            <Check
+                                                size={14}
+                                                className="text-blue-500"
+                                            />
+                                        )}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
-                    {/* Filter Bar */}
-                    <div className="flex flex-wrap items-center justify-between p-4 border-b border-slate-100 gap-4">
-                        <div className="flex flex-wrap items-center gap-3 flex-1">
-                            <div className="relative w-full max-w-[240px]">
-                                <Search
-                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-                                    size={18}
+                        {/* Transmission Filter */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-500 flex items-center justify-between min-w-[160px] border border-[#3B82F6]/40 outline-none focus:ring-1 focus:ring-blue-200">
+                                {currentTransmission || "Transmission"}
+                                <ChevronDown
+                                    size={14}
+                                    className="ml-2 opacity-50"
                                 />
-                                <input
-                                    type="text"
-                                    value={search}
-                                    onChange={(e) =>
-                                        handleSearch(e.target.value)
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="start"
+                                className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[160px]"
+                            >
+                                <DropdownMenuItem
+                                    active={currentTransmission === ""}
+                                    onClick={() =>
+                                        handleFilter("transmission", "all")
                                     }
-                                    placeholder="Search make or model..."
-                                    className="w-full pl-11 pr-4 py-2 bg-slate-50 border-transparent rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none border"
+                                >
+                                    Any
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    active={currentTransmission === "Manual"}
+                                    onClick={() =>
+                                        handleFilter("transmission", "Manual")
+                                    }
+                                >
+                                    Manual
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    active={currentTransmission === "Automatic"}
+                                    onClick={() =>
+                                        handleFilter(
+                                            "transmission",
+                                            "Automatic"
+                                        )
+                                    }
+                                >
+                                    Automatic
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Fuel Filter */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-500 flex items-center justify-between min-w-[160px] border border-[#3B82F6]/40 outline-none focus:ring-1 focus:ring-blue-200">
+                                {currentFuel || "Fuel Type"}
+                                <ChevronDown
+                                    size={14}
+                                    className="ml-2 opacity-50"
                                 />
-                            </div>
-
-                            {/* Dropdowns */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger className="flex items-center h-10 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-600 tracking-tight">
-                                    {currentBrand || "All Brands"}
-                                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                    align="start"
-                                    className="w-48 p-1"
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="start"
+                                className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-[160px]"
+                            >
+                                <DropdownMenuItem
+                                    active={currentFuel === ""}
+                                    onClick={() =>
+                                        handleFilter("fuel_type", "all")
+                                    }
                                 >
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            handleFilter("brand", "all")
-                                        }
-                                    >
-                                        All Brands
-                                    </DropdownMenuItem>
-                                    {brands.map((b) => (
-                                        <DropdownMenuItem
-                                            key={b.id}
-                                            onClick={() =>
-                                                handleFilter("brand", b.name)
-                                            }
-                                            className="flex justify-between"
-                                        >
-                                            {b.name}{" "}
-                                            {currentBrand === b.name && (
-                                                <Check
-                                                    size={14}
-                                                    className="text-indigo-600"
-                                                />
-                                            )}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger className="flex items-center h-10 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-600">
-                                    {currentTransmission || "Transmission"}
-                                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                    align="start"
-                                    className="w-48 p-1"
-                                >
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            handleFilter("transmission", "all")
-                                        }
-                                    >
-                                        Any
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            handleFilter(
-                                                "transmission",
-                                                "Manual"
-                                            )
-                                        }
-                                    >
-                                        Manual
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            handleFilter(
-                                                "transmission",
-                                                "Automatic"
-                                            )
-                                        }
-                                    >
-                                        Automatic
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger className="flex items-center h-10 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-600">
-                                    {currentFuel || "Fuel Type"}
-                                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                    align="start"
-                                    className="w-48 p-1"
-                                >
-                                    <DropdownMenuItem
-                                        onClick={() =>
-                                            handleFilter("fuel_type", "all")
-                                        }
-                                    >
-                                        Any Fuel
-                                    </DropdownMenuItem>
-                                    {[
-                                        "Petrol",
-                                        "Diesel",
-                                        "Electric",
-                                        "Hybrid",
-                                    ].map((f) => (
+                                    Any Fuel
+                                </DropdownMenuItem>
+                                {["Petrol", "Diesel", "Electric", "Hybrid"].map(
+                                    (f) => (
                                         <DropdownMenuItem
                                             key={f}
+                                            active={currentFuel === f}
                                             onClick={() =>
                                                 handleFilter("fuel_type", f)
                                             }
                                         >
                                             {f}
                                         </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                    )
+                                )}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
-                            {(currentBrand ||
-                                currentTransmission ||
-                                currentFuel ||
-                                search) && (
-                                <Link
-                                    href={route("admin.cars.index")}
-                                    className="text-rose-600 text-sm font-semibold flex items-center px-2"
-                                >
-                                    <X size={16} className="mr-1" /> Reset
-                                </Link>
-                            )}
-                        </div>
+                        {/* Reset Button */}
+                        {(currentBrand ||
+                            currentTransmission ||
+                            currentFuel ||
+                            search) && (
+                            <button
+                                onClick={() =>
+                                    router.get(route("admin.cars.index"))
+                                }
+                                className="text-rose-500 p-2 hover:bg-rose-50 rounded-md transition-colors border border-rose-100"
+                            >
+                                <X size={18} />
+                            </button>
+                        )}
                     </div>
+                </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-slate-50/80 text-slate-500 font-bold text-[11px] uppercase tracking-wider border-y border-slate-100">
-                                    <th className="py-4 px-6 w-10 text-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={
-                                                isAllPageSelected ||
-                                                selectAllGlobal
-                                            }
-                                            ref={(el) => {
-                                                if (el) {
-                                                    // Indeterminate স্টেট সেট করুন
-                                                    el.indeterminate =
-                                                        (isPartialSelected &&
-                                                            !selectAllGlobal) ||
-                                                        (selectAllGlobal &&
-                                                            excludedIds.length >
-                                                                0 &&
-                                                            excludedIds.length <
-                                                                cars.total);
+                {/* Bulk Actions Bar */}
+                {(selectedIds.length > 0 || selectAllGlobal) && (
+                    <div className="bg-blue-600 text-white px-6 py-2.5 flex items-center justify-between animate-in slide-in-from-top">
+                        <div className="flex items-center gap-4 text-sm font-medium">
+                            <span className="bg-white text-blue-600 px-2 py-0.5 rounded-full font-bold text-xs">
+                                {selectAllGlobal
+                                    ? `All (${cars.total})`
+                                    : selectedIds.length}
+                            </span>
+                            <span>Selected</span>
+                            {isAllPageSelected &&
+                                !selectAllGlobal &&
+                                cars.total > cars.data.length && (
+                                    <button
+                                        onClick={setSelectAllGlobal}
+                                        className="ml-2 text-xs bg-blue-500 px-3 py-1 rounded border border-blue-400"
+                                    >
+                                        Select all {cars.total} vehicles
+                                    </button>
+                                )}
+                            <button
+                                onClick={clearSelection}
+                                className="ml-4 text-xs font-bold hover:underline opacity-80"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                        <DeleteAction
+                            selectedIds={getEffectiveSelectedIds()}
+                            selectAllGlobal={selectAllGlobal}
+                            routeName="admin.cars.bulk-destroy"
+                            onSuccess={clearSelection}
+                        />
+                    </div>
+                )}
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="text-gray-400 font-bold text-[11px] uppercase tracking-wider border-b border-gray-100 bg-gray-50/30">
+                                <th className="py-4 px-6 w-10 text-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={
+                                            isAllPageSelected || selectAllGlobal
+                                        }
+                                        ref={(el) => {
+                                            if (el)
+                                                el.indeterminate =
+                                                    (isPartialSelected &&
+                                                        !selectAllGlobal) ||
+                                                    (selectAllGlobal &&
+                                                        excludedIds.length >
+                                                            0 &&
+                                                        excludedIds.length <
+                                                            cars.total);
+                                        }}
+                                        onChange={toggleSelectAll}
+                                        className="rounded border-gray-300 accent-blue-500 cursor-pointer"
+                                    />
+                                </th>
+                                <th className="py-4 px-4">Thumb</th>
+                                <th className="py-4 px-4">Name / Brand</th>
+                                <th className="py-4 px-4">Owner / Category</th>
+                                <th className="py-4 px-4">Ratings</th>
+                                <th className="py-4 px-4">Price Details</th>
+                                <th className="py-4 px-4">Info</th>
+                                <th className="py-4 px-4">Published</th>
+                                <th className="py-4 px-4 text-right pr-10">
+                                    Options
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {isLoading ? (
+                                skeletonRows.map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td className="py-6 px-6">
+                                            <div className="h-4 w-4 bg-gray-100 rounded mx-auto"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-16 w-16 bg-gray-100 rounded"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-4 w-32 bg-gray-100 rounded mb-2"></div>
+                                            <div className="h-3 w-20 bg-gray-50 rounded"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-4 w-24 bg-gray-100 rounded"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-4 w-20 bg-gray-100 rounded"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-6 w-16 bg-gray-100 rounded"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-4 w-20 bg-gray-100 rounded"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-5 w-10 bg-gray-100 rounded-full"></div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="h-8 w-8 bg-gray-100 rounded ml-auto"></div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : cars.data.length > 0 ? (
+                                cars.data.map((item) => (
+                                    <tr
+                                        key={item.id}
+                                        className={`${
+                                            isEffectivelySelected(item.id)
+                                                ? "bg-blue-50/40"
+                                                : "hover:bg-gray-50/30"
+                                        } transition-colors`}
+                                    >
+                                        <td className="py-6 px-6 text-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={isEffectivelySelected(
+                                                    item.id
+                                                )}
+                                                onChange={() =>
+                                                    toggleSelect(item.id)
                                                 }
-                                            }}
-                                            onChange={toggleSelectAll}
-                                            className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                        />
-                                    </th>
-                                    <th className="py-4 px-4 min-w-[240px]">
-                                        Unit Information
-                                    </th>
-                                    <th className="py-4 px-4">
-                                        Technical Specs
-                                    </th>
-                                    <th className="py-4 px-4">Legal & Docs</th>
-                                    <th className="py-4 px-4 text-center">
-                                        Rate Card
-                                    </th>
-                                    <th className="py-4 px-4 text-center">
-                                        Status
-                                    </th>
-                                    <th className="py-4 px-4 text-right pr-8">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 bg-white">
-                                {isLoading ? (
-                                    skeletonRows.map((_, i) => (
-                                        <tr key={i} className="animate-pulse">
-                                            <td className="py-4 px-6 text-center">
-                                                <div className="h-4 w-4 bg-slate-200 rounded mx-auto"></div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-16 h-12 bg-slate-200 rounded-lg"></div>
-                                                    <div className="space-y-2">
-                                                        <div className="h-3 w-24 bg-slate-200 rounded"></div>
-                                                        <div className="h-2 w-16 bg-slate-100 rounded"></div>
-                                                    </div>
+                                                className="rounded border-gray-300 accent-blue-500 cursor-pointer"
+                                            />
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="w-16 h-16 border border-gray-100 rounded shadow-sm flex items-center justify-center p-1 bg-white">
+                                                {item.images?.[0] ? (
+                                                    <img
+                                                        src={`/${item.images[0].file_path}`}
+                                                        className="max-w-full max-h-full object-contain"
+                                                        alt="car"
+                                                    />
+                                                ) : (
+                                                    <ImageOff
+                                                        size={20}
+                                                        className="text-gray-200"
+                                                    />
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-[13px] font-medium text-gray-700 leading-tight mb-1">
+                                                    {item.make} {item.model}
+                                                </span>
+                                                <span className="text-[11px] font-bold text-blue-500 uppercase">
+                                                    {item.brand?.name ||
+                                                        "No Brand"}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-[12px] text-blue-500 font-medium mb-0.5">
+                                                    Filon Asset Store
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 font-bold uppercase">
+                                                    Main Category
+                                                </span>
+                                                <span className="text-[11px] font-black text-gray-800 uppercase">
+                                                    Computer & Accessories
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="flex flex-col">
+                                                <div className="flex text-orange-400 gap-0.5">
+                                                    ★ ★ ★ ★ ★
                                                 </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="space-y-2">
-                                                    <div className="h-3 w-20 bg-slate-200 rounded"></div>
-                                                    <div className="h-2 w-12 bg-slate-100 rounded"></div>
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="h-4 w-24 bg-slate-200 rounded"></div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="h-4 w-16 bg-slate-200 rounded mx-auto"></div>
-                                            </td>
-                                            <td className="py-4 px-4 text-center">
-                                                <div className="h-5 w-16 bg-slate-200 rounded-full mx-auto"></div>
-                                            </td>
-                                            <td className="py-4 px-3 text-right pr-6">
-                                                <div className="flex justify-end gap-2">
-                                                    <div className="h-8 w-8 bg-slate-200 rounded-lg"></div>
-                                                    <div className="h-8 w-8 bg-slate-200 rounded-lg"></div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : cars.data.length > 0 ? (
-                                    cars.data.map((item) => (
-                                        <tr
-                                            key={item.id}
-                                            className={`${
-                                                isEffectivelySelected(item.id)
-                                                    ? "bg-indigo-50/40 border-l-2 border-l-indigo-500"
-                                                    : "hover:bg-slate-50/30"
-                                            } transition-all text-[12px]`}
-                                        >
-                                            <td className="py-4 px-6 text-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isEffectivelySelected(
-                                                        item.id
-                                                    )}
-                                                    onChange={() =>
-                                                        toggleSelect(item.id)
-                                                    }
-                                                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-                                                />
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="relative w-16 h-12 rounded-lg border border-slate-200 overflow-hidden bg-slate-100">
-                                                        {item.images?.[0] ? (
-                                                            <img
-                                                                src={`/${item.images[0].file_path}`}
-                                                                className="w-full h-full object-cover"
-                                                                alt="car"
-                                                            />
-                                                        ) : (
-                                                            <div className="flex items-center justify-center h-full">
-                                                                <ImageOff
-                                                                    size={16}
-                                                                    className="text-slate-300"
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="font-black text-slate-900 text-[13px] uppercase tracking-tight">
-                                                            {item.make}{" "}
-                                                            {item.model}
-                                                        </span>
-                                                        <span className="text-[11px] text-indigo-600 font-bold uppercase">
-                                                            {item.brand?.name} •{" "}
-                                                            {item.year}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                <div className="flex flex-col gap-1.5">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="bg-blue-50 text-blue-700 text-[10px] px-1.5 py-0.5 rounded-md font-extrabold border border-blue-100">
-                                                            {
-                                                                item
-                                                                    .specifications
-                                                                    ?.transmission
-                                                            }
-                                                        </span>
-                                                        <span className="text-slate-600 font-medium">
-                                                            {
-                                                                item
-                                                                    .specifications
-                                                                    ?.fuel_type
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                    <div className="text-[11px] text-slate-400 italic">
-                                                        {
-                                                            item.specifications
-                                                                ?.mileage
-                                                        }{" "}
-                                                        KM •{" "}
-                                                        {
-                                                            item.specifications
-                                                                ?.steering
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4 font-mono font-bold text-slate-600">
-                                                {item.police_documents
-                                                    ?.registration_number ||
-                                                    "NO-DOCS"}
-                                            </td>
-                                            <td className="py-4 px-4 text-center">
-                                                <span className="text-slate-900 font-black text-[14px]">
+                                                <span className="text-[11px] text-gray-500 font-bold mt-1">
+                                                    5 out of 5.0
+                                                </span>
+                                                <span className="text-[10px] text-gray-400">
+                                                    1 reviews
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-4 border-l border-gray-50 pl-6">
+                                            <div className="flex flex-col">
+                                                <span className="text-[11px] text-gray-400 uppercase font-bold">
+                                                    Price
+                                                </span>
+                                                <span className="text-[14px] font-bold text-gray-800">
+                                                    $
                                                     {Number(
                                                         item.price_details
                                                             ?.daily_rate
                                                     ).toLocaleString()}
                                                 </span>
-                                                <span className="text-slate-400 text-[10px] block">
-                                                    /Day
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div className="flex flex-col text-[11px]">
+                                                <span className="text-gray-400 font-bold uppercase">
+                                                    Number of Sale
                                                 </span>
-                                            </td>
-                                            <td className="py-4 px-4 text-center">
-                                                {getStatusBadge(item.status)}
-                                            </td>
-                                            <td className="py-4 px-3 text-right pr-6">
-                                                <div className="flex justify-end items-center gap-2">
-                                                    <Link
-                                                        href={route(
-                                                            "admin.cars.edit",
-                                                            item.id
-                                                        )}
-                                                        className="p-2 text-slate-400 hover:text-indigo-600 bg-white border border-slate-200 rounded-lg hover:shadow-md transition-all shadow-sm"
-                                                    >
-                                                        <Pencil size={14} />
-                                                    </Link>
-                                                    <DeleteAction
-                                                        id={item.id}
-                                                        routeName="admin.cars.destroy"
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td
-                                            colSpan="7"
-                                            className="py-32 text-center opacity-40"
-                                        >
-                                            <Car
-                                                size={32}
-                                                className="mx-auto mb-2"
-                                            />
-                                            <p className="font-bold">
-                                                No vehicles registered found.
-                                            </p>
+                                                <span className="font-black text-gray-800 text-sm">
+                                                    10
+                                                </span>
+                                                <button className="text-blue-500 font-bold mt-1 hover:underline text-left">
+                                                    View Stock
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-4">
+                                            <div
+                                                className={`w-9 h-5 rounded-full relative transition-colors cursor-pointer ${
+                                                    item.status === "available"
+                                                        ? "bg-blue-500"
+                                                        : "bg-gray-200"
+                                                }`}
+                                            >
+                                                <div
+                                                    className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${
+                                                        item.status ===
+                                                        "available"
+                                                            ? "left-5"
+                                                            : "left-1"
+                                                    }`}
+                                                ></div>
+                                            </div>
+                                        </td>
+                                        <td className="py-4 px-4 text-right pr-8">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger className="p-2 text-gray-400 hover:bg-gray-100 rounded-md outline-none transition-colors">
+                                                    <MoreVertical size={18} />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent
+                                                    align="end"
+                                                    className="w-36"
+                                                >
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={route(
+                                                                "admin.cars.edit",
+                                                                item.id
+                                                            )}
+                                                            className="flex items-center w-full"
+                                                        >
+                                                            <Pencil
+                                                                size={14}
+                                                                className="mr-2"
+                                                            />{" "}
+                                                            Edit Car
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <div className="border-t border-gray-100 my-1"></div>
+                                                    <div className="px-2 py-1">
+                                                        <DeleteAction
+                                                            id={item.id}
+                                                            routeName="admin.cars.destroy"
+                                                        />
+                                                    </div>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </td>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan="9"
+                                        className="py-32 text-center opacity-40"
+                                    >
+                                        <Car
+                                            size={32}
+                                            className="mx-auto mb-2"
+                                        />
+                                        <p className="font-bold">
+                                            No vehicles registered found.
+                                        </p>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="border-t border-gray-50">
                     <Pagination meta={cars} />
                 </div>
             </div>

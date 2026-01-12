@@ -8,7 +8,7 @@ export default function Footer() {
                 <div>
                     <div className="flex items-center gap-2 mb-4">
                         <span className="text-white font-bold text-xl">
-                            DREAMS{" "}
+                            Cars{" "}
                             <span className="text-gray-500 font-normal">
                                 RENT
                             </span>
@@ -39,7 +39,7 @@ export default function Footer() {
                     <ul className="space-y-2 text-sm">
                         <li>My account</li>
                         <li>Campaigns</li>
-                        <li>Dreams rent Dealers</li>
+                        <li>Car rent Dealers</li>
                         <li>Deals and Incentive</li>
                     </ul>
                 </div>
@@ -70,7 +70,7 @@ export default function Footer() {
             {/* Bottom Bar */}
             <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p className="text-xs">
-                    Copyright © 2025 Dreams Rent. All Rights Reserved.
+                    Copyright © 2025 Car Rent. All Rights Reserved.
                 </p>
                 <div className="flex gap-4">
                     <img src="/payments.png" alt="Payments" className="h-6" />

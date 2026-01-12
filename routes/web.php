@@ -1,11 +1,11 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CarController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Guest/Home/Index', [
@@ -31,6 +31,7 @@ Route::get('/car-list', [ProfileController::class, 'carList'])->name('car.list')
 // -- Admin Dashboard route --
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // cars resource route
+    Route::delete('cars/image/{id}', [CarController::class, 'destroyImage'])->name('cars.image.destroy');
     Route::resource('cars', CarController::class);
 });
 

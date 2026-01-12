@@ -1,15 +1,25 @@
+"use client";
+
 import React, { useState } from "react";
+import { Link } from "@inertiajs/react";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const navLinks = ["Home", "Listings", "Pages", "Blog", "Dashboard"];
+
+    const navLinks = [
+        { name: "Home", href: "/" },
+        { name: "Listings", href: "/listings" },
+        { name: "Pages", href: "/pages" },
+        { name: "Blog", href: "/blog" },
+        { name: "Dashboard", href: "/dashboard" },
+    ];
 
     return (
         <header className="bg-[#0f0f0f] text-white border-b border-gray-800 sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo Section */}
-                    <div className="flex items-center gap-2 shrink-0">
+                    <Link href="/" className="flex items-center gap-2 shrink-0">
                         <div className="bg-white p-1.5 rounded-lg">
                             <svg
                                 width="24"
@@ -26,26 +36,26 @@ export default function Header() {
                             </svg>
                         </div>
                         <h1 className="text-xl font-black tracking-tighter flex items-center">
-                            <span className="text-orange-500">DREAMS</span>
+                            <span className="text-orange-500">CAR</span>
                             <span className="text-white ml-1">RENT</span>
                         </h1>
-                    </div>
+                    </Link>
 
                     {/* Desktop Navigation Links */}
                     <nav className="hidden lg:flex items-center gap-8">
                         {navLinks.map((link) => (
-                            <a
-                                key={link}
-                                href="#"
-                                className={`text-[15px] font-medium transition-colors flex items-center gap-1.5 ${
-                                    link === "Home"
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                className={`text-[15px] font-medium transition-colors flex items-center gap-1.5 group ${
+                                    link.name === "Home"
                                         ? "text-orange-500"
                                         : "text-gray-300 hover:text-orange-500"
                                 }`}
                             >
-                                {link}
+                                {link.name}
                                 <svg
-                                    className="w-3 h-3 mt-0.5 opacity-70"
+                                    className="w-3 h-3 mt-0.5 opacity-70 group-hover:rotate-180 transition-transform"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -57,25 +67,32 @@ export default function Header() {
                                         d="M19 9l-7 7-7-7"
                                     />
                                 </svg>
-                            </a>
+                            </Link>
                         ))}
                     </nav>
 
                     {/* Auth Buttons + Mobile Toggle */}
                     <div className="flex items-center gap-3">
+                        {/* Desktop Auth */}
                         <div className="hidden sm:flex items-center gap-3">
-                            <button className="text-gray-200 px-4 py-2 text-sm font-semibold hover:text-orange-500">
+                            <Link
+                                href="/login"
+                                className="text-gray-200 px-4 py-2 text-sm font-semibold hover:text-orange-500 transition-colors"
+                            >
                                 Sign In
-                            </button>
-                            <button className="bg-orange-500 text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-orange-600 transition-all">
+                            </Link>
+                            <Link
+                                href="/register"
+                                className="bg-orange-500 text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-orange-600 transition-all shadow-lg active:scale-95"
+                            >
                                 Sign Up
-                            </button>
+                            </Link>
                         </div>
 
                         {/* Mobile Menu Button */}
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none"
+                            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none transition-colors"
                         >
                             <svg
                                 className="h-7 w-7"
@@ -106,29 +123,40 @@ export default function Header() {
 
             {/* Mobile Navigation Drawer */}
             <div
-                className={`lg:hidden transition-all duration-300 ease-in-out ${
+                className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${
                     isMenuOpen
-                        ? "max-h-screen opacity-100"
-                        : "max-h-0 opacity-0 overflow-hidden"
+                        ? "max-h-[500px] opacity-100"
+                        : "max-h-0 opacity-0"
                 }`}
             >
                 <div className="px-4 pt-2 pb-6 space-y-1 bg-[#141414] border-t border-gray-800">
                     {navLinks.map((link) => (
-                        <a
-                            key={link}
-                            href="#"
+                        <Link
+                            key={link.name}
+                            href={link.href}
+                            onClick={() => setIsMenuOpen(false)}
                             className="block px-3 py-4 text-base font-medium text-gray-300 hover:text-orange-500 border-b border-gray-800/50"
                         >
-                            {link}
-                        </a>
+                            {link.name}
+                        </Link>
                     ))}
-                    <div className="pt-4 flex flex-col gap-3">
-                        <button className="w-full bg-gray-800 text-white px-5 py-3 rounded-lg font-bold">
+
+                    {/* Mobile Auth Buttons (Visible on extra small screens) */}
+                    <div className="pt-4 flex flex-col gap-3 sm:hidden">
+                        <Link
+                            href="/login"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="w-full bg-gray-800 text-white px-5 py-3 rounded-lg font-bold text-center"
+                        >
                             Sign In
-                        </button>
-                        <button className="w-full bg-orange-500 text-white px-5 py-3 rounded-lg font-bold">
+                        </Link>
+                        <Link
+                            href="/register"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="w-full bg-orange-500 text-white px-5 py-3 rounded-lg font-bold text-center"
+                        >
                             Sign Up
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>

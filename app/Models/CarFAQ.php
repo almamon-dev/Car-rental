@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CarFaq extends Model
+class CarFAQ extends Model
 {
     protected $fillable = ['car_id', 'question', 'answer'];
 

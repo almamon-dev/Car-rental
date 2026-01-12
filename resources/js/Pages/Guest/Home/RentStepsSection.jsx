@@ -57,7 +57,7 @@ export default function RentStepsSection() {
                             <span className="text-gray-400">3 Steps</span>
                         </h2>
                         <p className="text-gray-500 mb-10">
-                            Check how it Works to Rent Cars in DreamsRent
+                            Check how it Works to Rent Cars in 3 Easy Steps
                         </p>
 
                         <div className="space-y-8">

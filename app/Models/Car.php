@@ -30,7 +30,7 @@ class Car extends Model
 
     public function faqs(): HasMany
     {
-        return $this->hasMany(CarFaq::class);
+        return $this->hasMany(CarFAQ::class);
     }
 
     public function policeDocuments(): HasOne
