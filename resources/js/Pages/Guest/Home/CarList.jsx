@@ -285,7 +285,9 @@ function CarCard({ car, viewMode }) {
                 <img
                     src={car.img}
                     alt={car.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out will-change-transform"
+                    style={{ transform: 'translateZ(0)' }}
                 />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded shadow-sm">
                     <span className="text-[11px] font-bold text-[#157284] uppercase tracking-wider">

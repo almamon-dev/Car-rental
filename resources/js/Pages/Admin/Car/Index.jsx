@@ -198,26 +198,13 @@ export default function CarList({
                 />
 
                 {/* Table Container */}
-                <div className="overflow-x-auto min-h-[400px] relative">
-                    <AnimatePresence mode="wait">
-                        {showSkeleton ? (
-                            <motion.div
-                                key="skeleton"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <TableSkeleton />
-                            </motion.div>
-                        ) : cars.data.length > 0 ? (
-                            <motion.div
-                                key="data"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
+                <div className="overflow-x-auto min-h-[400px] relative" style={{ willChange: 'scroll-position' }}>
+                    {showSkeleton ? (
+                        <div>
+                            <TableSkeleton />
+                        </div>
+                    ) : cars.data.length > 0 ? (
+                        <div>
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="text-gray-400 font-bold text-[11px] uppercase tracking-wider border-b border-gray-100 bg-gray-50/30">
@@ -269,11 +256,10 @@ export default function CarList({
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {cars.data.map((item, index) => (
+                                        {cars.data.map((item) => (
                                             <CarTableRow
                                                 key={item.id}
                                                 item={item}
-                                                index={index}
                                                 isEffectivelySelected={
                                                     isEffectivelySelected
                                                 }
@@ -285,15 +271,9 @@ export default function CarList({
                                         ))}
                                     </tbody>
                                 </table>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="empty"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="py-12 flex flex-col items-center justify-center bg-white"
-                            >
+                        </div>
+                    ) : (
+                        <div className="py-12 flex flex-col items-center justify-center bg-white">
                                 {/* Minimal LinkedIn-Style Illustration Container */}
                                 <div className="relative mb-4">
                                     <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center">
@@ -302,20 +282,12 @@ export default function CarList({
                                             className="text-slate-300 stroke-[1.2]"
                                         />
                                     </div>
-                                    <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{
-                                            delay: 0.2,
-                                            type: "spring",
-                                        }}
-                                        className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-sm border border-slate-100"
-                                    >
+                                    <div className="absolute bottom-0 right-0 bg-white p-1.5 rounded-full shadow-sm border border-slate-100">
                                         <Search
                                             size={16}
                                             className="text-blue-500"
                                         />
-                                    </motion.div>
+                                    </div>
                                 </div>
 
                                 {/* Typography Section */}
@@ -350,13 +322,12 @@ export default function CarList({
                                         Add new product
                                     </Link>
                                 </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                        </div>
+                    )}
 
                     {/* Loading overlay for pagination */}
                     {isProcessing && cars.data.length > 0 && (
-                        <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] flex items-center justify-center z-10">
+                        <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                         </div>
                     )}
@@ -366,7 +337,7 @@ export default function CarList({
                 {cars.data.length > 0 && (
                     <div className="border-t border-gray-50 relative">
                         {isProcessing && (
-                            <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10"></div>
+                            <div className="absolute inset-0 bg-white/80 z-10"></div>
                         )}
                         <Pagination meta={cars} />
                     </div>

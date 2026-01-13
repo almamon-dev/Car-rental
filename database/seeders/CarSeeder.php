@@ -12,9 +12,12 @@ class CarSeeder extends Seeder
 {
     public function run(): void
     {
-        // Insert data into cars table
-        for ($i = 1; $i <= 50; $i++) {
+        $total = 5000;
+        $chunkSize = 100; // প্রতি ব্যাচে ১০০টি করে ডাটা প্রসেস হবে
 
+        for ($i = 1; $i <= $total; $i++) {
+
+            // ১. কার ইনসার্ট
             $carId = DB::table('cars')->insertGetId([
                 'brand_id' => rand(1, 5),
                 'category_id' => rand(1, 4),
@@ -27,7 +30,7 @@ class CarSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-            // Insert data into car_specifications table
+            // ২. স্পেসিফিকেশন
             DB::table('car_specifications')->insert([
                 'car_id' => $carId,
                 'transmission' => 'Automatic',
@@ -42,7 +45,7 @@ class CarSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-            // Insert data into car_price_details table
+            // ৩. প্রাইস ডিটেইলস
             DB::table('car_price_details')->insert([
                 'car_id' => $carId,
                 'daily_rate' => rand(40, 120),
@@ -55,7 +58,7 @@ class CarSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-            // Insert data into car_police_documents table
+            // ৪. পুলিশ ডকুমেন্ট
             DB::table('car_police_documents')->insert([
                 'car_id' => $carId,
                 'registration_number' => 'DHA-'.(1000 + $i),
@@ -67,28 +70,28 @@ class CarSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-            // Insert data into car_features table
+            // ৫. ফিচারস (Batch Insert - লুপের বাইরে একবারে)
             $features = ['Air Conditioning', 'ABS', 'Airbags'];
+            $featuresData = [];
             foreach ($features as $feature) {
-                DB::table('car_features')->insert([
+                $featuresData[] = [
                     'car_id' => $carId,
                     'feature_name' => $feature,
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]);
+                ];
             }
+            DB::table('car_features')->insert($featuresData);
 
-            // Insert data into car_f_a_q_s table
+            // ৬. FAQ (Batch Insert)
             DB::table('car_f_a_q_s')->insert([
                 ['car_id' => $carId, 'question' => 'Is driver included?', 'answer' => 'Driver available on request.', 'created_at' => now(), 'updated_at' => now()],
                 ['car_id' => $carId, 'question' => 'Is fuel included?', 'answer' => 'Fuel cost is not included.', 'created_at' => now(), 'updated_at' => now()],
             ]);
 
-            // Upload images
+            // ৭. ইমেজ আপলোড পার্ট
             $folderName = 'cars/gallery';
             $uploadPath = public_path('uploads/'.$folderName);
-
-            // Create folder if not exists
             File::ensureDirectoryExists($uploadPath);
 
             $allImages = [
@@ -107,25 +110,33 @@ class CarSeeder extends Seeder
             ];
 
             $selectedImages = Arr::random($allImages, 8);
+            $imagesData = [];
 
             foreach ($selectedImages as $img) {
-                $sourcePath = public_path('images/cars/'.$img); // Get image path
-
+                $sourcePath = public_path('images/cars/'.$img);
                 if (File::exists($sourcePath)) {
-                    // Copy image to uploads folder
                     $extension = pathinfo($img, PATHINFO_EXTENSION);
-                    $newFileName = time().'_'.Str::random(8).'.'.$extension;
+                    $newFileName = microtime(true).'_'.Str::random(8).'.'.$extension;
 
                     File::copy($sourcePath, $uploadPath.'/'.$newFileName);
 
-                    // Insert image into car_images table
-                    DB::table('car_images')->insert([
+                    $imagesData[] = [
                         'car_id' => $carId,
                         'file_path' => 'uploads/'.$folderName.'/'.$newFileName,
                         'created_at' => now(),
                         'updated_at' => now(),
-                    ]);
+                    ];
                 }
+            }
+
+            // ইমেজগুলো একবারে ইনসার্ট করা হচ্ছে (Batch)
+            if (! empty($imagesData)) {
+                DB::table('car_images')->insert($imagesData);
+            }
+
+            // কনসোলে প্রোগ্রেস দেখার জন্য (ঐচ্ছিক)
+            if ($i % $chunkSize == 0) {
+                $this->command->info("Inserted $i cars...");
             }
         }
     }

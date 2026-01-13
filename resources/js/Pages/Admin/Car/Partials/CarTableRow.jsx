@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
-import { motion } from "framer-motion";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -10,28 +9,20 @@ import {
 import { Pencil, ImageOff, MoreVertical } from "lucide-react";
 import DeleteAction from "@/Components/modals/ConfirmDelete";
 
-export default function CarTableRow({
+const CarTableRow = React.memo(function CarTableRow({
     item,
-    index,
     isEffectivelySelected,
     toggleSelect,
     isClientSideLoading,
 }) {
     return (
-        <motion.tr
+        <tr
             key={item.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-                duration: 0.2,
-                delay: Math.min(index * 0.02, 0.3),
-                ease: "easeOut",
-            }}
             className={`${
                 isEffectivelySelected(item.id)
                     ? "bg-blue-50/40"
                     : "hover:bg-gray-50/30"
-            } transition-colors`}
+            } transition-colors duration-150`}
         >
             <td className="py-6 px-6 text-center">
                 <input
@@ -45,12 +36,11 @@ export default function CarTableRow({
             <td className="py-4 px-4">
                 <div className="w-16 h-16 border border-gray-100 rounded shadow-sm flex items-center justify-center p-1 bg-white overflow-hidden">
                     {item.images?.[0] ? (
-                        <motion.img
-                            whileHover={{ scale: 1.15 }}
-                            transition={{ duration: 0.2 }}
+                        <img
                             src={`/${item.images[0].file_path}`}
-                            className="max-w-full max-h-full object-contain"
+                            className="max-w-full max-h-full object-contain hover:scale-105 transition-transform duration-200 ease-out"
                             alt="car"
+                            loading="lazy"
                         />
                     ) : (
                         <ImageOff size={20} className="text-gray-200" />
@@ -110,20 +100,14 @@ export default function CarTableRow({
             </td>
             <td className="py-4 px-4">
                 <div
-                    className={`w-9 h-5 rounded-full relative transition-colors cursor-pointer ${
+                    className={`w-9 h-5 rounded-full relative transition-colors duration-200 cursor-pointer ${
                         item.status === "available"
                             ? "bg-blue-500"
                             : "bg-gray-200"
                     }`}
                 >
-                    <motion.div
-                        layout
-                        transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                        }}
-                        className={`absolute top-1 w-3 h-3 bg-white rounded-full ${
+                    <div
+                        className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-200 ease-out ${
                             item.status === "available" ? "left-5" : "left-1"
                         }`}
                     />
@@ -156,6 +140,8 @@ export default function CarTableRow({
                     </DropdownMenuContent>
                 </DropdownMenu>
             </td>
-        </motion.tr>
+        </tr>
     );
-}
+});
+
+export default CarTableRow;

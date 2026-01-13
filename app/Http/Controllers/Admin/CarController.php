@@ -19,15 +19,12 @@ class CarController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Build the Query
+        // 1. Build the Query - Only load necessary relationships
         $query = Car::with([
-            'brand',
-            'category',
-            'images',
-            'specifications',
-            'priceDetails',
-            'features',
-            'policeDocuments',
+            'brand:id,name',
+            'priceDetails:id,car_id,daily_rate',
+            // Only select necessary columns from images
+            'images:id,car_id,file_path',
         ]);
 
         // 2. Search Logic
@@ -41,33 +38,35 @@ class CarController extends Controller
 
         // 3. Brand & Category Filters
         if ($request->brand) {
-            $query->whereHas('brand', fn ($q) => $q->where('name', $request->brand));
+            $query->whereHas('brand', fn($q) => $q->where('name', $request->brand));
         }
         if ($request->category) {
-            $query->whereHas('category', fn ($q) => $q->where('name', $request->category));
+            $query->whereHas('category', fn($q) => $q->where('name', $request->category));
         }
         if ($request->status && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
-        // 4. Specification Filters
+        // 4. Specification Filters (only use whereHas, don't eager load)
         if ($request->transmission) {
-            $query->whereHas('specifications', fn ($q) => $q->where('transmission', $request->transmission));
+            $query->whereHas('specifications', fn($q) => $q->where('transmission', $request->transmission));
         }
         if ($request->fuel_type) {
-            $query->whereHas('specifications', fn ($q) => $q->where('fuel_type', $request->fuel_type));
+            $query->whereHas('specifications', fn($q) => $q->where('fuel_type', $request->fuel_type));
         }
 
         // 5. Execute Pagination
         $cars = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
-        // 6. Live Counts (Calculated every request)
-        $counts = [
-            'all' => Car::count(),
-            'available' => Car::where('status', 'available')->count(),
-            'reserved' => Car::where('status', 'reserved')->count(),
-            'sold' => Car::where('status', 'sold')->count(),
-        ];
+        // 6. Cached Counts (Cache for 60 seconds to reduce database load)
+        $counts = Cache::remember('car_counts', 60, function () {
+            return [
+                'all' => Car::count(),
+                'available' => Car::where('status', 'available')->count(),
+                'reserved' => Car::where('status', 'reserved')->count(),
+                'sold' => Car::where('status', 'sold')->count(),
+            ];
+        });
 
         return Inertia::render('Admin/Car/Index', [
             'cars' => $cars,
@@ -92,26 +91,45 @@ class CarController extends Controller
             DB::transaction(function () use ($request) {
                 // 1. Create primary car record
                 $car = Car::create($request->only([
-                    'brand_id', 'category_id', 'make', 'model', 'year',
-                    'rental_type', 'description', 'status',
+                    'brand_id',
+                    'category_id',
+                    'make',
+                    'model',
+                    'year',
+                    'rental_type',
+                    'description',
+                    'status',
                 ]));
 
                 // 2. Create Specifications
                 $car->specifications()->create($request->only([
-                    'transmission', 'mileage', 'fuel_type', 'steering',
-                    'model_year', 'vehicle_type', 'engine_capacity', 'color',
+                    'transmission',
+                    'mileage',
+                    'fuel_type',
+                    'steering',
+                    'model_year',
+                    'vehicle_type',
+                    'engine_capacity',
+                    'color',
                 ]));
 
                 // 3. Create Pricing Details
                 $car->priceDetails()->create($request->only([
-                    'daily_rate', 'weekly_rate', 'monthly_rate',
-                    'security_deposit', 'tax_percentage', 'currency',
+                    'daily_rate',
+                    'weekly_rate',
+                    'monthly_rate',
+                    'security_deposit',
+                    'tax_percentage',
+                    'currency',
                 ]));
 
                 // 4. Create Documents
                 $car->policeDocuments()->create($request->only([
-                    'registration_number', 'chassis_number', 'engine_number',
-                    'tax_token_expiry', 'fitness_expiry',
+                    'registration_number',
+                    'chassis_number',
+                    'engine_number',
+                    'tax_token_expiry',
+                    'fitness_expiry',
                 ]));
 
                 // 5. Create Features
@@ -145,10 +163,12 @@ class CarController extends Controller
                 }
             });
 
+            // Clear counts cache after creating a car
+            Cache::forget('car_counts');
+
             return redirect()
                 ->route('admin.cars.index')
                 ->with('success', 'Vehicle listed successfully in the marketplace.');
-
         } catch (\Exception $e) {
             Log::info('Error details:', [
                 'message' => $e->getMessage(),
@@ -180,32 +200,51 @@ class CarController extends Controller
             DB::transaction(function () use ($request, $car) {
                 // 1. Update primary car record
                 $car->update($request->only([
-                    'brand_id', 'category_id', 'make', 'model', 'year',
-                    'rental_type', 'description', 'status',
+                    'brand_id',
+                    'category_id',
+                    'make',
+                    'model',
+                    'year',
+                    'rental_type',
+                    'description',
+                    'status',
                 ]));
 
                 // 2. Update Specifications
                 $car->specifications()->updateOrCreate([], $request->only([
-                    'transmission', 'mileage', 'fuel_type', 'steering',
-                    'model_year', 'vehicle_type', 'engine_capacity', 'color',
+                    'transmission',
+                    'mileage',
+                    'fuel_type',
+                    'steering',
+                    'model_year',
+                    'vehicle_type',
+                    'engine_capacity',
+                    'color',
                 ]));
 
                 // 3. Update Pricing Details
                 $car->priceDetails()->updateOrCreate([], $request->only([
-                    'daily_rate', 'weekly_rate', 'monthly_rate',
-                    'security_deposit', 'tax_percentage', 'currency',
+                    'daily_rate',
+                    'weekly_rate',
+                    'monthly_rate',
+                    'security_deposit',
+                    'tax_percentage',
+                    'currency',
                 ]));
 
                 // 4. Update Documents
                 $car->policeDocuments()->updateOrCreate([], $request->only([
-                    'registration_number', 'chassis_number', 'engine_number',
-                    'tax_token_expiry', 'fitness_expiry',
+                    'registration_number',
+                    'chassis_number',
+                    'engine_number',
+                    'tax_token_expiry',
+                    'fitness_expiry',
                 ]));
 
                 // 5. Update Features
                 $car->features()->delete();
                 if ($request->has('features')) {
-                    $features = array_filter($request->features, fn ($f) => ! empty($f['feature_name']));
+                    $features = array_filter($request->features, fn($f) => ! empty($f['feature_name']));
                     if (! empty($features)) {
                         $car->features()->createMany($features);
                     }
@@ -214,7 +253,7 @@ class CarController extends Controller
                 // 6. Update FAQs
                 $car->faqs()->delete();
                 if ($request->has('faqs')) {
-                    $faqs = array_filter($request->faqs, fn ($f) => ! empty($f['question']));
+                    $faqs = array_filter($request->faqs, fn($f) => ! empty($f['question']));
                     if (! empty($faqs)) {
                         $car->faqs()->createMany($faqs);
                     }
@@ -231,9 +270,12 @@ class CarController extends Controller
                 }
             });
 
+            // Clear counts cache after updating a car (status might have changed)
+            Cache::forget('car_counts');
+
             return redirect()->route('admin.cars.index')->with('success', 'Vehicle updated successfully.');
         } catch (\Exception $e) {
-            Log::error('Car Update Error: '.$e->getMessage());
+            Log::error('Car Update Error: ' . $e->getMessage());
 
             return back()->withErrors(['error' => 'Update failed. Check logs for details.']);
         }
@@ -252,7 +294,6 @@ class CarController extends Controller
 
             // 2. Delete from database
             $image->delete();
-            Cache::flush();
 
             return back()->with('success', 'Image deleted successfully from database and server.');
         } catch (\Exception $e) {
@@ -281,11 +322,13 @@ class CarController extends Controller
                 $car->delete();
             });
 
+            // Clear counts cache after deleting a car
+            Cache::forget('car_counts');
+
             return redirect()->route('admin.cars.index')
                 ->with('success', 'Vehicle and all related data deleted successfully.');
-
         } catch (\Exception $e) {
-            Log::error('Car Deletion Error: '.$e->getMessage());
+            Log::error('Car Deletion Error: ' . $e->getMessage());
 
             return back()->withErrors([
                 'error' => 'Failed to delete vehicle. Please try again.',

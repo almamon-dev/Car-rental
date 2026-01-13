@@ -23,10 +23,15 @@ export default function FilterBar({
         currentBrand || currentTransmission || currentFuel || search;
 
     return (
-        <div className="flex flex-wrap items-center justify-between p-4 gap-3 bg-white">
+        <div className="flex flex-wrap items-center justify-between p-4 gap-3 bg-white border-b border-gray-50">
+            {/* Search Input */}
             <div className="relative flex-1 min-w-[200px]">
                 <Search
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${
+                        isClientSideLoading
+                            ? "text-blue-500 animate-pulse"
+                            : "text-slate-400"
+                    }`}
                     size={16}
                 />
                 <input
@@ -34,7 +39,7 @@ export default function FilterBar({
                     value={search}
                     onChange={(e) => handleSearch(e.target.value)}
                     placeholder="Search products..."
-                    className="w-full pl-10 pr-4 py-2 bg-[#F3F6F9] border-[#3B82F6]/40 rounded-md text-sm outline-none focus:ring-1 focus:ring-blue-200"
+                    className="w-full pl-10 pr-4 py-2 bg-[#F3F6F9] border border-transparent rounded-md text-sm outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
                 />
             </div>
 
@@ -42,18 +47,20 @@ export default function FilterBar({
                 {/* Brand Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-500 flex items-center justify-between min-w-[160px] border border-[#3B82F6]/40 outline-none focus:ring-1 focus:ring-blue-200"
+                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-600 flex items-center justify-between min-w-[140px] border border-transparent hover:border-blue-200 outline-none focus:ring-2 focus:ring-blue-100 disabled:opacity-50"
                         disabled={isClientSideLoading}
                     >
-                        {currentBrand || "All Brands"}
+                        <span className="truncate">
+                            {currentBrand || "All Brands"}
+                        </span>
                         <ChevronDown size={14} className="ml-2 opacity-50" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-[160px]">
+                    <DropdownMenuContent align="end" className="w-[180px]">
                         <DropdownMenuItem
                             onClick={() => handleFilter("brand", "all")}
                             className="flex justify-between cursor-pointer"
                         >
-                            All Brands
+                            All Brands{" "}
                             {currentBrand === "" && (
                                 <Check size={14} className="text-blue-500" />
                             )}
@@ -64,7 +71,7 @@ export default function FilterBar({
                                 onClick={() => handleFilter("brand", b.name)}
                                 className="flex justify-between cursor-pointer"
                             >
-                                {b.name}
+                                {b.name}{" "}
                                 {currentBrand === b.name && (
                                     <Check
                                         size={14}
@@ -79,48 +86,46 @@ export default function FilterBar({
                 {/* Transmission Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-500 flex items-center justify-between min-w-[160px] border border-[#3B82F6]/40 outline-none focus:ring-1 focus:ring-blue-200"
+                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-600 flex items-center justify-between min-w-[140px] border border-transparent hover:border-blue-200 disabled:opacity-50"
                         disabled={isClientSideLoading}
                     >
-                        {currentTransmission || "Transmission"}
+                        <span className="truncate">
+                            {currentTransmission || "Transmission"}
+                        </span>
                         <ChevronDown size={14} className="ml-2 opacity-50" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-[160px]">
-                        <DropdownMenuItem
-                            onClick={() => handleFilter("transmission", "all")}
-                            className="cursor-pointer"
-                        >
-                            Any
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() =>
-                                handleFilter("transmission", "Manual")
-                            }
-                            className="cursor-pointer"
-                        >
-                            Manual
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() =>
-                                handleFilter("transmission", "Automatic")
-                            }
-                            className="cursor-pointer"
-                        >
-                            Automatic
-                        </DropdownMenuItem>
+                    <DropdownMenuContent align="end" className="w-[160px]">
+                        {["all", "Manual", "Automatic"].map((t) => (
+                            <DropdownMenuItem
+                                key={t}
+                                onClick={() => handleFilter("transmission", t)}
+                                className="flex justify-between cursor-pointer"
+                            >
+                                {t === "all" ? "Any" : t}
+                                {currentTransmission ===
+                                    (t === "all" ? "" : t) && (
+                                    <Check
+                                        size={14}
+                                        className="text-blue-500"
+                                    />
+                                )}
+                            </DropdownMenuItem>
+                        ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
                 {/* Fuel Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-500 flex items-center justify-between min-w-[160px] border border-[#3B82F6]/40 outline-none focus:ring-1 focus:ring-blue-200"
+                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-600 flex items-center justify-between min-w-[140px] border border-transparent hover:border-blue-200 disabled:opacity-50"
                         disabled={isClientSideLoading}
                     >
-                        {currentFuel || "Fuel Type"}
+                        <span className="truncate">
+                            {currentFuel || "Fuel Type"}
+                        </span>
                         <ChevronDown size={14} className="ml-2 opacity-50" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-[160px]">
+                    <DropdownMenuContent align="end" className="w-[160px]">
                         <DropdownMenuItem
                             onClick={() => handleFilter("fuel_type", "all")}
                             className="cursor-pointer"
@@ -131,52 +136,35 @@ export default function FilterBar({
                             <DropdownMenuItem
                                 key={f}
                                 onClick={() => handleFilter("fuel_type", f)}
-                                className="cursor-pointer"
+                                className="flex justify-between cursor-pointer"
                             >
-                                {f}
+                                {f}{" "}
+                                {currentFuel === f && (
+                                    <Check
+                                        size={14}
+                                        className="text-blue-500"
+                                    />
+                                )}
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Premium Animated Reset Button */}
+                {/* Reset Button */}
                 <AnimatePresence>
                     {hasActiveFilters && (
                         <motion.button
-                            initial={{
-                                opacity: 0,
-                                x: 20,
-                                filter: "blur(10px)",
-                            }}
-                            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                            exit={{ opacity: 0, x: 10, filter: "blur(10px)" }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.95 }}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
                             onClick={() =>
                                 router.get(route("admin.cars.index"))
                             }
-                            className="group flex items-center gap-2 px-3 py-2 bg-rose-50 hover:bg-rose-500 text-rose-500 hover:text-white rounded-md transition-all duration-300 border border-rose-100 hover:border-rose-500 shadow-sm overflow-hidden"
+                            className="flex items-center gap-2 px-3 py-2 bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-md transition-all text-xs font-bold"
                             disabled={isClientSideLoading}
                         >
-                            <motion.div
-                                initial={{ rotate: 0 }}
-                                animate={{ rotate: -360 }}
-                                transition={{ duration: 0.5 }}
-                            >
-                                <RotateCcw
-                                    size={16}
-                                    className="group-hover:rotate-180 transition-transform duration-500"
-                                />
-                            </motion.div>
-
-                            <span className="text-xs font-bold whitespace-nowrap">
-                                Clear All
-                            </span>
-
-                            <X
-                                size={14}
-                                className="ml-1 opacity-50 group-hover:opacity-100 group-hover:rotate-90 transition-all"
-                            />
+                            <RotateCcw size={14} />
+                            Clear All
                         </motion.button>
                     )}
                 </AnimatePresence>
