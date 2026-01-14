@@ -26,7 +26,7 @@ const FeaturesSection = ({
                         <input
                             type="text"
                             placeholder="Feature name..."
-                            value={f.feature_name || ""}
+                            value={f?.feature_name || ""}
                             onChange={(e) =>
                                 handleNestedChange(
                                     "features",

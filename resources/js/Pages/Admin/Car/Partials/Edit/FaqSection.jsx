@@ -33,7 +33,7 @@ const FaqSection = ({
                     </h3>
                 </div>
 
-                {/* Your Custom Styled Switch */}
+                {/* Toggle Switch */}
                 <div className="flex items-center gap-3">
                     <span className="text-xs font-medium text-slate-500">
                         Show FAQs

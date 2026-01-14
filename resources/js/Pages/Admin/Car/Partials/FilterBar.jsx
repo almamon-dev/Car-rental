@@ -5,7 +5,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import { Search, ChevronDown, X, Check, RotateCcw } from "lucide-react";
+import { Search, ChevronDown, Check, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function FilterBar({
@@ -23,13 +23,14 @@ export default function FilterBar({
         currentBrand || currentTransmission || currentFuel || search;
 
     return (
-        <div className="flex flex-wrap items-center justify-between p-4 gap-3 bg-white border-b border-gray-50">
-            {/* Search Input */}
-            <div className="relative flex-1 min-w-[200px]">
+        /* Changed to flex-nowrap to keep it in one row and added gap-4 */
+        <div className="flex flex-nowrap items-center w-full p-4 gap-4 bg-white border-b border-gray-100">
+            {/* Search Input - flex-grow allows it to take up remaining space */}
+            <div className="relative flex-grow min-w-[200px]">
                 <Search
                     className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${
                         isClientSideLoading
-                            ? "text-orange-600 animate-pulse"
+                            ? "text-blue-600 animate-pulse"
                             : "text-slate-400"
                     }`}
                     size={16}
@@ -39,30 +40,30 @@ export default function FilterBar({
                     value={search}
                     onChange={(e) => handleSearch(e.target.value)}
                     placeholder="Search products..."
-                    className="w-full pl-10 pr-4 py-2 bg-[#F3F6F9] border border-transparent rounded-md text-sm outline-none focus:bg-white focus:border-orange-600 focus:ring-4 focus:ring-orange-600/10 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#F3F6F9] border border-transparent rounded-lg text-sm outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
                 />
             </div>
 
-            <div className="flex flex-wrap gap-2 items-center">
+            {/* Filters Container - flex-shrink-0 prevents dropdowns from getting squished */}
+            <div className="flex flex-shrink-0 items-center gap-2">
                 {/* Brand Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-600 flex items-center justify-between min-w-[140px] border border-transparent hover:border-orange-600/30 outline-none focus:ring-2 focus:ring-orange-600/20 disabled:opacity-50"
+                        className="bg-[#F3F6F9] px-4 py-2.5 rounded-lg text-sm text-gray-600 flex items-center justify-between gap-2 min-w-[140px] border border-transparent hover:border-blue-600/30 transition-all outline-none disabled:opacity-50"
                         disabled={isClientSideLoading}
                     >
                         <span className="truncate">
                             {currentBrand || "All Brands"}
                         </span>
-                        <ChevronDown size={14} className="ml-2 opacity-50" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[180px]">
                         <DropdownMenuItem
                             onClick={() => handleFilter("brand", "all")}
                             className="flex justify-between cursor-pointer"
                         >
-                            All Brands{" "}
+                            All Brands
                             {currentBrand === "" && (
-                                <Check size={14} className="text-orange-600" />
+                                <Check size={14} className="text-blue-600" />
                             )}
                         </DropdownMenuItem>
                         {brands.map((b) => (
@@ -71,11 +72,11 @@ export default function FilterBar({
                                 onClick={() => handleFilter("brand", b.name)}
                                 className="flex justify-between cursor-pointer"
                             >
-                                {b.name}{" "}
+                                {b.name}
                                 {currentBrand === b.name && (
                                     <Check
                                         size={14}
-                                        className="text-orange-600"
+                                        className="text-blue-600"
                                     />
                                 )}
                             </DropdownMenuItem>
@@ -86,13 +87,12 @@ export default function FilterBar({
                 {/* Transmission Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-600 flex items-center justify-between min-w-[140px] border border-transparent hover:border-orange-600/30 disabled:opacity-50"
+                        className="bg-[#F3F6F9] px-4 py-2.5 rounded-lg text-sm text-gray-600 flex items-center justify-between gap-2 min-w-[130px] border border-transparent hover:border-blue-600/30 transition-all outline-none disabled:opacity-50"
                         disabled={isClientSideLoading}
                     >
                         <span className="truncate">
                             {currentTransmission || "Transmission"}
                         </span>
-                        <ChevronDown size={14} className="ml-2 opacity-50" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[160px]">
                         {["all", "Manual", "Automatic"].map((t) => (
@@ -106,7 +106,7 @@ export default function FilterBar({
                                     (t === "all" ? "" : t) && (
                                     <Check
                                         size={14}
-                                        className="text-orange-600"
+                                        className="text-blue-600"
                                     />
                                 )}
                             </DropdownMenuItem>
@@ -117,13 +117,12 @@ export default function FilterBar({
                 {/* Fuel Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="bg-[#F3F6F9] px-4 py-2 rounded-md text-sm text-gray-600 flex items-center justify-between min-w-[140px] border border-transparent hover:border-orange-600/30 disabled:opacity-50"
+                        className="bg-[#F3F6F9] px-4 py-2.5 rounded-lg text-sm text-gray-600 flex items-center justify-between gap-2 min-w-[120px] border border-transparent hover:border-blue-600/30 transition-all outline-none disabled:opacity-50"
                         disabled={isClientSideLoading}
                     >
                         <span className="truncate">
                             {currentFuel || "Fuel Type"}
                         </span>
-                        <ChevronDown size={14} className="ml-2 opacity-50" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-[160px]">
                         <DropdownMenuItem
@@ -138,11 +137,11 @@ export default function FilterBar({
                                 onClick={() => handleFilter("fuel_type", f)}
                                 className="flex justify-between cursor-pointer"
                             >
-                                {f}{" "}
+                                {f}
                                 {currentFuel === f && (
                                     <Check
                                         size={14}
-                                        className="text-orange-600"
+                                        className="text-blue-600"
                                     />
                                 )}
                             </DropdownMenuItem>
@@ -154,17 +153,17 @@ export default function FilterBar({
                 <AnimatePresence>
                     {hasActiveFilters && (
                         <motion.button
-                            initial={{ opacity: 0, scale: 0.8 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
                             onClick={() =>
                                 router.get(route("admin.cars.index"))
                             }
-                            className="flex items-center gap-2 px-3 py-2 bg-orange-600/10 text-orange-600 hover:bg-orange-600 hover:text-orange-600-foreground rounded-md transition-all text-xs font-bold"
+                            className="flex items-center gap-2 px-3 py-2.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-all text-xs font-bold whitespace-nowrap"
                             disabled={isClientSideLoading}
                         >
                             <RotateCcw size={14} />
-                            Clear All
+                            Reset
                         </motion.button>
                     )}
                 </AnimatePresence>

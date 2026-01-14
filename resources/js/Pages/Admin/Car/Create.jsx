@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { Head, useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Save, XCircle, ChevronLeft, LayoutDashboard } from "lucide-react";
+import {
+    Save,
+    XCircle,
+    ChevronLeft,
+    LayoutDashboard,
+    Loader2,
+} from "lucide-react";
 
-// Import Redesigned Partials
+// Import Partials
 import BasicInfoSection from "./Partials/Create/BasicInfoSection";
 import TechSpecsSection from "./Partials/Create/TechSpecsSection";
 import FeaturesSection from "./Partials/Create/FeaturesSection";
@@ -44,10 +50,10 @@ export default function CarCreate({ auth, categories, brands }) {
         fitness_expiry: "",
         features: [{ feature_name: "" }],
         faqs: [{ question: "", answer: "" }],
+        has_faqs: false,
         images: [],
     });
 
-    // Sections state - keeping them open by default for easier onboarding
     const [openSections, setOpenSections] = useState({
         basic: true,
         specs: true,
@@ -101,39 +107,36 @@ export default function CarCreate({ auth, categories, brands }) {
         <AdminLayout user={auth.user}>
             <Head title="Add Vehicle | Admin Dashboard" />
 
-            <div className="bg-[#FDFDFD] min-h-screen">
-                {/* Modern Sticky Header */}
-                <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 px-8 py-4">
-                    <div className="flex justify-between items-center max-w-[1600px] mx-auto">
+            <div className="bg-[#FDFDFD] min-h-screen pb-20">
+                {/* Header - Minimal & Non-Sticky */}
+                <div className="bg-white border-b border-gray-100 px-8 py-6">
+                    <div className="flex justify-between items-center mx-auto">
                         <div>
-                            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-tighter mb-1">
-                                <LayoutDashboard size={14} />
-                                <span>Inventory Management</span>
+                            <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
+                                <LayoutDashboard size={12} />
+                                <span>Inventory</span>
                             </div>
-                            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-                                List New Vehicle
+                            <h1 className="text-xl font-black text-slate-900 tracking-tight">
+                                New Vehicle Listing
                             </h1>
                         </div>
 
                         <Link
                             href={route("admin.cars.index")}
-                            className="group flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-600 hover:text-primary transition-all"
+                            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
                         >
-                            <ChevronLeft
-                                size={18}
-                                className="group-hover:-translate-x-1 transition-transform"
-                            />
-                            Back to Inventory
+                            <ChevronLeft size={16} />
+                            BACK
                         </Link>
                     </div>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 py-10"
+                    className="mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 py-10"
                 >
-                    {/* Left Column: Core Data (8 Cols) */}
-                    <div className="lg:col-span-8 space-y-8">
+                    {/* Left Column (8 Cols) */}
+                    <div className="lg:col-span-8 space-y-6">
                         <CollapsibleCard
                             title="Primary Details"
                             isOpen={openSections.basic}
@@ -182,6 +185,7 @@ export default function CarCreate({ auth, categories, brands }) {
                             <FaqSection
                                 data={data}
                                 errors={errors}
+                                handleInputChange={handleInputChange}
                                 handleNestedChange={handleNestedChange}
                                 removeRow={removeRow}
                                 addRow={addRow}
@@ -189,10 +193,10 @@ export default function CarCreate({ auth, categories, brands }) {
                         </CollapsibleCard>
                     </div>
 
-                    {/* Right Column: Pricing & Meta (4 Cols) */}
-                    <div className="lg:col-span-4 space-y-8">
+                    {/* Right Column (4 Cols) */}
+                    <div className="lg:col-span-4 space-y-6">
                         <CollapsibleCard
-                            title="Pricing Strategy"
+                            title="Pricing"
                             isOpen={openSections.pricing}
                             onToggle={() => toggleSection("pricing")}
                         >
@@ -204,7 +208,7 @@ export default function CarCreate({ auth, categories, brands }) {
                         </CollapsibleCard>
 
                         <CollapsibleCard
-                            title="Legal & Compliance"
+                            title="Compliance"
                             isOpen={openSections.documents}
                             onToggle={() => toggleSection("documents")}
                         >
@@ -216,7 +220,7 @@ export default function CarCreate({ auth, categories, brands }) {
                         </CollapsibleCard>
 
                         <CollapsibleCard
-                            title="Media Gallery"
+                            title="Media"
                             isOpen={openSections.images}
                             onToggle={() => toggleSection("images")}
                         >
@@ -228,35 +232,82 @@ export default function CarCreate({ auth, categories, brands }) {
                             />
                         </CollapsibleCard>
 
-                        {/* Floating Action Bar (Mobile Responsive) */}
-                        <div className="bg-slate-900 rounded-3xl p-6 shadow-2xl shadow-slate-200">
-                            <div className="text-white mb-6">
-                                <h4 className="font-bold text-lg">
-                                    Ready to publish?
-                                </h4>
-                                <p className="text-slate-400 text-xs">
-                                    Ensure all required legal documents are
-                                    valid before listing.
-                                </p>
+                        {/* Minimal Submit Section */}
+                        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h4 className="font-bold text-slate-800 text-sm tracking-tight">
+                                        Finish Process
+                                    </h4>
+                                    <p className="text-slate-400 text-[10px] uppercase tracking-wider font-medium">
+                                        Visibility & Status
+                                    </p>
+                                </div>
+
+                                {/* Your Custom Switch Style */}
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={data.status === "available"}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                "status",
+                                                e.target.checked
+                                                    ? "available"
+                                                    : "draft"
+                                            )
+                                        }
+                                    />
+                                    <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-slate-900"></div>
+                                </label>
                             </div>
-                            <div className="flex flex-col gap-3">
+
+                            {/* Buttons: Same Width in One Row */}
+                            <div className="flex items-center gap-3">
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white font-black rounded-2xl hover:bg-primary/90 disabled:opacity-50 transition-all shadow-lg shadow-primary/20"
+                                    className="flex-1 flex items-center justify-center gap-2 px-2 py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-black disabled:opacity-50 transition-all text-[10px] uppercase tracking-widest shadow-sm"
                                 >
-                                    <Save size={20} />
+                                    {processing ? (
+                                        <Loader2
+                                            size={14}
+                                            className="animate-spin"
+                                        />
+                                    ) : (
+                                        <Save size={14} />
+                                    )}
                                     {processing
-                                        ? "PUBLISHING..."
-                                        : "PUBLISH LISTING"}
+                                        ? "Saving..."
+                                        : data.status === "available"
+                                        ? "Publish"
+                                        : "Save Draft"}
                                 </button>
+
                                 <Link
                                     href={route("admin.cars.index")}
-                                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-slate-800 text-slate-300 font-bold rounded-2xl hover:bg-slate-700 transition-all"
+                                    className="flex-1 flex items-center justify-center gap-2 px-2 py-4 bg-white text-slate-400 font-bold border border-slate-100 rounded-xl hover:bg-slate-50 hover:text-red-500 hover:border-red-100 transition-all text-[10px] uppercase tracking-widest"
                                 >
-                                    <XCircle size={18} />
-                                    Discard Draft
+                                    <XCircle size={14} />
+                                    Discard
                                 </Link>
+                            </div>
+
+                            {/* Status Label */}
+                            <div className="mt-4 flex items-center justify-center gap-2">
+                                <div
+                                    className={`w-1.5 h-1.5 rounded-full ${
+                                        data.status === "available"
+                                            ? "bg-green-500 animate-pulse"
+                                            : "bg-slate-300"
+                                    }`}
+                                />
+                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                    {data.status === "available"
+                                        ? "Listing will be Live"
+                                        : "Saved as Private Draft"}
+                                </span>
                             </div>
                         </div>
                     </div>

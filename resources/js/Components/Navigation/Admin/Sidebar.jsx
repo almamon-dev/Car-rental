@@ -20,8 +20,13 @@ import {
 
 const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
     const { url } = usePage();
+
+    // URL থেকে কুয়েরি প্যারামিটার (?search=abc) বাদ দিয়ে মেইন পাথ বের করা
+    const currentPath = url.split("?")[0];
+
     const [openMenus, setOpenMenus] = useState({
-        products: false,
+        "/admin/cars": false,
+        blogs: false,
         settings: false,
     });
 
@@ -29,16 +34,19 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
         setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
     };
 
+    // যখনই URL পরিবর্তন হবে, চেক করবে কোন ড্রপডাউনটি খোলা রাখা দরকার
     useEffect(() => {
         menuItems.forEach((item) => {
             if (
                 item.children &&
-                item.children.some((child) => url.startsWith(child.path))
+                item.children.some((child) =>
+                    currentPath.startsWith(child.path)
+                )
             ) {
                 setOpenMenus((prev) => ({ ...prev, [item.key]: true }));
             }
         });
-    }, [url]);
+    }, [currentPath]);
 
     const menuItems = [
         {
@@ -68,7 +76,7 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
             label: "Car Management",
             path: "/admin/cars",
             icon: <Tag size={18} />,
-            key: "products",
+            key: "/admin/cars",
             children: [
                 {
                     label: "All Cars",
@@ -175,9 +183,12 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
 
                 <div className="space-y-1">
                     {menuItems.map((item) => {
+                        // চেক করা হচ্ছে এই মেনু আইটেমটি একটিভ কি না
                         const isActive = item.children
-                            ? item.children.some((child) => url === child.path)
-                            : url === item.path;
+                            ? item.children.some(
+                                  (child) => currentPath === child.path
+                              )
+                            : currentPath === item.path;
 
                         return item.children ? (
                             <SidebarItem
@@ -197,14 +208,15 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
                                                 key={child.path}
                                                 href={child.path}
                                                 className={`flex items-center gap-3 ml-4 py-2 px-3 rounded-md text-sm transition-all ${
-                                                    url === child.path
+                                                    currentPath === child.path
                                                         ? "text-primary font-semibold bg-blue-50/50"
                                                         : "text-slate-500 hover:text-blue-500 hover:bg-blue-50"
                                                 }`}
                                             >
                                                 <span
                                                     className={`${
-                                                        url === child.path
+                                                        currentPath ===
+                                                        child.path
                                                             ? "text-primary"
                                                             : "text-slate-400"
                                                     }`}

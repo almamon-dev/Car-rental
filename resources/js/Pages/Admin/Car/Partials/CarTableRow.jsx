@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "@inertiajs/react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/DropdownMenu";
-import { Pencil, ImageOff, MoreVertical } from "lucide-react";
+import { Pencil, ImageOff, MoreVertical, Eye } from "lucide-react";
 import DeleteAction from "@/Components/modals/ConfirmDelete";
 
 const CarTableRow = React.memo(function CarTableRow({
@@ -18,27 +12,35 @@ const CarTableRow = React.memo(function CarTableRow({
 }) {
     const [imageLoading, setImageLoading] = useState(true);
     const [imageKey, setImageKey] = useState(0);
-    const previousItemId = React.useRef(item.id);
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // Dropdown state
+    const previousItemId = useRef(item.id);
+    const menuRef = useRef(null); // Click outside handle korar jonno
 
-    // Reset image loading when item changes or processing starts
     useEffect(() => {
-        // Only reset if item actually changed (new page) or processing started
         if (previousItemId.current !== item.id || isProcessing) {
             setImageLoading(true);
             if (isProcessing) {
-                setImageKey((prev) => prev + 1); // Force image reload on pagination
+                setImageKey((prev) => prev + 1);
             }
             previousItemId.current = item.id;
         }
     }, [item.id, isProcessing]);
 
-    const handleImageLoad = () => {
-        setImageLoading(false);
-    };
+    // Menu-r baire click korle jate bondho hoy
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setIsMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
-    const handleImageError = () => {
-        setImageLoading(false);
-    };
+    const handleImageLoad = () => setImageLoading(false);
+    const handleImageError = () => setImageLoading(false);
+
     return (
         <tr
             key={item.id}
@@ -57,26 +59,17 @@ const CarTableRow = React.memo(function CarTableRow({
                     disabled={isClientSideLoading}
                 />
             </td>
+
+            {/* Image Section */}
             <td className="py-4 px-4">
                 <div className="group relative">
                     <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/60 shadow-sm overflow-hidden relative transition-all duration-300 hover:shadow-md hover:border-gray-300/80 hover:scale-[1.02]">
                         {item.images?.[0] ? (
                             <>
-                                {/* YouTube-style enhanced shimmer effect */}
                                 {imageLoading && (
                                     <div className="absolute inset-0 rounded-lg overflow-hidden z-20">
-                                        {/* Base pulsing background */}
                                         <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-150 to-gray-200 animate-pulse"></div>
-                                        {/* Animated shimmer sweep */}
                                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/70 to-transparent bg-[length:200%_100%] animate-shimmer opacity-90"></div>
-                                        {/* Secondary shimmer for depth */}
-                                        <div
-                                            className="absolute inset-0 bg-gradient-to-r from-gray-300/50 via-gray-200/70 to-gray-300/50 bg-[length:150%_100%] animate-shimmer"
-                                            style={{
-                                                animationDelay: "0.5s",
-                                                animationDuration: "2.5s",
-                                            }}
-                                        ></div>
                                     </div>
                                 )}
                                 <div className="relative w-full h-full flex items-center justify-center bg-white">
@@ -89,13 +82,10 @@ const CarTableRow = React.memo(function CarTableRow({
                                                 : "opacity-100 blur-0 scale-100 group-hover:scale-110"
                                         }`}
                                         alt={`${item.make} ${item.model}`}
-                                        loading="lazy"
                                         onLoad={handleImageLoad}
                                         onError={handleImageError}
                                     />
                                 </div>
-                                {/* Hover overlay effect */}
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 rounded-lg z-10 pointer-events-none"></div>
                             </>
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
@@ -103,10 +93,10 @@ const CarTableRow = React.memo(function CarTableRow({
                             </div>
                         )}
                     </div>
-                    {/* Professional corner accent */}
-                    <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-br from-primary/20 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
             </td>
+
+            {/* Content Sections */}
             <td className="py-4 px-4">
                 <div className="flex flex-col">
                     <span className="text-[13px] font-medium text-gray-700 leading-tight mb-1">
@@ -117,6 +107,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     </span>
                 </div>
             </td>
+
             <td className="py-4 px-4">
                 <div className="flex flex-col">
                     <span className="text-[12px] text-primary font-medium mb-0.5">
@@ -127,6 +118,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     </span>
                 </div>
             </td>
+
             <td className="py-4 px-4">
                 <div className="flex flex-col">
                     <div className="flex text-primary gap-0.5">★ ★ ★ ★ ★</div>
@@ -135,6 +127,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     </span>
                 </div>
             </td>
+
             <td className="py-4 px-4 border-l border-gray-50 pl-6">
                 <div className="flex flex-col">
                     <span className="text-[11px] text-gray-400 uppercase font-bold">
@@ -148,6 +141,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     </span>
                 </div>
             </td>
+
             <td className="py-4 px-4">
                 <div className="flex flex-col text-[11px]">
                     <span className="text-gray-400 font-bold uppercase">
@@ -156,6 +150,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     <span className="font-black text-gray-800 text-sm">10</span>
                 </div>
             </td>
+
             <td className="py-4 px-4">
                 <div
                     className={`w-9 h-5 rounded-full relative transition-colors duration-200 cursor-pointer ${
@@ -171,32 +166,66 @@ const CarTableRow = React.memo(function CarTableRow({
                     />
                 </div>
             </td>
+
+            {/* --- Updated Action Section (No Library Classes) --- */}
             <td className="py-4 px-4 text-right pr-8">
-                <DropdownMenu>
-                    <DropdownMenuTrigger
-                        className="p-2 text-gray-400 hover:bg-gray-100 rounded-md outline-none transition-colors"
+                <div className="relative inline-block text-left" ref={menuRef}>
+                    {/* Toggle Button */}
+                    <button
+                        type="button"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className={`inline-flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200 focus:outline-none ${
+                            isMenuOpen
+                                ? "bg-gray-200 text-gray-900"
+                                : "bg-[#F3F6F9] text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                        }`}
                         disabled={isClientSideLoading}
                     >
                         <MoreVertical size={18} />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-36">
-                        <DropdownMenuItem asChild>
+                    </button>
+
+                    {/* Action Menu Card */}
+                    {isMenuOpen && (
+                        <div className="absolute right-0 z-50 mt-2 w-44 origin-top-right bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 py-2 animate-in fade-in zoom-in-95 duration-200">
+                            <div className="text-[10px] font-bold text-gray-400 px-4 py-1.5 uppercase tracking-wider">
+                                Actions
+                            </div>
+
+                            <Link
+                                href={route("admin.cars.show", item.id)}
+                                className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <Eye size={16} className="mr-3 text-gray-400" />
+                                View Details
+                            </Link>
+
                             <Link
                                 href={route("admin.cars.edit", item.id)}
-                                className="flex items-center w-full cursor-pointer"
+                                className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors"
+                                onClick={() => setIsMenuOpen(false)}
                             >
-                                <Pencil size={14} className="mr-2" /> Edit Car
+                                <Pencil
+                                    size={16}
+                                    className="mr-3 text-gray-400"
+                                />
+                                Edit Car
                             </Link>
-                        </DropdownMenuItem>
-                        <div className="border-t border-gray-100 my-1"></div>
-                        <div className="px-2 py-1">
-                            <DeleteAction
-                                id={item.id}
-                                routeName="admin.cars.destroy"
-                            />
+
+                            <div className="h-px bg-gray-100 my-2 mx-2" />
+
+                            <div
+                                className="px-1"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <DeleteAction
+                                    id={item.id}
+                                    routeName="admin.cars.destroy"
+                                />
+                            </div>
                         </div>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                    )}
+                </div>
             </td>
         </tr>
     );

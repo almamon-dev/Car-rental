@@ -198,7 +198,7 @@ class CarController extends Controller
     {
         try {
             DB::transaction(function () use ($request, $car) {
-                // 1. Update orange-600 car record
+                // 1. Update car record
                 $car->update($request->only([
                     'brand_id',
                     'category_id',
@@ -241,49 +241,68 @@ class CarController extends Controller
                     'fitness_expiry',
                 ]));
 
-                // 5. Update Features
+                // 5. Update Features - delete and recreate
                 $car->features()->delete();
                 if ($request->has('features')) {
-                    $features = array_filter($request->features, fn ($f) => ! empty($f['feature_name']));
+                    $features = collect($request->features)
+                        ->filter(fn ($f) => ! empty($f['feature_name']))
+                        ->map(fn ($f) => ['feature_name' => $f['feature_name']])
+                        ->toArray();
+
                     if (! empty($features)) {
                         $car->features()->createMany($features);
                     }
                 }
 
                 // 6. Update FAQs
-                $car->faqs()->delete();
-                if ($request->has('faqs')) {
-                    $faqs = array_filter($request->faqs, fn ($f) => ! empty($f['question']));
-                    if (! empty($faqs)) {
-                        $car->faqs()->createMany($faqs);
+                if ($request->has('has_faqs') && $request->has_faqs) {
+                    $car->faqs()->delete();
+                    if ($request->has('faqs')) {
+                        $faqs = collect($request->faqs)
+                            ->filter(fn ($f) => ! empty($f['question']))
+                            ->map(fn ($f) => [
+                                'question' => $f['question'],
+                                'answer' => $f['answer'] ?? '',
+                            ])
+                            ->toArray();
+
+                        if (! empty($faqs)) {
+                            $car->faqs()->createMany($faqs);
+                        }
                     }
+                } else {
+                    $car->faqs()->delete();
                 }
 
-                // 7. Handle New Image Uploads using your Helper
+                // 7. Handle New Image Uploads
                 if ($request->hasFile('images')) {
                     foreach ($request->file('images') as $image) {
-                        $path = Helper::uploadFile($image, 'cars/gallery');
-                        if ($path) {
-                            $car->images()->create(['file_path' => $path]);
+                        if ($image->isValid()) {
+                            $path = Helper::uploadFile($image, 'cars/gallery');
+                            if ($path) {
+                                $car->images()->create(['file_path' => $path]);
+                            }
                         }
                     }
                 }
             });
 
-            // Clear counts cache after updating a car (status might have changed)
+            // Clear counts cache after updating a car
             Cache::forget('car_counts');
 
-            return redirect()->route('admin.cars.index')->with('success', 'Vehicle updated successfully.');
+            return redirect()->route('admin.cars.index')
+                ->with('success', 'Vehicle updated successfully.');
+
         } catch (\Exception $e) {
             Log::error('Car Update Error: '.$e->getMessage());
+            Log::error($e->getTraceAsString());
 
-            return back()->withErrors(['error' => 'Update failed. Check logs for details.']);
+            return back()
+                ->withErrors(['error' => 'Update failed. Please try again.'])
+                ->withInput();
         }
     }
 
-    /**
-     * Image Delete Method using your Helper class
-     */
     public function destroyImage($id)
     {
         try {

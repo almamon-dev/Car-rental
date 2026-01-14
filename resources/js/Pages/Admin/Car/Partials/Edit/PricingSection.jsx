@@ -11,9 +11,12 @@ import {
 const PricingSection = ({ data, errors, handleInputChange }) => {
     const currencyMap = { USD: "$", BDT: "৳", EUR: "€", GBP: "£" };
     const curr = currencyMap[data.currency] || "$";
-    const [showRates, setShowRates] = useState(false);
 
-    // Standardized Label to match the internal Input label styling
+    // AUTO-OPEN if data exists
+    const [showRates, setShowRates] = useState(
+        !!(data.daily_rate || data.weekly_rate || data.monthly_rate)
+    );
+
     const Label = ({ children }) => (
         <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 block">
             {children}
@@ -22,19 +25,18 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
 
     return (
         <div className="space-y-6">
-            {/* Top Row: Currency & Tax Rate */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                {/* Currency Dropdown */}
+                {/* Currency Selection */}
                 <div className="flex flex-col">
                     <Label>Currency</Label>
                     <DropdownMenu>
-                        <DropdownMenuTrigger className="flex h-11 w-full items-center justify-between rounded-md border border-blue-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all">
+                        <DropdownMenuTrigger className="flex h-11 w-full items-center justify-between rounded-md border border-blue-200 bg-white px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500 transition-all">
                             <span
-                                className={`${
+                                className={
                                     data.currency
                                         ? "text-gray-900"
                                         : "text-gray-400"
-                                } font-medium`}
+                                }
                             >
                                 {data.currency
                                     ? `${data.currency} (${curr})`
@@ -50,7 +52,6 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
                                 ([code, symbol]) => (
                                     <DropdownMenuItem
                                         key={code}
-                                        className="cursor-pointer"
                                         onClick={() =>
                                             handleInputChange("currency", code)
                                         }
@@ -68,17 +69,14 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
                     )}
                 </div>
 
-                {/* Tax Rate Input */}
+                {/* Tax Percentage */}
                 <div>
                     <Label>Tax Rate (%)</Label>
                     <Input
                         type="number"
                         value={data.tax_percentage}
                         onChange={(e) =>
-                            handleInputChange(
-                                "tax_percentage",
-                                parseFloat(e.target.value) || 0
-                            )
+                            handleInputChange("tax_percentage", e.target.value)
                         }
                         error={errors.tax_percentage}
                         className="h-11 border-blue-200"
@@ -87,13 +85,13 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
                 </div>
             </div>
 
-            {/* Rental Rates Container */}
+            {/* Rental Rates Toggle Card */}
             <div className="border border-blue-100 rounded-lg overflow-hidden bg-white shadow-sm">
                 <div className="bg-slate-50/80 px-4 py-3 flex items-center justify-between border-b border-blue-100">
                     <div className="flex items-center gap-2">
                         <DollarSign size={16} className="text-slate-500" />
                         <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                            Rental Rates Details
+                            Rental Rates
                         </span>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -108,14 +106,13 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
                 </div>
 
                 {showRates ? (
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in duration-300">
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-1 duration-300">
                         {["daily_rate", "weekly_rate", "monthly_rate"].map(
                             (field) => (
                                 <div key={field} className="flex flex-col">
                                     <Label>{field.replace("_", " ")}</Label>
                                     <div className="relative group">
-                                        {/* Positioned symbol with better z-index and color */}
-                                        <span className="absolute left-3 top-[14px] text-gray-400 text-sm font-medium pointer-events-none z-20">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">
                                             {curr}
                                         </span>
                                         <Input
@@ -124,14 +121,11 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
                                             onChange={(e) =>
                                                 handleInputChange(
                                                     field,
-                                                    parseFloat(
-                                                        e.target.value
-                                                    ) || 0
+                                                    e.target.value
                                                 )
                                             }
                                             error={errors[field]}
-                                            // Added pl-7 to make room for the symbol and h-11 for consistency
-                                            className="h-11 border-blue-200 pl-7 w-full bg-white focus:ring-1 transition-all"
+                                            className="h-11 border-blue-200 pl-8 w-full"
                                             placeholder="0.00"
                                         />
                                     </div>
@@ -141,18 +135,18 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
                     </div>
                 ) : (
                     <div className="p-6 text-center text-[11px] text-slate-400 font-medium">
-                        Rental rates are hidden. Toggle to edit.
+                        Rates are currently hidden. Toggle to view/edit.
                     </div>
                 )}
             </div>
 
             {/* Security Deposit */}
-            <div className="max-w-md">
+            <div>
                 <Label>Security Deposit</Label>
                 <div className="relative">
                     <ShieldCheck
                         size={18}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                     />
                     <Input
                         type="number"
@@ -160,11 +154,11 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
                         onChange={(e) =>
                             handleInputChange(
                                 "security_deposit",
-                                parseFloat(e.target.value) || 0
+                                e.target.value
                             )
                         }
                         error={errors.security_deposit}
-                        className="pl-10 h-11 border-blue-200 w-full"
+                        className="pl-10 h-11 border-blue-200"
                         placeholder="0.00"
                     />
                 </div>

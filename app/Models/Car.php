@@ -35,12 +35,13 @@ class Car extends Model
 
     public function policeDocuments(): HasOne
     {
-        return $this->hasOne(CarPoliceDocument::class);
+        return $this->hasOne(CarPoliceDocument::class, 'car_id');
     }
 
     public function priceDetails(): HasOne
     {
-        return $this->hasOne(CarPriceDetail::class);
+
+        return $this->hasOne(CarPriceDetail::class, 'car_id');
     }
 
     public function brand()

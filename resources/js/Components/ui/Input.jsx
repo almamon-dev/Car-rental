@@ -18,7 +18,7 @@ const Input = React.forwardRef(
         return (
             <div className="w-full space-y-1.5 text-left">
                 {label && (
-                    <label className="text-[13px] font-semibold text-gray-700 ml-0.5">
+                    <label className="text-[13px] font-semibold text-gray-700 ml-0.5 uppercase tracking-wide">
                         {label}
                     </label>
                 )}
@@ -26,14 +26,13 @@ const Input = React.forwardRef(
                 <Component
                     type={!isTextArea ? type : undefined}
                     className={cn(
-                        "flex w-full rounded-md border bg-white px-3 py-2 text-sm transition-all",
-                        "placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-0",
-                        // Dynamic Border: Red if error, Orange if focus, Gray otherwise
+                        "flex w-full rounded-md bg-white px-3 py-2 text-sm transition-colors border",
+                        "placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-offset-0",
+                        // Border logic: matching the image's light blue border
                         error
                             ? "border-red-500 focus:border-red-600 focus:ring-red-500/20"
-                            : "border-gray-200 focus:border-secondary focus:ring-secondary/20",
-
-                        isTextArea ? "min-h-[100px] resize-y" : "h-10",
+                            : "border-blue-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20",
+                        isTextArea ? "min-h-[100px] resize-y" : "h-11", // height adjusted to match image
                         "disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500",
                         className
                     )}

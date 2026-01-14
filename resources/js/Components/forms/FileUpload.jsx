@@ -73,7 +73,7 @@ const FileUpload = ({
                 ${
                     errors[field]
                         ? "border-red-400 bg-red-50/50"
-                        : "border-slate-200 bg-slate-50/30 hover:bg-white hover:border-orange-400"
+                        : "border-slate-200 bg-slate-50/30 hover:bg-white hover:border-blue-400"
                 }`}
             >
                 <input
