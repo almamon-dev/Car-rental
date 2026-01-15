@@ -57,8 +57,9 @@ const Sidebar = ({ isCollapsed, isMobileOpen, setIsMobileOpen }) => {
         { label: "Orders", path: "/orders", icon: <ShoppingCart size={18} /> },
         {
             label: "Categories",
-            path: "/categories",
+            path: "/admin/category/create",
             icon: <List size={18} />,
+            key: "/admin/category/create",
         },
         { label: "Returns", path: "/returns", icon: <RefreshCw size={18} /> },
         { label: "All leads", path: "/leads", icon: <Users size={18} /> },

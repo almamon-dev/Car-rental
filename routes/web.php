@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CarController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -33,6 +34,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // cars resource route
     Route::delete('cars/image/{id}', [CarController::class, 'destroyImage'])->name('cars.image.destroy');
     Route::resource('cars', CarController::class);
+
+    // --category
+    Route::resource('category', CategoryController::class);
 });
 
 Route::fallback(function () {

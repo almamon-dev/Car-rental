@@ -1,6 +1,5 @@
 import React from "react";
 import FileUpload from "@/Components/forms/FileUpload";
-import { Info } from "lucide-react";
 
 const GallerySection = ({ data, errors, setData, clearErrors }) => {
     return (
