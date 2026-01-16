@@ -1,6 +1,5 @@
 import React from "react";
-import { Link } from "@inertiajs/react";
-import { Car, Search, Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function EmptyState({ hasActiveFilters, onResetFilters }) {
     const Car = ({ size = 24, className = "" }) => (

@@ -25,7 +25,7 @@ export default function Login({ status, canResetPassword }) {
         <GuestLayout>
             <Head title="Log in" />
 
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+            <div className="min-h-screen mt-8 bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
                 <div className="max-w-md w-full">
                     {/* Card Container */}
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CategoryStoreRequest;
+use App\Http\Requests\Admin\CategoryUpdateRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -63,30 +66,31 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created category.
+     * store the specified category.
      */
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
+        // -- validate
+        foreach ($request->categories as $categoryData) {
+            $data = [
+                'name' => $categoryData['name'],
+                'description' => $categoryData['description'] ?? null,
+                'slug' => Str::slug($categoryData['name']),
+                'status' => 'active',
+            ];
 
-        $data = $request->only(['name', 'description']);
-        $data['slug'] = Str::slug($request->name);
-
-        if ($request->hasFile('image')) {
-            $upload = Helper::uploadFile($request->file('image'), 'categories', true);
-            if ($upload) {
-                $data['icon'] = $upload['original'];
+            if (isset($categoryData['image'])) {
+                $upload = Helper::uploadFile($categoryData['image'], 'categories', true);
+                if ($upload) {
+                    $data['icon'] = $upload['original'];
+                }
             }
+
+            Category::create($data);
         }
 
-        Category::create($data);
-
         return redirect()->route('admin.category.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', 'Categories created successfully.');
     }
 
     /**
@@ -102,22 +106,15 @@ class CategoryController extends Controller
     /**
      * Update the specified category.
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryUpdateRequest $request, Category $category)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,'.$category->id,
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
-
+        // validate the request data
         $data = $request->only(['name', 'description']);
         $data['slug'] = Str::slug($request->name);
 
         if ($request->hasFile('image')) {
-
             if ($category->icon) {
                 Helper::deleteFile($category->icon);
-
                 $thumbPath = str_replace('categories/', 'categories/thumbs/', $category->icon);
                 Helper::deleteFile($thumbPath);
             }
@@ -134,38 +131,59 @@ class CategoryController extends Controller
             ->with('success', 'Category updated successfully.');
     }
 
-    /**
-     * Remove the specified category.
-     */
+    // single delete
     public function destroy(Category $category)
     {
-        // ইমেজ ডিলিট করা
-        if ($category->icon) {
-            Helper::deleteFile($category->icon);
-            $thumbPath = str_replace('categories/', 'categories/thumbs/', $category->icon);
-            Helper::deleteFile($thumbPath);
-        }
-
+        $this->deleteFileSafely($category);
         $category->delete();
+
+        Cache::forget('category_counts');
 
         return back()->with('success', 'Category deleted successfully.');
     }
 
-    /**
-     * Bulk Delete categories
-     */
+    // bulk delete
     public function bulkDestroy(Request $request)
     {
-        $ids = $request->ids;
-        $categories = Category::whereIn('id', $ids)->get();
+        $selectAllGlobal = filter_var($request->input('all'), FILTER_VALIDATE_BOOLEAN);
+        $ids = $request->input('ids');
 
-        foreach ($categories as $category) {
-            if ($category->icon) {
-                Helper::deleteFile($category->icon);
+        try {
+            DB::beginTransaction();
+
+            if ($selectAllGlobal) {
+                $categories = Category::all();
+            } elseif (! empty($ids) && is_array($ids)) {
+                $categories = Category::whereIn('id', $ids)->get();
+            } else {
+                return back()->with('error', 'No items selected.');
             }
-            $category->delete();
-        }
 
-        return back()->with('success', 'Selected categories deleted.');
+            foreach ($categories as $category) {
+                $this->deleteFileSafely($category);
+                $category->delete();
+            }
+
+            DB::commit();
+            Cache::forget('category_counts');
+
+            return back()->with('success', 'Selected items deleted successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()->with('error', 'Something went wrong: '.$e->getMessage());
+        }
+    }
+
+    // ফাইল ডিলিট করার জন্য প্রাইভেট মেথড
+    private function deleteFileSafely($category)
+    {
+        if ($category->icon) {
+            Helper::deleteFile($category->icon);
+            // থাম্বনেইল ডিলিট (যদি থাকে)
+            $thumbPath = str_replace('categories/', 'categories/thumbs/', $category->icon);
+            Helper::deleteFile($thumbPath);
+        }
     }
 }

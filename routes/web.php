@@ -31,12 +31,22 @@ Route::get('/car-list', [ProfileController::class, 'carList'])->name('car.list')
 
 // -- Admin Dashboard route --
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    // cars resource route
+
+    // 1. Specific custom routes FIRST
     Route::delete('cars/image/{id}', [CarController::class, 'destroyImage'])->name('cars.image.destroy');
+
+    // MOVE THIS ABOVE THE RESOURCE
+    Route::delete('cars/bulk-destroy', [CarController::class, 'bulkDestroy'])
+        ->name('cars.bulk-destroy');
+
+    // 2. Resource route SECOND
     Route::resource('cars', CarController::class);
 
-    // --category
+    // -- category
+    Route::delete('categories/bulk-destroy', [CategoryController::class, 'bulkDestroy'])
+        ->name('category.bulk-destroy');
     Route::resource('category', CategoryController::class);
+
 });
 
 Route::fallback(function () {

@@ -1,47 +1,74 @@
 import React from "react";
+import { motion } from "framer-motion";
+import { Trash2, X } from "lucide-react";
 import DeleteAction from "@/Components/modals/ConfirmDelete";
 
-export default function BulkActionBanner({
+const BulkActionBanner = ({
     selectedIds,
     selectAllGlobal,
     setSelectAllGlobal,
     isAllPageSelected,
-    cars,
+    totalCount,
+    itemCount,
     clearSelection,
     getEffectiveSelectedIds,
-}) {
+    search, // সার্চ প্যারামিটার পাস করুন
+}) => {
     return (
-        <div className="bg-primary text-orange-600-foreground px-6 py-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-4 text-sm font-medium">
-                <span className="bg-white text-orange-600 px-2 py-0.5 rounded-full font-bold text-xs">
-                    {selectAllGlobal
-                        ? `All (${cars.total})`
-                        : selectedIds.length}
-                </span>
-                <span>Selected</span>
-                {isAllPageSelected &&
-                    !selectAllGlobal &&
-                    cars.total > cars.data.length && (
-                        <button
-                            onClick={setSelectAllGlobal}
-                            className="ml-2 text-xs bg-gray-600 px-3 py-1 rounded border border-orange-600/30"
-                        >
-                            Select all {cars.total} vehicles
-                        </button>
-                    )}
-                <button
-                    onClick={clearSelection}
-                    className="ml-4 text-xs font-bold hover:underline opacity-80"
-                >
-                    Clear
-                </button>
+        <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            className="fixed top-0 left-0 right-0 z-[60] flex justify-center p-4 pointer-events-none"
+        >
+            <div className="bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 pointer-events-auto border border-slate-700">
+                <div className="flex items-center gap-3 border-r border-slate-700 pr-6">
+                    <div className="bg-primary/20 p-2 rounded-full">
+                        <Trash2 size={18} className="text-primary" />
+                    </div>
+                    <span className="font-medium">
+                        {selectAllGlobal ? totalCount : selectedIds.length}{" "}
+                        Vehicles Selected
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-4">
+                    {!selectAllGlobal &&
+                        isAllPageSelected &&
+                        itemCount < totalCount && (
+                            <button
+                                onClick={() => setSelectAllGlobal(true)}
+                                className="text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                            >
+                                Select all {totalCount} vehicles
+                            </button>
+                        )}
+
+                    {/* SweetAlert Popup এর জন্য DeleteAction ব্যবহার করা হলো */}
+                    <DeleteAction
+                        isBulk={true}
+                        routeName="admin.cars.bulk-destroy"
+                        selectedIds={getEffectiveSelectedIds()}
+                        selectAllGlobal={selectAllGlobal}
+                        totalCount={totalCount}
+                        search={search}
+                        onSuccess={() => {
+                            clearSelection(); // ডিলিট শেষে আইডি ক্লিয়ার করবে
+                            setSelectAllGlobal(false); // সিলেক্ট অল অফ করবে
+                        }}
+                    />
+
+                    <button
+                        onClick={clearSelection}
+                        className="p-1 hover:bg-slate-800 rounded-full transition-colors"
+                        title="Clear Selection"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
             </div>
-            <DeleteAction
-                selectedIds={getEffectiveSelectedIds()}
-                selectAllGlobal={selectAllGlobal}
-                routeName="admin.cars.bulk-destroy"
-                onSuccess={clearSelection}
-            />
-        </div>
+        </motion.div>
     );
-}
+};
+
+export default BulkActionBanner;

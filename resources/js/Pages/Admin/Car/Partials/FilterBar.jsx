@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { Search, Check, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { router } from "@inertiajs/react";
 
 export default function FilterBar({
     search,
@@ -17,15 +18,12 @@ export default function FilterBar({
     brands,
     isClientSideLoading,
     handleFilter,
-    router,
 }) {
     const hasActiveFilters =
         currentBrand || currentTransmission || currentFuel || search;
 
     return (
-        /* Changed to flex-nowrap to keep it in one row and added gap-4 */
         <div className="flex flex-nowrap items-center w-full p-4 gap-4 bg-white border-b border-gray-100">
-            {/* Search Input - flex-grow allows it to take up remaining space */}
             <div className="relative flex-grow min-w-[200px]">
                 <Search
                     className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${
@@ -44,9 +42,7 @@ export default function FilterBar({
                 />
             </div>
 
-            {/* Filters Container - flex-shrink-0 prevents dropdowns from getting squished */}
             <div className="flex flex-shrink-0 items-center gap-2">
-                {/* Brand Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
                         className="bg-[#F3F6F9] px-4 py-2.5 rounded-lg text-sm text-gray-600 flex items-center justify-between gap-2 min-w-[140px] border border-transparent hover:border-blue-600/30 transition-all outline-none disabled:opacity-50"
@@ -84,7 +80,6 @@ export default function FilterBar({
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Transmission Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
                         className="bg-[#F3F6F9] px-4 py-2.5 rounded-lg text-sm text-gray-600 flex items-center justify-between gap-2 min-w-[130px] border border-transparent hover:border-blue-600/30 transition-all outline-none disabled:opacity-50"
@@ -114,7 +109,6 @@ export default function FilterBar({
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Fuel Filter */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
                         className="bg-[#F3F6F9] px-4 py-2.5 rounded-lg text-sm text-gray-600 flex items-center justify-between gap-2 min-w-[120px] border border-transparent hover:border-blue-600/30 transition-all outline-none disabled:opacity-50"
@@ -149,7 +143,6 @@ export default function FilterBar({
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Reset Button */}
                 <AnimatePresence>
                     {hasActiveFilters && (
                         <motion.button

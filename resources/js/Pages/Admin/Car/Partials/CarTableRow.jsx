@@ -9,12 +9,13 @@ const CarTableRow = React.memo(function CarTableRow({
     toggleSelect,
     isClientSideLoading,
     isProcessing,
+    onDeleteSuccess, // এটি নিশ্চিত করুন প্যারেন্ট থেকে আসছে
 }) {
     const [imageLoading, setImageLoading] = useState(true);
     const [imageKey, setImageKey] = useState(0);
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // Dropdown state
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const previousItemId = useRef(item.id);
-    const menuRef = useRef(null); // Click outside handle korar jonno
+    const menuRef = useRef(null);
 
     useEffect(() => {
         if (previousItemId.current !== item.id || isProcessing) {
@@ -26,7 +27,6 @@ const CarTableRow = React.memo(function CarTableRow({
         }
     }, [item.id, isProcessing]);
 
-    // Menu-r baire click korle jate bondho hoy
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -44,11 +44,14 @@ const CarTableRow = React.memo(function CarTableRow({
     return (
         <tr
             key={item.id}
-            className={`${
+            className={`group transition-colors duration-150 ${
                 isEffectivelySelected(item.id)
                     ? "bg-primary/5"
                     : "hover:bg-gray-50/30"
-            } transition-colors duration-150`}
+            } ${
+                /* ড্রপডাউন ওপেন থাকলে এই নির্দিষ্ট রো-টিকে সবার উপরে ভাসিয়ে রাখার জন্য z-index */
+                isMenuOpen ? "relative z-[60]" : "relative z-0"
+            }`}
         >
             <td className="py-6 px-6 text-center">
                 <input
@@ -113,7 +116,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     <span className="text-[12px] text-primary font-medium mb-0.5">
                         Filon Asset Store
                     </span>
-                    <span className="text-[11px] font-black text-gray-800 uppercase">
+                    <span className="text-[11px] font-black text-gray-800 uppercase leading-none">
                         Computer & Accessories
                     </span>
                 </div>
@@ -136,7 +139,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     <span className="text-[14px] font-bold text-gray-800">
                         $
                         {Number(
-                            item.price_details?.daily_rate
+                            item.price_details?.daily_rate || 0
                         ).toLocaleString()}
                     </span>
                 </div>
@@ -167,16 +170,15 @@ const CarTableRow = React.memo(function CarTableRow({
                 </div>
             </td>
 
-            {/* --- Updated Action Section (No Library Classes) --- */}
+            {/* Actions Section */}
             <td className="py-4 px-4 text-right pr-8">
                 <div className="relative inline-block text-left" ref={menuRef}>
-                    {/* Toggle Button */}
                     <button
                         type="button"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className={`inline-flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200 focus:outline-none ${
                             isMenuOpen
-                                ? "bg-gray-200 text-gray-900"
+                                ? "bg-primary text-white shadow-md scale-105"
                                 : "bg-[#F3F6F9] text-gray-500 hover:bg-gray-200 hover:text-gray-700"
                         }`}
                         disabled={isClientSideLoading}
@@ -184,9 +186,19 @@ const CarTableRow = React.memo(function CarTableRow({
                         <MoreVertical size={18} />
                     </button>
 
-                    {/* Action Menu Card */}
                     {isMenuOpen && (
-                        <div className="absolute right-0 z-50 mt-2 w-44 origin-top-right bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 py-2 animate-in fade-in zoom-in-95 duration-200">
+                        <div
+                            className={`
+                            absolute right-0 z-[100] w-48 origin-top-right bg-white rounded-xl
+                            shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] border border-gray-100 py-2
+                            animate-in fade-in zoom-in-95 duration-200
+
+                            /* স্মার্ট পজিশনিং: নিচের দিকে জায়গা না থাকলে উপরে উঠবে */
+                            top-full mt-2
+                            group-last:top-auto group-last:bottom-full group-last:mb-2
+                            group-[&:nth-last-child(2)]:top-auto group-[&:nth-last-child(2)]:bottom-full group-[&:nth-last-child(2)]:mb-2
+                        `}
+                        >
                             <div className="text-[10px] font-bold text-gray-400 px-4 py-1.5 uppercase tracking-wider">
                                 Actions
                             </div>
@@ -221,7 +233,12 @@ const CarTableRow = React.memo(function CarTableRow({
                                 <DeleteAction
                                     id={item.id}
                                     routeName="admin.cars.destroy"
-                                />
+                                    onSuccess={onDeleteSuccess}
+                                >
+                                    <span className="text-sm font-medium ml-3 text-red-600">
+                                        Delete Car
+                                    </span>
+                                </DeleteAction>
                             </div>
                         </div>
                     )}

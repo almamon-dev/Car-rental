@@ -354,4 +354,53 @@ class CarController extends Controller
             ]);
         }
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $selectAllGlobal = filter_var($request->all, FILTER_VALIDATE_BOOLEAN);
+        $ids = $request->ids;
+
+        try {
+            DB::beginTransaction();
+
+            // ১. কোন কারগুলো ডিলিট হবে তা নির্ধারণ করা
+            if ($selectAllGlobal) {
+                $cars = Car::with('images')->get();
+            } elseif (! empty($ids) && is_array($ids)) {
+                $cars = Car::with('images')->whereIn('id', $ids)->get();
+            } else {
+                return back()->with('error', 'No vehicles selected.');
+            }
+
+            foreach ($cars as $car) {
+
+                foreach ($car->images as $image) {
+                    Helper::deleteFile($image->file_path);
+                }
+
+                $car->images()->delete();
+                $car->specifications()->delete();
+                $car->features()->delete();
+                $car->faqs()->delete();
+                $car->policeDocuments()->delete();
+                $car->priceDetails()->delete();
+
+                // মূল কার রেকর্ড ডিলিট
+                $car->delete();
+            }
+
+            DB::commit();
+
+            // ৩. ক্যাশ ক্লিয়ার করা
+            Cache::forget('car_counts');
+
+            return back()->with('success', 'Selected vehicles deleted successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Bulk Delete Error: '.$e->getMessage());
+
+            return back()->with('error', 'Something went wrong while deleting items.');
+        }
+    }
 }
