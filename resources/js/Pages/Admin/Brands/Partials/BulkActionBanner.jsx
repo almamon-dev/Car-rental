@@ -26,7 +26,7 @@ const BulkActionBanner = ({
                 <div className="flex items-center gap-3 border-r border-slate-700 pr-6">
                     <span className="font-medium">
                         {selectAllGlobal ? totalCount : selectedIds.length}{" "}
-                        Items Selected
+                        Brands Selected
                     </span>
                 </div>
 
@@ -36,7 +36,7 @@ const BulkActionBanner = ({
                         itemCount < totalCount && (
                             <button
                                 onClick={() => setSelectAllGlobal(true)}
-                                className="text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                                className="text-sm font-bold text-blue-400 hover:text-blue-300"
                             >
                                 Select all {totalCount} items
                             </button>
@@ -44,11 +44,9 @@ const BulkActionBanner = ({
 
                     <DeleteAction
                         isBulk={true}
-                        routeName="admin.category.bulk-destroy"
+                        routeName="admin.brands.bulk-destroy"
                         selectedIds={getEffectiveSelectedIds()}
                         selectAllGlobal={selectAllGlobal}
-                        totalCount={totalCount}
-                        search={search}
                         onSuccess={onDeleteSuccess}
                     />
 

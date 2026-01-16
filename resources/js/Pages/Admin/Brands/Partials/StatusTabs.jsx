@@ -6,7 +6,6 @@ export default function StatusTabs({
     handleTabChange,
     counts = {},
 }) {
-    // Categories usually track Active vs Inactive/Draft
     const tabs = ["all", "active", "inactive"];
 
     return (
@@ -22,7 +21,7 @@ export default function StatusTabs({
                     }`}
                 >
                     <span>
-                        {tab === "all" ? "All Categories" : `${tab} Categories`}
+                        {tab === "all" ? "All Brands" : `${tab} Brands`}
                     </span>
                     <span
                         className={`text-[10px] px-1.5 py-0.5 rounded-full ${
@@ -38,11 +37,6 @@ export default function StatusTabs({
                         <motion.div
                             layoutId="activeTabUnderline"
                             className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
-                            transition={{
-                                type: "spring",
-                                stiffness: 380,
-                                damping: 30,
-                            }}
                         />
                     )}
                 </button>

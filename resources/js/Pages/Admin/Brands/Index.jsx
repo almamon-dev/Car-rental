@@ -8,18 +8,13 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Import Partials
 import BulkActionBanner from "./Partials/BulkActionBanner";
-import CategoryTableRow from "./Partials/TableRow";
+import BrandTableRow from "./Partials/TableRow";
 import FilterBar from "./Partials/FilterBar";
 import StatusTabs from "./Partials/StatusTabs";
 import TableSkeleton from "./Partials/TableSkeleton";
 import EmptyState from "./Partials/EmptyState";
 
-export default function CategoryList({
-    auth,
-    categories,
-    filters = {},
-    counts = {},
-}) {
+export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
     const [isLoading, setIsLoading] = useState(false);
     const searchTimeoutRef = useRef(null);
 
@@ -36,12 +31,12 @@ export default function CategoryList({
         isAllPageSelected,
         getEffectiveSelectedIds,
         isEffectivelySelected,
-    } = TableManager("admin.category.index", categories.data, filters);
+    } = TableManager("admin.brands.index", brands.data, filters);
 
     // Page navigation and filtering logic
     const performVisit = useCallback((params) => {
         setIsLoading(true);
-        router.get(route("admin.category.index"), params, {
+        router.get(route("admin.brands.index"), params, {
             preserveState: true,
             preserveScroll: true,
             replace: true,
@@ -71,7 +66,7 @@ export default function CategoryList({
 
     return (
         <AdminLayout user={auth.user}>
-            <Head title="Manage Categories" />
+            <Head title="Manage Brands" />
 
             {/* Bulk Action Banner */}
             <AnimatePresence>
@@ -81,8 +76,8 @@ export default function CategoryList({
                         selectAllGlobal={selectAllGlobal}
                         setSelectAllGlobal={setSelectAllGlobal}
                         isAllPageSelected={isAllPageSelected}
-                        totalCount={categories.total}
-                        itemCount={categories.data.length}
+                        totalCount={brands.total}
+                        itemCount={brands.data.length}
                         clearSelection={clearSelection}
                         getEffectiveSelectedIds={getEffectiveSelectedIds}
                         search={search}
@@ -95,16 +90,15 @@ export default function CategoryList({
                 {/* Header Section */}
                 <div className="flex justify-between items-center px-6 py-6 ">
                     <h1 className="text-xl font-bold text-slate-800">
-                        Categories
+                        Brands
                     </h1>
-                    <Link href={route("admin.category.create")}>
+                    <Link href={route("admin.brands.create")}>
                         <motion.div
                             initial="rest"
                             whileHover="hover"
                             animate="rest"
-                            className="flex items-center gap-2 px-4 py-2 bg-[#3B82F6] rounded-[20px] cursor-pointer overflow-hidden relative"
+                            className="flex items-center gap-2 px-4 py-2 bg-[#3B82F6] rounded-[20px] cursor-pointer overflow-hidden relative shadow-sm"
                         >
-                            {/* Background Hover Effect Overlay */}
                             <motion.div
                                 variants={{
                                     rest: { scale: 0, opacity: 0 },
@@ -117,7 +111,6 @@ export default function CategoryList({
                                 }}
                             />
 
-                            {/* Text Label */}
                             <motion.span
                                 variants={{
                                     rest: { x: 0 },
@@ -125,10 +118,9 @@ export default function CategoryList({
                                 }}
                                 className="text-white font-bold text-xs tracking-wider"
                             >
-                                Add Car
+                                Add Brand
                             </motion.span>
 
-                            {/* Icon with Motion */}
                             <motion.div
                                 variants={{
                                     rest: { rotate: 0, scale: 1 },
@@ -166,7 +158,7 @@ export default function CategoryList({
                     isClientSideLoading={isLoading}
                 />
 
-                {/* Table Section - height auto করা হয়েছে */}
+                {/* Table Section */}
                 <div className="overflow-x-auto relative">
                     <table className="w-full text-left border-collapse">
                         <thead>
@@ -181,9 +173,8 @@ export default function CategoryList({
                                         className="rounded border-gray-300 accent-primary"
                                     />
                                 </th>
-                                <th className="py-4 px-4">Icon</th>
+                                <th className="py-4 px-4">Logo</th>
                                 <th className="py-4 px-4">Name / Slug</th>
-                                <th className="py-4 px-4">Description</th>
                                 <th className="py-4 px-4">Status</th>
                                 <th className="py-4 px-4">Created At</th>
                                 <th className="py-4 px-4 text-right pr-10">
@@ -195,7 +186,7 @@ export default function CategoryList({
                         <AnimatePresence mode="wait">
                             {isLoading ? (
                                 <TableSkeleton key="skeleton" />
-                            ) : categories.data.length === 0 ? (
+                            ) : brands.data.length === 0 ? (
                                 <motion.tbody
                                     key="empty"
                                     initial={{ opacity: 0 }}
@@ -203,7 +194,7 @@ export default function CategoryList({
                                     exit={{ opacity: 0 }}
                                 >
                                     <tr>
-                                        <td colSpan="7">
+                                        <td colSpan="6" className="p-0">
                                             <EmptyState
                                                 hasActiveFilters={
                                                     !!search || !!filters.status
@@ -224,8 +215,8 @@ export default function CategoryList({
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.2 }}
                                 >
-                                    {categories.data.map((item) => (
-                                        <CategoryTableRow
+                                    {brands.data.map((item) => (
+                                        <BrandTableRow
                                             key={item.id}
                                             item={item}
                                             isEffectivelySelected={
@@ -234,7 +225,7 @@ export default function CategoryList({
                                             toggleSelect={toggleSelect}
                                             onDeleteSuccess={
                                                 handleDeleteSuccess
-                                            } // Pass success handler
+                                            }
                                         />
                                     ))}
                                 </motion.tbody>
@@ -244,10 +235,10 @@ export default function CategoryList({
                 </div>
 
                 {/* Pagination Section */}
-                {categories.data.length > 0 && (
+                {brands.data.length > 0 && (
                     <div className="p-4 border-t border-gray-50">
                         <Pagination
-                            meta={categories}
+                            meta={brands}
                             onPageChange={(page) =>
                                 performVisit({ ...filters, page })
                             }

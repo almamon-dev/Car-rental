@@ -9,7 +9,7 @@ const CarTableRow = React.memo(function CarTableRow({
     toggleSelect,
     isClientSideLoading,
     isProcessing,
-    onDeleteSuccess, // এটি নিশ্চিত করুন প্যারেন্ট থেকে আসছে
+    onDeleteSuccess,
 }) {
     const [imageLoading, setImageLoading] = useState(true);
     const [imageKey, setImageKey] = useState(0);
@@ -49,7 +49,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     ? "bg-primary/5"
                     : "hover:bg-gray-50/30"
             } ${
-                /* ড্রপডাউন ওপেন থাকলে এই নির্দিষ্ট রো-টিকে সবার উপরে ভাসিয়ে রাখার জন্য z-index */
+
                 isMenuOpen ? "relative z-[60]" : "relative z-0"
             }`}
         >

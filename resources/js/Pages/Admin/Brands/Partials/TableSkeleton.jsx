@@ -21,13 +21,10 @@ export default function TableSkeleton() {
                         <div className="h-3 w-20 bg-gray-50 rounded" />
                     </td>
                     <td className="py-4 px-4">
-                        <div className="h-4 w-40 bg-gray-50 rounded" />
-                    </td>
-                    <td className="py-4 px-4">
                         <div className="h-5 w-10 bg-gray-100 rounded-full" />
                     </td>
                     <td className="py-4 px-4">
-                        <div className="h-4 w-24 bg-gray-50 rounded" />
+                        <div className="h-4 w-24 bg-gray-100 rounded" />
                     </td>
                     <td className="py-4 px-4 text-right pr-10">
                         <div className="h-8 w-8 bg-gray-100 rounded-lg ml-auto" />

@@ -22,11 +22,10 @@ export default function FilterBar({
                     type="text"
                     value={search}
                     onChange={(e) => handleSearch(e.target.value)}
-                    placeholder="Search by name or description..."
+                    placeholder="Search brands by name..."
                     className="w-full pl-10 pr-4 py-2 bg-[#F3F6F9] border-transparent rounded-lg text-sm focus:bg-white focus:border-primary transition-all outline-none"
                 />
             </div>
-
             <AnimatePresence>
                 {search && (
                     <motion.button
@@ -34,7 +33,7 @@ export default function FilterBar({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => handleSearch("")}
-                        className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-red-600 bg-red-50 rounded-lg hover:bg-red-100"
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-red-600 bg-red-50 rounded-lg"
                     >
                         <RotateCcw size={14} /> Reset
                     </motion.button>

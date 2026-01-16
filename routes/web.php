@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CarController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\DashboardController;
@@ -46,6 +47,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('categories/bulk-destroy', [CategoryController::class, 'bulkDestroy'])
         ->name('category.bulk-destroy');
     Route::resource('category', CategoryController::class);
+
+    // -- brands
+    Route::delete('brands/bulk-destroy', [BrandController::class, 'bulkDestroy'])
+        ->name('brands.bulk-destroy');
+    Route::resource('brands', BrandController::class);
 
 });
 

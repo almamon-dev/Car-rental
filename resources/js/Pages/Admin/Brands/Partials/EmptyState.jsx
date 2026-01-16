@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { LayoutGrid, Search, Plus, RotateCcw } from "lucide-react";
+import { Award, Search, Plus, RotateCcw } from "lucide-react";
 import { Link } from "@inertiajs/react";
 
 export default function EmptyState({ hasActiveFilters, onResetFilters }) {
@@ -21,20 +21,20 @@ export default function EmptyState({ hasActiveFilters, onResetFilters }) {
                     {hasActiveFilters ? (
                         <Search size={32} className="text-slate-300" />
                     ) : (
-                        <LayoutGrid size={32} className="text-primary/40" />
+                        <Award size={32} className="text-primary/40" />
                     )}
                 </motion.div>
 
                 <h3 className="text-xl font-bold text-slate-900 mb-2">
                     {hasActiveFilters
-                        ? "No matching categories"
-                        : "No categories yet"}
+                        ? "No matching brands"
+                        : "No brands yet"}
                 </h3>
 
                 <p className="text-slate-500 mb-8 text-sm">
                     {hasActiveFilters
-                        ? "We couldn't find any categories matching your current search or filters."
-                        : "Organize your products by creating your first category department."}
+                        ? "We couldn't find any brands matching your current search or filters."
+                        : "Start building your catalog by adding your first product brand."}
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -48,11 +48,11 @@ export default function EmptyState({ hasActiveFilters, onResetFilters }) {
                         </button>
                     ) : (
                         <Link
-                            href={route("admin.category.create")}
+                            href={route("admin.brands.create")}
                             className="px-6 py-2.5 text-sm font-bold text-white bg-primary hover:bg-primary/90 rounded-lg shadow-md transition-all inline-flex items-center justify-center gap-2"
                         >
                             <Plus size={18} />
-                            Add Your First Category
+                            Add Your First Brand
                         </Link>
                     )}
                 </div>

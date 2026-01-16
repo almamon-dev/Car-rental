@@ -181,7 +181,6 @@ class CategoryController extends Controller
     {
         if ($category->icon) {
             Helper::deleteFile($category->icon);
-            // থাম্বনেইল ডিলিট (যদি থাকে)
             $thumbPath = str_replace('categories/', 'categories/thumbs/', $category->icon);
             Helper::deleteFile($thumbPath);
         }
