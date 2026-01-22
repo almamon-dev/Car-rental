@@ -188,6 +188,15 @@ class CarController extends Controller
         }
     }
 
+    public function show(Car $car)
+    {
+        $car->load(['brand', 'category', 'specifications', 'priceDetails', 'policeDocuments', 'features', 'faqs', 'images']);
+        
+        return Inertia::render('Admin/Car/Show', [
+            'car' => $car
+        ]);
+    }
+
     public function edit(Car $car)
     {
         // Load all relationships needed for the form
