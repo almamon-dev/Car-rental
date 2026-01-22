@@ -22,13 +22,6 @@ function FlashMessages({ children }) {
         if (flash?.error) {
             toast.error(flash.error, { position: "top-center" });
         }
-
-        // -- Validation Errors --
-        const errorKeys = Object.keys(errors);
-        if (errorKeys.length > 0) {
-            // -- Client Side --
-            toast.error(errors[errorKeys[0]], { position: "top-center" });
-        }
     }, [flash, errors]);
 
     return (

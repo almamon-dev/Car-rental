@@ -36,7 +36,7 @@ const GallerySection = ({
                                 Live Fleet Assets ({existingImages.length})
                             </h3>
                         </div>
-                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded border border-gray-100 italic">
+                        <span className="text-[11px] font-bold text-slate-400  bg-slate-50 px-2 py-0.5 rounded border border-slate-100 ">
                             Published to Marketplace
                         </span>
                     </div>

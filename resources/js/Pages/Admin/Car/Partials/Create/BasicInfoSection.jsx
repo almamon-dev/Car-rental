@@ -42,25 +42,25 @@ const BasicInfoSection = ({
     `;
 
     return (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Brand Dropdown */}
-                <div className="space-y-1.5">
-                    <label className="text-[13px] font-semibold text-gray-700 block">
-                        Brand <span className="text-red-600">*</span>
+                <div className="space-y-1">
+                    <label className="text-[12px] font-bold text-gray-700 uppercase tracking-wide block">
+                        Brand <span className="text-red-500">*</span>
                     </label>
                     <DropdownMenu>
                         <DropdownMenuTrigger
                             className={dropdownTriggerClass(errors.brand_id)}
                         >
                             <div className="flex items-center gap-2">
-                                <Tag className="text-gray-400" size={16} />
+                                <Tag className="text-gray-400" size={14} />
                                 <span
-                                    className={
+                                    className={`truncate ${
                                         data.brand_id
-                                            ? "text-gray-900"
+                                            ? "text-gray-900 font-medium"
                                             : "text-gray-400"
-                                    }
+                                    }`}
                                 >
                                     {getBrandLabel()}
                                 </span>
@@ -93,29 +93,29 @@ const BasicInfoSection = ({
                         </DropdownMenuContent>
                     </DropdownMenu>
                     {errors.brand_id && (
-                        <p className="text-red-600 text-[12px] mt-1">
+                        <p className="text-red-600 text-[11px] mt-0.5">
                             {errors.brand_id}
                         </p>
                     )}
                 </div>
 
                 {/* Category Dropdown */}
-                <div className="space-y-1.5">
-                    <label className="text-[13px] font-semibold text-gray-700 block">
-                        Category <span className="text-red-600">*</span>
+                <div className="space-y-1">
+                    <label className="text-[12px] font-bold text-gray-700 uppercase tracking-wide block">
+                        Category <span className="text-red-500">*</span>
                     </label>
                     <DropdownMenu>
                         <DropdownMenuTrigger
                             className={dropdownTriggerClass(errors.category_id)}
                         >
                             <div className="flex items-center gap-2">
-                                <Car className="text-gray-400" size={16} />
+                                <Car className="text-gray-400" size={14} />
                                 <span
-                                    className={
+                                     className={`truncate ${
                                         data.category_id
-                                            ? "text-gray-900"
+                                            ? "text-gray-900 font-medium"
                                             : "text-gray-400"
-                                    }
+                                    }`}
                                 >
                                     {getCategoryLabel()}
                                 </span>
@@ -148,51 +148,56 @@ const BasicInfoSection = ({
                         </DropdownMenuContent>
                     </DropdownMenu>
                     {errors.category_id && (
-                        <p className="text-red-600 text-[12px] mt-1">
+                        <p className="text-red-600 text-[11px] mt-0.5">
                             {errors.category_id}
                         </p>
                     )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
-                    label="Make *"
-                    placeholder="e.g., Toyota"
-                    value={data.make}
-                    onChange={(e) => handleInputChange("make", e.target.value)}
-                    error={errors.make}
-                />
-                <Input
-                    label="Model *"
-                    placeholder="e.g., Camry"
-                    value={data.model}
-                    onChange={(e) => handleInputChange("model", e.target.value)}
-                    error={errors.model}
-                />
+            {/* Make, Model, Year - 3 Columns */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                    <label className="text-[12px] font-bold text-gray-700 uppercase tracking-wide block">Make <span className="text-red-500">*</span></label>
+                    <Input
+                        placeholder="e.g. Toyota"
+                        value={data.make}
+                        onChange={(e) => handleInputChange("make", e.target.value)}
+                        error={errors.make}
+                        className="h-[40px]"
+                    />
+                </div>
+                <div className="space-y-1">
+                     <label className="text-[12px] font-bold text-gray-700 uppercase tracking-wide block">Model <span className="text-red-500">*</span></label>
+                     <Input
+                        placeholder="e.g. Camry"
+                        value={data.model}
+                        onChange={(e) => handleInputChange("model", e.target.value)}
+                        error={errors.model}
+                        className="h-[40px]"
+                    />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-[12px] font-bold text-gray-700 uppercase tracking-wide block">Year <span className="text-red-500">*</span></label>
+                    <Input
+                        type="number"
+                        value={data.year}
+                        onChange={(e) => handleInputChange("year", e.target.value)}
+                        error={errors.year}
+                        className="h-[40px]"
+                    />
+                </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
-                    label="Production Year *"
-                    type="number"
-                    value={data.year}
-                    onChange={(e) =>
-                        handleInputChange("year", e.target.value)
-                    }
-                    error={errors.year}
-                />
-
-                {/* Rental Type Dropdown */}
-                <div className="space-y-1.5">
-                    <label className="text-[13px] font-semibold text-gray-700 block">
-                        Default Rental Type
-                    </label>
-                    <DropdownMenu>
+            
+            {/* Rental Type & Description */}
+            <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-1">
+                     <label className="text-[12px] font-bold text-gray-700 uppercase tracking-wide block">Rental Type</label>
+                     <DropdownMenu>
                         <DropdownMenuTrigger
                             className={dropdownTriggerClass(false)}
                         >
-                            <span className="text-gray-900">
+                            <span className="text-gray-900 font-medium capitalize">
                                 {getRentalTypeLabel()}
                             </span>
                             <ChevronDown size={14} className="text-gray-400" />
@@ -213,19 +218,20 @@ const BasicInfoSection = ({
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-            </div>
-
-            <div className="space-y-1.5">
-                <Input
-                    isTextArea
-                    label="Detailed Information"
-                    placeholder="Provide a comprehensive description of this vehicle..."
-                    value={data.description}
-                    onChange={(e) =>
-                        handleInputChange("description", e.target.value)
-                    }
-                    error={errors.description}
-                />
+            
+                <div className="space-y-1">
+                    <label className="text-[12px] font-bold text-gray-700 uppercase tracking-wide block">Description</label>
+                    <Input
+                        isTextArea
+                        placeholder="Vehicle description..."
+                        value={data.description}
+                        onChange={(e) =>
+                            handleInputChange("description", e.target.value)
+                        }
+                        error={errors.description}
+                        className="min-h-[80px]"
+                    />
+                </div>
             </div>
         </div>
     );

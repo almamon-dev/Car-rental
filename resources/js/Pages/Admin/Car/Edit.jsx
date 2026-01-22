@@ -5,6 +5,12 @@ import {
     Save,
     ChevronLeft,
     Loader2,
+    LayoutDashboard,
+    Settings2,
+    Camera,
+    ShieldCheck,
+    HelpCircle,
+    Check
 } from "lucide-react";
 
 // Import Partials
@@ -15,7 +21,7 @@ import FaqSection from "./Partials/Edit/FaqSection";
 import PricingSection from "./Partials/Edit/PricingSection";
 import DocumentsSection from "./Partials/Edit/DocumentsSection";
 import GallerySection from "./Partials/Edit/GallerySection";
-import CollapsibleCard from "./Partials/Edit/CollapsibleCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/Tabs";
 
 export default function CarEdit({ auth, car, categories, brands }) {
     const specs = car.specifications || {};
@@ -58,18 +64,23 @@ export default function CarEdit({ auth, car, categories, brands }) {
         existing_images: car.images || [],
     });
 
-    const [openSections, setOpenSections] = useState({
-        basic: true,
-        specs: true,
-        pricing: true,
-        features: true,
-        documents: true,
-        faqs: true,
-        images: true,
-    });
+    const [activeTab, setActiveTab] = useState("essentials");
 
-    const toggleSection = (section) =>
-        setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+    const findTabForField = (field) => {
+        const mapping = {
+            essentials: ["brand_id", "category_id", "make", "model", "year", "rental_type", "description", "status", "daily_rate", "weekly_rate", "monthly_rate", "security_deposit", "currency", "tax_percentage"],
+            technical: ["transmission", "mileage", "fuel_type", "steering", "model_year", "vehicle_type", "engine_capacity", "color", "features"],
+            media: ["images", "existing_images"],
+            admin: ["registration_number", "chassis_number", "engine_number", "tax_token_expiry", "fitness_expiry", "faqs", "has_faqs"]
+        };
+
+        for (const [tab, fields] of Object.entries(mapping)) {
+            if (fields.some(f => field === f || field.startsWith(`${f}.`))) {
+                return tab;
+            }
+        }
+        return "essentials";
+    };
 
     const handleInputChange = (field, value) => {
         setData(field, value);
@@ -108,6 +119,20 @@ export default function CarEdit({ auth, car, categories, brands }) {
             ...data,
             forceFormData: true,
             preserveScroll: true,
+            onError: (errors) => {
+                const firstErrorKey = Object.keys(errors)[0];
+                if (firstErrorKey) {
+                    const errorTab = findTabForField(firstErrorKey);
+                    setActiveTab(errorTab);
+                    
+                    setTimeout(() => {
+                        const errorElement = document.querySelector(`[name="${firstErrorKey}"], #error-${firstErrorKey}`);
+                        if (errorElement) {
+                            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 100);
+                }
+            }
         });
     };
 
@@ -115,6 +140,7 @@ export default function CarEdit({ auth, car, categories, brands }) {
         <AdminLayout user={auth.user}>
             <Head title={`Update ${car.make} ${car.model} | Admin`} />
 
+            {/* Main Container */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 {/* Header Section */}
                 <div className="px-8 py-5 border-b border-gray-100 bg-white flex justify-between items-center">
@@ -127,9 +153,9 @@ export default function CarEdit({ auth, car, categories, brands }) {
                         </Link>
                         <div>
                             <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">
-                                Update Vehicle Parameters
+                                Update Vehicle Listing
                             </h1>
-                            <p className="text-[13px] text-gray-500 font-medium mt-0.5">
+                            <p className="text-[13px] text-gray-500 font-medium mt-0.5 tracking-widest">
                                 Editing {car.make} {car.model} • Internal ID #{car.id}
                             </p>
                         </div>
@@ -160,206 +186,218 @@ export default function CarEdit({ auth, car, categories, brands }) {
                 {/* Form Body */}
                 <form
                     onSubmit={handleSubmit}
-                    className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8"
+                    className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
                 >
-                    {/* Left Column (8 Cols) */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <CollapsibleCard
-                            title="Basic Information"
-                            isOpen={openSections.basic}
-                            onToggle={() => toggleSection("basic")}
-                        >
-                            <BasicInfoSection
-                                data={data}
-                                errors={errors}
-                                handleInputChange={handleInputChange}
-                                brands={brands}
-                                categories={categories}
-                            />
-                        </CollapsibleCard>
-
-                        <CollapsibleCard
-                            title="Technical Specifications"
-                            isOpen={openSections.specs}
-                            onToggle={() => toggleSection("specs")}
-                        >
-                            <TechSpecsSection
-                                data={data}
-                                errors={errors}
-                                handleInputChange={handleInputChange}
-                            />
-                        </CollapsibleCard>
-
-                        <CollapsibleCard
-                            title="Fleet Media & Gallery"
-                            isOpen={openSections.images}
-                            onToggle={() => toggleSection("images")}
-                        >
-                            <GallerySection
-                                data={data}
-                                errors={errors}
-                                setData={setData}
-                                clearErrors={clearErrors}
-                                existingImages={data.existing_images}
-                                onImageRemove={handleImageRemove}
-                            />
-                        </CollapsibleCard>
-
-                        <CollapsibleCard
-                            title="Vehicle Features"
-                            isOpen={openSections.features}
-                            onToggle={() => toggleSection("features")}
-                        >
-                            <FeaturesSection
-                                data={data}
-                                errors={errors}
-                                handleNestedChange={handleNestedChange}
-                                removeRow={removeRow}
-                                addRow={addRow}
-                            />
-                        </CollapsibleCard>
-
-                        <CollapsibleCard
-                            title="Frequently Asked Questions"
-                            isOpen={openSections.faqs}
-                            onToggle={() => toggleSection("faqs")}
-                        >
-                            <FaqSection
-                                data={data}
-                                errors={errors}
-                                handleInputChange={handleInputChange}
-                                handleNestedChange={handleNestedChange}
-                                removeRow={removeRow}
-                                addRow={addRow}
-                            />
-                        </CollapsibleCard>
-                    </div>
-
-                    {/* Right Column (4 Cols) */}
-                    <div className="lg:col-span-4 space-y-6">
-                        {/* Completion Checklist */}
-                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
-                                <h3 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">Data Integrity Check</h3>
+                    {/* Left Column (Granular Tabs) */}
+                    <div className="lg:col-span-8 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col">
+                            <div className="px-8 pt-6 border-b border-gray-100 overflow-x-auto custom-sidebar-scrollbar bg-slate-50/30">
+                                <TabsList className="w-full justify-start space-x-10 border-b-0 min-w-max">
+                                    <TabsTrigger 
+                                        value="essentials" 
+                                        className="pb-4 text-[12px] font-black  tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
+                                    >
+                                        <LayoutDashboard size={14} />
+                                        ESSENTIALS
+                                    </TabsTrigger>
+                                    <TabsTrigger 
+                                        value="technical" 
+                                        className="pb-4 text-[12px] font-black  tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
+                                    >
+                                        <Settings2 size={14} />
+                                        TECHNICAL
+                                    </TabsTrigger>
+                                    <TabsTrigger 
+                                        value="media" 
+                                        className="pb-4 text-[12px] font-black  tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
+                                    >
+                                        <Camera size={14} />
+                                        MEDIA
+                                    </TabsTrigger>
+                                    <TabsTrigger 
+                                        value="admin" 
+                                        className="pb-4 text-[12px] font-black  tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
+                                    >
+                                        <ShieldCheck size={14} />
+                                        ADMINISTRATION
+                                    </TabsTrigger>
+                                </TabsList>
                             </div>
-                            <div className="p-6 space-y-5">
-                                {[
-                                    { 
-                                        label: "Basic Information", 
-                                        isComplete: !!(data.brand_id && data.category_id && data.make && data.model) 
-                                    },
-                                    { 
-                                        label: "Technical Specs", 
-                                        isComplete: !!(data.transmission && data.fuel_type && data.mileage) 
-                                    },
-                                    { 
-                                        label: "Listing Media", 
-                                        isComplete: (data.images && data.images.length > 0) || (data.existing_images && data.existing_images.length > 0)
-                                    },
-                                    { 
-                                        label: "Pricing Details", 
-                                        isComplete: !!(data.daily_rate && data.security_deposit !== undefined) 
-                                    },
-                                    { 
-                                        label: "Legal Documents", 
-                                        isComplete: !!(data.registration_number && data.chassis_number) 
-                                    },
-                                ].map((step, idx) => (
-                                    <div key={idx} className="flex items-center justify-between group">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                                                step.isComplete 
-                                                    ? "bg-[#0a66c2] text-white" 
-                                                    : "bg-gray-100 border border-gray-200 text-transparent group-hover:border-gray-300"
-                                            }`}>
-                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            </div>
-                                            <span className={`text-[13px] font-medium transition-colors ${
-                                                step.isComplete ? "text-gray-900" : "text-gray-500"
-                                            }`}>
-                                                {step.label}
-                                            </span>
-                                        </div>
-                                        {step.isComplete && (
-                                            <span className="text-[11px] font-bold text-[#0a66c2] uppercase tracking-wider">Verified</span>
-                                        )}
-                                    </div>
-                                ))}
 
-                                <div className="pt-4 border-t border-gray-100">
-                                    <div className="flex justify-between items-end mb-2">
-                                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Listing Quality</span>
-                                        <span className="text-[13px] font-bold text-[#0a66c2]">
-                                            {Math.round(([
-                                                data.brand_id && data.category_id && data.make && data.model,
-                                                data.transmission && data.fuel_type && data.mileage,
-                                                (data.images && data.images.length > 0) || (data.existing_images && data.existing_images.length > 0),
-                                                data.daily_rate && data.security_deposit !== undefined,
-                                                data.registration_number && data.chassis_number
-                                            ].filter(Boolean).length / 5) * 100)}%
-                                        </span>
-                                    </div>
-                                    <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                        <div 
-                                            className="h-full bg-[#0a66c2] transition-all duration-700 ease-out"
-                                            style={{ 
-                                                width: `${([
-                                                    data.brand_id && data.category_id && data.make && data.model,
-                                                    data.transmission && data.fuel_type && data.mileage,
-                                                    (data.images && data.images.length > 0) || (data.existing_images && data.existing_images.length > 0),
-                                                    data.daily_rate && data.security_deposit !== undefined,
-                                                    data.registration_number && data.chassis_number
-                                                ].filter(Boolean).length / 5) * 100}%` 
-                                            }}
+                            <div className="flex-1 p-8 h-auto space-y-12">
+                                <TabsContent value="essentials" className="mt-0 space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                    <div>
+                                        <h3 className="text-sm font-black text-slate-800  mb-6 flex items-center gap-2">
+                                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                            Core Identification
+                                        </h3>
+                                        <BasicInfoSection
+                                            data={data}
+                                            errors={errors}
+                                            handleInputChange={handleInputChange}
+                                            brands={brands}
+                                            categories={categories}
                                         />
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-gray-50/50 border border-gray-200 rounded-lg p-6">
-                            <h3 className="text-[15px] font-semibold text-gray-900 mb-4">Listing Settings</h3>
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-[13px] font-semibold text-gray-800">Marketplace Visibility</p>
-                                        <p className="text-[11px] text-gray-500">Enable listing for end-users</p>
+                                    
+                                    <div className="border-t border-slate-100 pt-12">
+                                        <div>
+                                            <h3 className="text-sm font-black text-slate-800  mb-6 flex items-center gap-2">
+                                                <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                                Pricing & Packages
+                                            </h3>
+                                            <PricingSection
+                                                data={data}
+                                                errors={errors}
+                                                handleInputChange={handleInputChange}
+                                            />
+                                        </div>
                                     </div>
+                                </TabsContent>
+
+                                <TabsContent value="technical" className="mt-0 space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                    <div>
+                                        <h3 className="text-sm font-black text-slate-800  mb-6 flex items-center gap-2">
+                                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                            Technical Specifications
+                                        </h3>
+                                        <TechSpecsSection
+                                            data={data}
+                                            errors={errors}
+                                            handleInputChange={handleInputChange}
+                                        />
+                                    </div>
+
+                                    <div className="border-t border-slate-100 pt-12">
+                                        <div>
+                                            <h3 className="text-sm font-black text-slate-800  mb-6 flex items-center gap-2">
+                                                <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                                Vehicle Features
+                                            </h3>
+                                            <FeaturesSection
+                                                data={data}
+                                                errors={errors}
+                                                handleNestedChange={handleNestedChange}
+                                                removeRow={removeRow}
+                                                addRow={addRow}
+                                            />
+                                        </div>
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value="media" className="mt-0 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                    <div>
+                                        <h3 className="text-sm font-black text-slate-800   mb-6 flex items-center gap-2">
+                                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                            Photos & Assets
+                                        </h3>
+                                        <GallerySection
+                                            data={data}
+                                            errors={errors}
+                                            setData={setData}
+                                            clearErrors={clearErrors}
+                                            existingImages={data.existing_images}
+                                            onImageRemove={handleImageRemove}
+                                        />
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value="admin" className="mt-0 space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                    <div>
+                                        <h3 className="text-sm font-black text-slate-800  mb-6 flex items-center gap-2">
+                                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                            Legal & Compliance
+                                        </h3>
+                                        <DocumentsSection
+                                            data={data}
+                                            errors={errors}
+                                            handleInputChange={handleInputChange}
+                                        />
+                                    </div>
+
+                                    <div className="border-t border-slate-100 pt-12">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-8">
+                                                <h3 className="text-sm font-black text-slate-800  flex items-center gap-2">
+                                                    <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                                    Customer FAQs
+                                                </h3>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-[13px] text-gray-600 font-medium">Enable FAQs</span>
+                                                    <label className="relative inline-flex items-center cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="sr-only peer"
+                                                            checked={!!data.has_faqs}
+                                                            onChange={(e) => {
+                                                                const isChecked = e.target.checked;
+                                                                handleInputChange("has_faqs", isChecked);
+                                                                if (isChecked && (!data.faqs || data.faqs.length === 0)) {
+                                                                    addRow("faqs", { question: "", answer: "" });
+                                                                }
+                                                            }}
+                                                        />
+                                                        <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0a66c2]"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {data.has_faqs ? (
+                                                 <FaqSection
+                                                    data={data}
+                                                    errors={errors}
+                                                    handleInputChange={handleInputChange}
+                                                    handleNestedChange={handleNestedChange}
+                                                    removeRow={removeRow}
+                                                    addRow={addRow}
+                                                />
+                                            ) : (
+                                                <div className="py-16 border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center px-10 bg-slate-50/30">
+                                                    <div className="w-14 h-14 bg-white shadow-sm border border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 mb-5">
+                                                        <HelpCircle size={28} />
+                                                    </div>
+                                                    <h4 className="text-sm font-black text-slate-800  tracking-tight mb-2">FAQs are disabled</h4>
+                                                    <p className="text-[12px] text-slate-500 max-w-[280px] leading-relaxed font-medium">Toggle the switch above to enable and add frequently asked questions for your customers.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </TabsContent>
+                            </div>
+                        </Tabs>
+                    </div>
+
+                    {/* Right Column (Sticky Sidebar) */}
+                    <div className="lg:col-span-4 space-y-6 sticky top-8">
+                         {/* Publishing Info */}
+                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+                            <h3 className="text-[11px] font-bold text-gray-400  tracking-widest mb-4">Publishing</h3>
+                            <div className="space-y-4">
+                                <div className={`flex items-center justify-between p-3 rounded-sm border transition-all ${
+                                    data.status === 'available' 
+                                    ? 'bg-emerald-50 border-emerald-100' 
+                                    : 'bg-slate-50 border-slate-100'
+                                }`}>
+                                    <span className={`text-[13px] font-bold ${
+                                        data.status === 'available' ? 'text-emerald-700' : 'text-slate-600'
+                                    }`}>Status</span>
+                                    <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm transition-all ${
+                                        data.status === 'available' 
+                                        ? 'bg-emerald-500 text-white' 
+                                        : 'bg-slate-400 text-white'
+                                    }`}>
+                                        <div className={`w-1.5 h-1.5 bg-white rounded-full ${data.status === 'available' ? 'animate-pulse' : ''}`} />
+                                        {data.status === 'available' ? 'Active' : 'Draft'}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between px-1">
+                                    <span className="text-[13px] text-gray-600 font-medium">Public Visibility</span>
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input
                                             type="checkbox"
                                             className="sr-only peer"
                                             checked={data.status === "available"}
-                                            onChange={(e) =>
-                                                handleInputChange(
-                                                    "status",
-                                                    e.target.checked ? "available" : "draft"
-                                                )
-                                            }
-                                        />
-                                        <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0a66c2]"></div>
-                                    </label>
-                                </div>
-
-                                <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-                                    <div>
-                                        <p className="text-[13px] font-semibold text-gray-800">Customer FAQs</p>
-                                        <p className="text-[11px] text-gray-500">Enable assistance section</p>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="sr-only peer"
-                                            checked={!!data.has_faqs}
-                                            onChange={(e) => {
-                                                const isChecked = e.currentTarget.checked;
-                                                handleInputChange("has_faqs", isChecked);
-                                                if (isChecked && (!data.faqs || data.faqs.length === 0)) {
-                                                    addRow("faqs", { question: "", answer: "" });
-                                                }
-                                            }}
+                                            onChange={(e) => handleInputChange("status", e.target.checked ? "available" : "draft")}
                                         />
                                         <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0a66c2]"></div>
                                     </label>
@@ -367,29 +405,69 @@ export default function CarEdit({ auth, car, categories, brands }) {
                             </div>
                         </div>
 
-                        <CollapsibleCard
-                            title="Pricing Strategy"
-                            isOpen={openSections.pricing}
-                            onToggle={() => toggleSection("pricing")}
-                        >
-                            <PricingSection
-                                data={data}
-                                errors={errors}
-                                handleInputChange={handleInputChange}
-                            />
-                        </CollapsibleCard>
+                        {/* INVENTORY ASSETS Grid Container */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                             <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-[13px] font-bold text-gray-900  tracking-tight">INVENTORY ASSETS</h3>
+                                <span className="text-[14px] font-bold text-gray-400">
+                                    {Math.round(([
+                                        data.brand_id && data.category_id && data.make && data.model,
+                                        data.daily_rate,
+                                        data.transmission && data.fuel_type,
+                                        (data.images?.length > 0 || data.existing_images?.length > 0),
+                                        data.registration_number
+                                    ].filter(Boolean).length / 5) * 100)}%
+                                </span>
+                            </div>
 
-                        <CollapsibleCard
-                            title="Legal & Compliance"
-                            isOpen={openSections.documents}
-                            onToggle={() => toggleSection("documents")}
-                        >
-                            <DocumentsSection
-                                data={data}
-                                errors={errors}
-                                handleInputChange={handleInputChange}
-                            />
-                        </CollapsibleCard>
+                            {/* Subtle Progress Bar */}
+                            <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden mb-8">
+                                <div 
+                                    className="h-full bg-[#0a66c2] transition-all duration-700 ease-out"
+                                    style={{ 
+                                        width: `${([
+                                            data.brand_id && data.category_id && data.make && data.model,
+                                            data.daily_rate,
+                                            data.transmission && data.fuel_type,
+                                            (data.images?.length > 0 || data.existing_images?.length > 0),
+                                            data.registration_number
+                                        ].filter(Boolean).length / 5) * 100}%` 
+                                    }}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                                {[
+                                    { 
+                                        label: "Essentials", 
+                                        isComplete: !!(data.brand_id && data.category_id && data.make && data.model && data.daily_rate) 
+                                    },
+                                    { 
+                                        label: "Technical", 
+                                        isComplete: !!(data.transmission && data.fuel_type) 
+                                    },
+                                    { 
+                                        label: "Media", 
+                                        isComplete: (data.images?.length > 0 || data.existing_images?.length > 0) 
+                                    },
+                                    { 
+                                        label: "Administration", 
+                                        isComplete: !!(data.registration_number) 
+                                    },
+                                ].map((step, i) => (
+                                    <div key={i} className="flex items-center gap-2.5">
+                                        <div className={`flex-shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-all bg-white
+                                            ${step.isComplete ? 'border-[#0a66c2] bg-[#0a66c2]/5' : 'border-slate-200'}`}>
+                                            {step.isComplete && <Check size={10} className="text-[#0a66c2]" strokeWidth={4} />}
+                                        </div>
+                                        <span className={`text-[11px] font-black tracking-tight transition-colors
+                                            ${step.isComplete ? 'text-slate-900' : 'text-slate-400'}`}>
+                                            {step.label}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

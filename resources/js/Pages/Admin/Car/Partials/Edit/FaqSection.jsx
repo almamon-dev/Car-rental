@@ -21,12 +21,9 @@ const FaqSection = ({
                                 className="group bg-white border border-gray-200 rounded-md overflow-hidden transition-all hover:border-gray-300"
                             >
                                 <div className="flex items-start gap-4 p-5">
-                                    <div className="flex-shrink-0 w-6 h-6 bg-gray-100 rounded text-[12px] flex items-center justify-center font-bold text-gray-500">
-                                        {i + 1}
-                                    </div>
                                     <div className="flex-1 space-y-4">
                                         <Input
-                                            label={`Question ${i + 1}`}
+                                            label="Question"
                                             placeholder="e.g. Is insurance included in the rental price?"
                                             value={faq.question}
                                             onChange={(e) =>
@@ -45,7 +42,6 @@ const FaqSection = ({
                                             error={errors[`faqs.${i}.answer`]}
                                             className="min-h-[80px]"
                                         />
-                                        {data.faqs.length > 1 && (
                                             <div className="flex justify-end pt-2">
                                                 <button
                                                     type="button"
@@ -56,7 +52,6 @@ const FaqSection = ({
                                                     Remove Question
                                                 </button>
                                             </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>

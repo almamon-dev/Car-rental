@@ -20,7 +20,7 @@ class CarController extends Controller
     public function index(Request $request)
     {
         $query = Car::query()->select([
-            'id', 'brand_id', 'category_id', 'make', 'model', 'status', 'created_at', 'year', 'rental_type',
+            'id', 'brand_id', 'category_id', 'make', 'model', 'status', 'created_at', 'year', 'rental_type', 'description',
         ]);
         // dd($query);
         // ২. Eager Loading with constraints
@@ -31,6 +31,7 @@ class CarController extends Controller
             'images:id,car_id,file_path,thumbnail_path',
             'specifications',
             'policeDocuments',
+            'features',
         ]);
 
         // Search

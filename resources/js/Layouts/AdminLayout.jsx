@@ -4,15 +4,12 @@ import Sidebar from "../Components/Navigation/Admin/Sidebar";
 import { ChevronLeft } from "lucide-react";
 
 export default function AdminLayout({ children }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
+    // -- Fixed Sidebar (No collapse)
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-
-    // -- sidebar toggle
-    const showFullSidebar = !isCollapsed || isHovered;
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     return (
-        <div className="flex h-screen bg-[#f4f2ee] overflow-hidden font-sans selection:bg-[#0a66c2]/10 selection:text-[#0a66c2]">
+        <div className="flex h-screen bg-[#f3f2ef] overflow-hidden font-sans selection:bg-[#0a66c2]/10 selection:text-[#0a66c2]">
             {/* Mobile Overlay - Glassmorphism */}
             {isMobileOpen && (
                 <div
@@ -23,42 +20,24 @@ export default function AdminLayout({ children }) {
 
             {/* Sidebar Container - Executive Elevation (Borderless) */}
             <aside
-                onMouseEnter={() => isCollapsed && setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className={`fixed inset-y-0 left-0 z-[160] bg-white transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05),0_8px_10px_-6px_rgba(0,0,0,0.05)]
-                    ${
-                        isMobileOpen
-                            ? "translate-x-0 w-[280px]"
-                            : "-translate-x-full lg:translate-x-0"
-                    }
-                    ${showFullSidebar ? "lg:w-[280px]" : "lg:w-[80px]"}`}
+                className={`fixed inset-y-0 left-0 z-[160] bg-white transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1) flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05),0_8px_10px_-6px_rgba(0,0,0,0.05)]
+                    ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+                    ${isSidebarCollapsed ? "lg:w-[80px] hover:lg:w-[280px] group" : "lg:w-[280px]"}
+                    `}
             >
-                {/* Collapse Toggle Button - Borderless Floating Style */}
-                <button
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="hidden lg:flex absolute -right-3 top-6 z-[170] w-6 h-6 bg-white text-[#0a66c2] rounded-full items-center justify-center shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] hover:bg-[#edf3f8] hover:scale-110 active:scale-95 transition-all duration-300"
-                >
-                    <ChevronLeft
-                        size={14}
-                        strokeWidth={3}
-                        className={`${
-                            isCollapsed ? "rotate-180" : ""
-                        } transition-transform duration-500`}
-                    />
-                </button>
-
                 <Sidebar
-                    isCollapsed={!showFullSidebar}
                     isMobileOpen={isMobileOpen}
                     setIsMobileOpen={setIsMobileOpen}
+                    isCollapsed={isSidebarCollapsed}
+                    toggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 />
             </aside>
 
             {/* Main Content Area - Professional Depth */}
             <div
-                className={`flex-1 flex flex-col min-w-0 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
-                    showFullSidebar ? "lg:pl-[280px]" : "lg:pl-[80px]"
-                }`}
+                className={`flex-1 flex flex-col min-w-0 transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)
+                    ${isSidebarCollapsed ? "lg:pl-[80px]" : "lg:pl-[280px]"}
+                `}
             >
                 {/* Header: Navigation Bar */}
                 <Header onMenuClick={() => setIsMobileOpen(true)} />

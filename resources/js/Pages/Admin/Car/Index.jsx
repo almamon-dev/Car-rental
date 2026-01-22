@@ -60,7 +60,7 @@ export default function CarList({
             setIsSearching(true);
             searchTimeoutRef.current = setTimeout(() => {
                 performVisit({ ...filters, search: value || null, page: 1 });
-            }, 600);
+            }, 300);
         },
         [filters, originalHandleSearch, performVisit]
     );
@@ -160,7 +160,8 @@ export default function CarList({
                                 <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Vehicle</th>
                                 <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Category</th>
                                 <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Registration / VIN</th>
-                                <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Specifications</th>
+                                <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider text-center">Specifications</th>
+                                <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Features</th>
                                 <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Pricing</th>
                                 <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Status</th>
                                 <th className="py-3.5 px-4 text-[12px] font-bold text-gray-600 uppercase tracking-wider">Added Date</th>

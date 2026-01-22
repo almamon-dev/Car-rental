@@ -104,19 +104,20 @@ const CarTableRow = React.memo(function CarTableRow({
                 </div>
             </td>
 
-            {/* Merged Vehicle Section: Image + Primary Meta */}
-            <td className="py-3 px-4">
-                <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center">
+            {/* Premium Vehicle Information Card */}
+            <td className="py-4 px-4 min-w-[280px]">
+                <div className="flex items-start gap-4">
+                    {/* Visual Asset Container */}
+                    <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shadow-sm relative group/img">
                         {item.images?.[0] ? (
                             <>
                                 {imageLoading && (
-                                    <div className="absolute inset-0 z-20 bg-gray-50 animate-pulse" />
+                                    <div className="absolute inset-0 z-20 bg-slate-50 animate-pulse" />
                                 )}
                                 <img
                                     key={imageKey}
                                     src={`/${item.images[0].file_path}`}
-                                    className={`w-full h-full object-cover ${
+                                    className={`w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110 ${
                                         imageLoading ? "opacity-0" : "opacity-100"
                                     }`}
                                     alt={`${item.make} ${item.model}`}
@@ -125,21 +126,33 @@ const CarTableRow = React.memo(function CarTableRow({
                                 />
                             </>
                         ) : (
-                            <ImageOff size={18} className="text-gray-300" />
+                            <ImageOff size={20} className="text-slate-300" />
                         )}
+                        <div className="absolute inset-x-0 bottom-0 py-0.5 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover/img:opacity-100 transition-opacity">
+                            <span className="block text-center text-[8px] font-black text-white uppercase tracking-widest">View Gallery</span>
+                        </div>
                     </div>
-                    <div className="flex flex-col min-w-0">
+
+                    {/* Meta Data Hierarchy */}
+                    <div className="flex flex-col min-w-0 pt-0.5">
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[9px] font-black bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md uppercase tracking-[1px] border border-slate-200/50">
+                                {item.brand?.name || "No Brand"}
+                            </span>
+                        </div>
+                        
                         <Link
                             href={route("admin.cars.show", item.id)}
-                            className="text-[14px] font-bold text-[#0a66c2] hover:underline truncate"
+                            className="text-[15px] font-black text-[#0a66c2] hover:text-[#004182] transition-colors line-clamp-1 mb-1"
                         >
                             {item.make} {item.model}
                         </Link>
-                        <div className="flex items-center gap-1.5 text-[12px] text-gray-500 font-medium">
-                            <span>{item.brand?.name || "No Brand"}</span>
-                            <span className="text-gray-300">•</span>
-                            <span className="bg-gray-100 px-1 py-0.5 rounded text-[10px]">#{item.id}</span>
-                        </div>
+
+                        {item.description && (
+                            <p className="text-[11px] text-slate-400 line-clamp-2 max-w-[220px] font-medium leading-tight">
+                                {item.description}
+                            </p>
+                        )}
                     </div>
                 </div>
             </td>
@@ -160,42 +173,69 @@ const CarTableRow = React.memo(function CarTableRow({
                     <span className="text-[13px] font-bold text-gray-700 uppercase tracking-tight">
                         {item.police_documents?.registration_number || "NO-PLATE"}
                     </span>
-                    <span className="text-[11px] text-gray-400 font-medium font-mono">
+                    <span className="text-[11px] text-gray-400 font-medium font-mono text-[10px]">
                         {item.police_documents?.chassis_number || "NO-VIN"}
                     </span>
                 </div>
             </td>
 
             <td className="py-3 px-4">
-                <div className="flex flex-wrap gap-1.5 max-w-[220px]">
-                    {[
-                        item.specifications?.transmission,
-                        item.specifications?.fuel_type,
-                        item.specifications?.mileage ? `${item.specifications.mileage} KM` : null,
-                        item.specifications?.steering,
-                        `EY-${item.year}`
-                    ].filter(Boolean).slice(0, 3).map((spec, idx) => (
-                        <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-[11px] font-bold rounded uppercase tracking-tighter border border-gray-200/50 whitespace-nowrap">
-                            {spec}
-                        </span>
-                    ))}
-                    {[
-                        item.specifications?.transmission,
-                        item.specifications?.fuel_type,
-                        item.specifications?.mileage ? `${item.specifications.mileage} KM` : null,
-                        item.specifications?.steering,
-                        `EY-${item.year}`
-                    ].filter(Boolean).length > 3 && (
-                        <span className="px-2 py-0.5 bg-blue-50 text-[#0a66c2] text-[11px] font-bold rounded uppercase tracking-tighter border border-[#0a66c2]/10 whitespace-nowrap">
-                            +{ [ 
-                                item.specifications?.transmission,
-                                item.specifications?.fuel_type,
-                                item.specifications?.mileage ? `${item.specifications.mileage} KM` : null,
-                                item.specifications?.steering,
-                                `EY-${item.year}`
-                            ].filter(Boolean).length - 3 } more
-                        </span>
-                    )}
+                <div className="flex flex-wrap gap-1.5 max-w-[240px] justify-center">
+                    {(() => {
+                        const specs = [
+                            item.specifications?.transmission,
+                            item.specifications?.fuel_type,
+                            item.specifications?.mileage ? `${Number(item.specifications.mileage).toFixed(0)} KM` : null,
+                            item.specifications?.steering,
+                            `EY-${item.year}`
+                        ].filter(Boolean);
+                        
+                        const displaySpecs = specs.slice(0, 2);
+                        const moreCount = specs.length - 2;
+                        
+                        return (
+                            <>
+                                {displaySpecs.map((spec, idx) => (
+                                    <span key={idx} className="px-2 py-0.5 bg-gray-50 text-gray-700 text-[10px] font-black rounded border border-gray-200 uppercase tracking-tight whitespace-nowrap">
+                                        {spec}
+                                    </span>
+                                ))}
+                                {moreCount > 0 && (
+                                    <span className="px-2 py-0.5 bg-blue-50 text-[#0a66c2] text-[10px] font-black rounded border border-blue-100 uppercase tracking-tight whitespace-nowrap">
+                                        +{moreCount} more
+                                    </span>
+                                )}
+                            </>
+                        );
+                    })()}
+                </div>
+            </td>
+
+            <td className="py-3 px-4">
+                <div className="flex flex-wrap gap-1.5 max-w-[240px]">
+                    {(() => {
+                        const features = (item.features || []).map(f => f.feature_name).filter(Boolean);
+                        const displayFeatures = features.slice(0, 2);
+                        const moreCount = features.length - 2;
+                        
+                        return (
+                            <>
+                                {displayFeatures.map((feat, idx) => (
+                                    <span key={idx} className="px-2 py-0.5 bg-slate-50 text-slate-700 text-[10px] font-black rounded border border-slate-200 uppercase tracking-tight whitespace-nowrap">
+                                        {feat}
+                                    </span>
+                                ))}
+                                {moreCount > 0 && (
+                                    <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded border border-indigo-100 uppercase tracking-tight whitespace-nowrap">
+                                        +{moreCount} more
+                                    </span>
+                                )}
+                                {features.length === 0 && (
+                                    <span className="text-[10px] font-bold text-gray-300 uppercase italic">No Features</span>
+                                )}
+                            </>
+                        );
+                    })()}
                 </div>
             </td>
 
@@ -203,31 +243,29 @@ const CarTableRow = React.memo(function CarTableRow({
                 <div className="flex flex-col">
                     <span className="text-[14px] font-bold text-gray-900">
                         {item.price_details?.currency || '$'}
-                        {Number(item.price_details?.daily_rate || 0).toLocaleString()}
+                        {Number(item.price_details?.daily_rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                     <span className="text-[11px] text-gray-500 font-medium">per day</span>
                 </div>
             </td>
 
             <td className="py-3 px-4">
-                <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                        item.status === "available"
-                            ? "bg-[#057642]"
-                            : item.status === "reserved"
-                            ? "bg-[#915907]"
-                            : "bg-[#d11124]"
-                    }`} />
-                    <span className={`text-[13px] font-semibold capitalize ${
-                        item.status === "available"
-                            ? "text-[#057642]"
-                            : item.status === "reserved"
-                            ? "text-[#915907]"
-                            : "text-[#d11124]"
-                    }`}>
-                        {item.status}
-                    </span>
-                </div>
+                {item.status === "available" ? (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full shadow-sm">
+                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                        Active
+                    </div>
+                ) : item.status === "reserved" || item.status === "sold" ? (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full shadow-sm">
+                        <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                        Reserved
+                    </div>
+                ) : (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-400 text-white text-[10px] font-black uppercase tracking-wider rounded-full shadow-sm">
+                        <div className="w-1.5 h-1.5 bg-white rounded-full opacity-60" />
+                        {item.status || "Draft"}
+                    </div>
+                )}
             </td>
 
             <td className="py-3 px-4">
