@@ -17,7 +17,6 @@ const DropdownMenuTrigger = React.forwardRef(
             {...props}
         >
             {children}
-            <ChevronDown className="h-4 w-4 opacity-50" />
         </DropdownMenuPrimitive.Trigger>
     )
 );

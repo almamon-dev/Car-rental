@@ -18,7 +18,7 @@ const Input = React.forwardRef(
         return (
             <div className="w-full space-y-1.5 text-left">
                 {label && (
-                    <label className="text-[13px] font-semibold text-gray-700 ml-0.5 uppercase tracking-wide">
+                    <label className="text-[13px] font-semibold text-gray-700 block">
                         {label}
                     </label>
                 )}
@@ -26,14 +26,16 @@ const Input = React.forwardRef(
                 <Component
                     type={!isTextArea ? type : undefined}
                     className={cn(
-                        "flex w-full rounded-md bg-white px-3 py-2 text-sm transition-colors border",
+                        "block w-full rounded border border-gray-300 bg-white px-3 py-2 text-[14px] transition-all",
                         "placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-offset-0",
-                        // Border logic: matching the image's light blue border
                         error
-                            ? "border-red-500 focus:border-red-600 focus:ring-red-500/20"
-                            : "border-blue-200 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20",
-                        isTextArea ? "min-h-[100px] resize-y" : "h-11", // height adjusted to match image
-                        "disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500",
+                            ? "border-red-600 focus:border-red-600 focus:ring-red-600/10"
+                            : "border-gray-300 focus:border-[#0a66c2] focus:ring-[#0a66c2]/10",
+                        isTextArea ? "min-h-[140px] resize-y" : "h-[40px]",
+                        "disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500",
+                        "hover:border-gray-400 focus:bg-white",
+                        // Resetting any internal browser centering and fixing the date icon
+                        type === "date" && "appearance-none [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:p-0 [&::-webkit-calendar-picker-indicator]:m-0",
                         className
                     )}
                     ref={ref}
@@ -41,7 +43,7 @@ const Input = React.forwardRef(
                 />
 
                 {error && (
-                    <p className="text-[11px] font-medium text-red-500 animate-in fade-in slide-in-from-top-1">
+                    <p className="text-[12px] font-medium text-red-600 mt-1">
                         {error}
                     </p>
                 )}

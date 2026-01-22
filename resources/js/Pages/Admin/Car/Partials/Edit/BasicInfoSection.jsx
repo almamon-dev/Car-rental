@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "@/Components/ui/Input";
-import { Car, Tag, Calendar, FileText, ChevronDown } from "lucide-react";
+import { Car, Tag, ChevronDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -15,12 +15,6 @@ const BasicInfoSection = ({
     brands,
     categories,
 }) => {
-    const Label = ({ children }) => (
-        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">
-            {children}
-        </label>
-    );
-
     const getBrandLabel = () => {
         const brand = brands?.find(
             (b) => b.id.toString() === data.brand_id?.toString()
@@ -40,12 +34,11 @@ const BasicInfoSection = ({
         return types[data.rental_type] || "Daily";
     };
 
-    // কমন ক্লাস যা ইনপুট এবং ড্রপডাউন উভয় ক্ষেত্রেই ব্যবহার হবে
-    const commonFieldClass = (hasError) => `
-        flex h-11 w-full items-center justify-between rounded-md border
-        ${hasError ? "border-red-500" : "border-blue-200"}
-        bg-white px-3 py-2 text-sm transition-all
-        focus:outline-none focus:ring-1 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6]
+    const dropdownTriggerClass = (hasError) => `
+        flex h-[40px] w-full items-center justify-between rounded border
+        ${hasError ? "border-red-600 focus:ring-red-600/10" : "border-gray-300 focus:border-[#0a66c2] focus:ring-[#0a66c2]/10"}
+        bg-white px-3 py-2 text-[14px] transition-all
+        focus:outline-none focus:ring-1 hover:border-gray-400
     `;
 
     return (
@@ -53,12 +46,12 @@ const BasicInfoSection = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Brand Dropdown */}
                 <div className="space-y-1.5">
-                    <Label>
-                        Brand <span className="text-red-400">*</span>
-                    </Label>
+                    <label className="text-[13px] font-semibold text-gray-700 block">
+                        Brand <span className="text-red-600">*</span>
+                    </label>
                     <DropdownMenu>
                         <DropdownMenuTrigger
-                            className={commonFieldClass(errors.brand_id)}
+                            className={dropdownTriggerClass(errors.brand_id)}
                         >
                             <div className="flex items-center gap-2">
                                 <Tag className="text-gray-400" size={16} />
@@ -72,8 +65,9 @@ const BasicInfoSection = ({
                                     {getBrandLabel()}
                                 </span>
                             </div>
+                            <ChevronDown size={14} className="text-gray-400" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                             <DropdownMenuItem
                                 active={!data.brand_id}
                                 onClick={() =>
@@ -99,7 +93,7 @@ const BasicInfoSection = ({
                         </DropdownMenuContent>
                     </DropdownMenu>
                     {errors.brand_id && (
-                        <p className="text-red-500 text-[10px] mt-1">
+                        <p className="text-red-600 text-[12px] mt-1">
                             {errors.brand_id}
                         </p>
                     )}
@@ -107,12 +101,12 @@ const BasicInfoSection = ({
 
                 {/* Category Dropdown */}
                 <div className="space-y-1.5">
-                    <Label>
-                        Category <span className="text-red-400">*</span>
-                    </Label>
+                    <label className="text-[13px] font-semibold text-gray-700 block">
+                        Category <span className="text-red-600">*</span>
+                    </label>
                     <DropdownMenu>
                         <DropdownMenuTrigger
-                            className={commonFieldClass(errors.category_id)}
+                            className={dropdownTriggerClass(errors.category_id)}
                         >
                             <div className="flex items-center gap-2">
                                 <Car className="text-gray-400" size={16} />
@@ -126,8 +120,9 @@ const BasicInfoSection = ({
                                     {getCategoryLabel()}
                                 </span>
                             </div>
+                            <ChevronDown size={14} className="text-gray-400" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                             <DropdownMenuItem
                                 active={!data.category_id}
                                 onClick={() =>
@@ -153,7 +148,7 @@ const BasicInfoSection = ({
                         </DropdownMenuContent>
                     </DropdownMenu>
                     {errors.category_id && (
-                        <p className="text-red-500 text-[10px] mt-1">
+                        <p className="text-red-600 text-[12px] mt-1">
                             {errors.category_id}
                         </p>
                     )}
@@ -167,7 +162,6 @@ const BasicInfoSection = ({
                     value={data.make}
                     onChange={(e) => handleInputChange("make", e.target.value)}
                     error={errors.make}
-                    className="h-11 border-blue-200"
                 />
                 <Input
                     label="Model *"
@@ -175,44 +169,35 @@ const BasicInfoSection = ({
                     value={data.model}
                     onChange={(e) => handleInputChange("model", e.target.value)}
                     error={errors.model}
-                    className="h-11 border-blue-200"
                 />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="relative space-y-1.5">
-                    <Label>
-                        Year <span className="text-red-400">*</span>
-                    </Label>
-                    <div className="relative">
-                        <Calendar
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
-                            size={16}
-                        />
-                        <Input
-                            type="number"
-                            value={data.year}
-                            onChange={(e) =>
-                                handleInputChange("year", e.target.value)
-                            }
-                            error={errors.year}
-                            className="h-11 pl-10 border-blue-200"
-                        />
-                    </div>
-                </div>
+                <Input
+                    label="Production Year *"
+                    type="number"
+                    value={data.year}
+                    onChange={(e) =>
+                        handleInputChange("year", e.target.value)
+                    }
+                    error={errors.year}
+                />
 
                 {/* Rental Type Dropdown */}
                 <div className="space-y-1.5">
-                    <Label>Default Rental Type</Label>
+                    <label className="text-[13px] font-semibold text-gray-700 block">
+                        Default Rental Type
+                    </label>
                     <DropdownMenu>
                         <DropdownMenuTrigger
-                            className={commonFieldClass(false)}
+                            className={dropdownTriggerClass(false)}
                         >
                             <span className="text-gray-900">
                                 {getRentalTypeLabel()}
                             </span>
+                            <ChevronDown size={14} className="text-gray-400" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                             {["daily", "weekly", "monthly"].map((type) => (
                                 <DropdownMenuItem
                                     key={type}
@@ -231,27 +216,16 @@ const BasicInfoSection = ({
             </div>
 
             <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                    <FileText size={14} className="text-gray-400" />
-                    <Label>Detailed Description</Label>
-                </div>
-                <textarea
-                    className={`w-full min-h-[140px] border ${
-                        errors.description
-                            ? "border-red-500"
-                            : "border-blue-200"
-                    } rounded-md px-4 py-3 text-sm focus:ring-1 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] outline-none transition bg-white`}
-                    placeholder="Describe the car's condition, unique features, or rental rules..."
+                <Input
+                    isTextArea
+                    label="Detailed Information"
+                    placeholder="Provide a comprehensive description of this vehicle..."
                     value={data.description}
                     onChange={(e) =>
                         handleInputChange("description", e.target.value)
                     }
+                    error={errors.description}
                 />
-                {errors.description && (
-                    <p className="text-red-500 text-[10px] mt-1">
-                        {errors.description}
-                    </p>
-                )}
             </div>
         </div>
     );

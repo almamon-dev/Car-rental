@@ -22,152 +22,82 @@ const PricingSection = ({ data, errors, handleInputChange }) => {
 
     return (
         <div className="space-y-6">
-            {/* Top Row: Currency & Tax Rate */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Currency Dropdown */}
-                <div className="flex flex-col">
-                    <Label>Currency</Label>
+                <div className="space-y-1.5">
+                    <label className="text-[13px] font-semibold text-gray-700 block">
+                        Currency
+                    </label>
                     <DropdownMenu>
-                        <DropdownMenuTrigger className="flex h-11 w-full items-center justify-between rounded-md border border-blue-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all">
-                            <span
-                                className={`${
-                                    data.currency
-                                        ? "text-gray-900"
-                                        : "text-gray-400"
-                                } font-medium`}
-                            >
-                                {data.currency
-                                    ? `${data.currency} (${curr})`
-                                    : "Select Currency"}
+                        <DropdownMenuTrigger className="flex h-[40px] w-full items-center justify-between rounded border border-gray-300 bg-white px-3 py-2 text-[14px] focus:outline-none focus:ring-1 focus:ring-[#0a66c2]/10 focus:border-[#0a66c2] transition-all hover:border-gray-400">
+                            <span className={data.currency ? "text-gray-900" : "text-gray-400"}>
+                                {data.currency ? `${data.currency} (${curr})` : "Select Currency"}
                             </span>
-                            <ChevronDown size={16} className="text-gray-400" />
+                            <ChevronDown size={14} className="text-gray-400" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="start"
-                            className="w-[--radix-dropdown-menu-trigger-width]"
-                        >
-                            {Object.entries(currencyMap).map(
-                                ([code, symbol]) => (
-                                    <DropdownMenuItem
-                                        key={code}
-                                        className="cursor-pointer"
-                                        onClick={() =>
-                                            handleInputChange("currency", code)
-                                        }
-                                    >
-                                        {code} ({symbol})
-                                    </DropdownMenuItem>
-                                )
-                            )}
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+                            {Object.entries(currencyMap).map(([code, symbol]) => (
+                                <DropdownMenuItem
+                                    key={code}
+                                    onClick={() => handleInputChange("currency", code)}
+                                >
+                                    {code} ({symbol})
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    {errors.currency && (
-                        <span className="text-xs text-red-500 mt-1">
-                            {errors.currency}
-                        </span>
-                    )}
                 </div>
 
-                {/* Tax Rate Input */}
-                <div>
-                    <Label>Tax Rate (%)</Label>
-                    <Input
-                        type="number"
-                        value={data.tax_percentage}
-                        onChange={(e) =>
-                            handleInputChange(
-                                "tax_percentage",
-                                parseFloat(e.target.value) || 0
-                            )
-                        }
-                        error={errors.tax_percentage}
-                        className="h-11 border-blue-200"
-                        placeholder="0"
-                    />
+                <Input
+                    label="Tax Percentage (%)"
+                    type="number"
+                    value={data.tax_percentage}
+                    onChange={(e) => handleInputChange("tax_percentage", parseFloat(e.target.value) || 0)}
+                    error={errors.tax_percentage}
+                    placeholder="0"
+                />
+            </div>
+
+            <div className="bg-gray-50 border border-gray-200 rounded p-5 space-y-6">
+                <h4 className="text-[13px] font-bold text-gray-900 uppercase tracking-tight">Active Rental Rates</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {["daily_rate", "weekly_rate", "monthly_rate"].map((field) => (
+                        <div key={field} className="relative">
+                            <label className="text-[13px] font-semibold text-gray-700 block mb-1.5 capitalize">
+                                {field.replace("_", " ")}
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-[14px] font-medium z-10">
+                                    {curr}
+                                </span>
+                                <Input
+                                    type="number"
+                                    value={data[field]}
+                                    onChange={(e) => handleInputChange(field, parseFloat(e.target.value) || 0)}
+                                    error={errors[field]}
+                                    className="pl-7"
+                                    placeholder="0.00"
+                                />
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
-            {/* Rental Rates Container */}
-            <div className="border border-blue-100 rounded-lg overflow-hidden bg-white shadow-sm">
-                <div className="bg-slate-50/80 px-4 py-3 flex items-center justify-between border-b border-blue-100">
-                    <div className="flex items-center gap-2">
-                        <DollarSign size={16} className="text-slate-500" />
-                        <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                            Rental Rates Details
-                        </span>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={showRates}
-                            onChange={() => setShowRates(!showRates)}
-                        />
-                        <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
-                </div>
-
-                {showRates ? (
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in duration-300">
-                        {["daily_rate", "weekly_rate", "monthly_rate"].map(
-                            (field) => (
-                                <div key={field} className="flex flex-col">
-                                    <Label>{field.replace("_", " ")}</Label>
-                                    <div className="relative group">
-                                        {/* Positioned symbol with better z-index and color */}
-                                        <span className="absolute left-3 top-[14px] text-gray-400 text-sm font-medium pointer-events-none z-20">
-                                            {curr}
-                                        </span>
-                                        <Input
-                                            type="number"
-                                            value={data[field]}
-                                            onChange={(e) =>
-                                                handleInputChange(
-                                                    field,
-                                                    parseFloat(
-                                                        e.target.value
-                                                    ) || 0
-                                                )
-                                            }
-                                            error={errors[field]}
-                                            // Added pl-7 to make room for the symbol and h-11 for consistency
-                                            className="h-11 border-blue-200 pl-7 w-full bg-white focus:ring-1 transition-all"
-                                            placeholder="0.00"
-                                        />
-                                    </div>
-                                </div>
-                            )
-                        )}
-                    </div>
-                ) : (
-                    <div className="p-6 text-center text-[11px] text-slate-400 font-medium">
-                        Rental rates are hidden. Toggle to edit.
-                    </div>
-                )}
-            </div>
-
-            {/* Security Deposit */}
-            <div className="max-w-md">
-                <Label>Security Deposit</Label>
-                <div className="relative">
-                    <ShieldCheck
-                        size={18}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
-                    />
-                    <Input
-                        type="number"
-                        value={data.security_deposit}
-                        onChange={(e) =>
-                            handleInputChange(
-                                "security_deposit",
-                                parseFloat(e.target.value) || 0
-                            )
-                        }
-                        error={errors.security_deposit}
-                        className="pl-10 h-11 border-blue-200 w-full"
-                        placeholder="0.00"
-                    />
-                </div>
+            <div className="relative">
+                <Input
+                    label="Security Deposit"
+                    type="number"
+                    value={data.security_deposit}
+                    onChange={(e) => handleInputChange("security_deposit", parseFloat(e.target.value) || 0)}
+                    error={errors.security_deposit}
+                    className="pl-10"
+                    placeholder="0.00"
+                />
+                <ShieldCheck
+                    size={16}
+                    className="absolute left-3 bottom-[12px] text-gray-400"
+                />
             </div>
         </div>
     );

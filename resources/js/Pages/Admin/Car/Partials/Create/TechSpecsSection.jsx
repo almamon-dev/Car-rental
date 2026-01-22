@@ -33,7 +33,7 @@ const TechSpecsSection = ({ data, errors, handleInputChange }) => {
             {specs.map((spec) => (
                 <Input
                     key={spec.name}
-                    label={<Label>{spec.label}</Label>}
+                    label={spec.label}
                     type={spec.type || "text"}
                     placeholder={spec.placeholder}
                     value={data[spec.name] || ""}
@@ -41,7 +41,6 @@ const TechSpecsSection = ({ data, errors, handleInputChange }) => {
                         handleInputChange(spec.name, e.target.value)
                     }
                     error={errors[spec.name]}
-                    className="h-11 rounded-md border-blue-200 focus:bg-white transition-all"
                 />
             ))}
         </div>

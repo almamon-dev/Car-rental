@@ -12,37 +12,38 @@ export default function AdminLayout({ children }) {
     const showFullSidebar = !isCollapsed || isHovered;
 
     return (
-        <div className="flex h-screen bg-[#F9FAFB] overflow-hidden font-sans">
-            {/* Mobile Overlay */}
+        <div className="flex h-screen bg-[#f4f2ee] overflow-hidden font-sans selection:bg-[#0a66c2]/10 selection:text-[#0a66c2]">
+            {/* Mobile Overlay - Glassmorphism */}
             {isMobileOpen && (
                 <div
-                    className="fixed inset-0 bg-black/40 z-[55] lg:hidden transition-opacity duration-300"
+                    className="fixed inset-0 bg-slate-900/40 z-[155] lg:hidden transition-all duration-500 ease-in-out backdrop-blur-[3px] animate-in fade-in"
                     onClick={() => setIsMobileOpen(false)}
                 />
             )}
 
-            {/* Sidebar Container */}
+            {/* Sidebar Container - Executive Elevation (Borderless) */}
             <aside
                 onMouseEnter={() => isCollapsed && setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`fixed inset-y-0 left-0 z-[60] bg-white border-r border-gray-100 transition-all duration-300 ease-in-out flex flex-col
+                className={`fixed inset-y-0 left-0 z-[160] bg-white transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05),0_8px_10px_-6px_rgba(0,0,0,0.05)]
                     ${
                         isMobileOpen
-                            ? "translate-x-0 w-64 shadow-2xl"
+                            ? "translate-x-0 w-[280px]"
                             : "-translate-x-full lg:translate-x-0"
                     }
-                    ${showFullSidebar ? "lg:w-64" : "lg:w-20"}`}
+                    ${showFullSidebar ? "lg:w-[280px]" : "lg:w-[80px]"}`}
             >
-                {/* Mobile Close Button */}
+                {/* Collapse Toggle Button - Borderless Floating Style */}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="hidden lg:flex absolute -right-3 top-6 z-[70] w-6 h-6 bg-blue-600 text-secondary-foreground rounded-full items-center justify-center shadow-md hover:bg-blue/90 transition-all"
+                    className="hidden lg:flex absolute -right-3 top-6 z-[170] w-6 h-6 bg-white text-[#0a66c2] rounded-full items-center justify-center shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] hover:bg-[#edf3f8] hover:scale-110 active:scale-95 transition-all duration-300"
                 >
                     <ChevronLeft
                         size={14}
+                        strokeWidth={3}
                         className={`${
                             isCollapsed ? "rotate-180" : ""
-                        } transition-transform duration-300`}
+                        } transition-transform duration-500`}
                     />
                 </button>
 
@@ -53,10 +54,10 @@ export default function AdminLayout({ children }) {
                 />
             </aside>
 
-            {/* Main Content Area */}
+            {/* Main Content Area - Professional Depth */}
             <div
-                className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
-                    showFullSidebar ? "lg:pl-64" : "lg:pl-20"
+                className={`flex-1 flex flex-col min-w-0 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
+                    showFullSidebar ? "lg:pl-[280px]" : "lg:pl-[80px]"
                 }`}
             >
                 {/* Header: Navigation Bar */}

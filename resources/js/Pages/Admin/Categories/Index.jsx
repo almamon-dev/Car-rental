@@ -245,7 +245,7 @@ export default function CategoryList({
 
                 {/* Pagination Section */}
                 {categories.data.length > 0 && (
-                    <div className="p-4 border-t border-gray-50">
+                    <div className="p-4 ">
                         <Pagination
                             meta={categories}
                             onPageChange={(page) =>

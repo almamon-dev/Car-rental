@@ -13,12 +13,13 @@ export default function DeleteAction({
     search = "",
     onSuccess,
     title = "Are you sure?",
-    children, // টেক্সট বা অন্য কন্টেন্ট পাস করার জন্য
+    children,
+    className,
 }) {
     const handleDelete = (e) => {
         if (e) {
             e.preventDefault();
-            e.stopPropagation(); // ড্রপডাউন বন্ধ হওয়া বা অন্য ইভেন্ট আটকানোর জন্য
+            e.stopPropagation();
         }
 
         const count = isBulk
@@ -64,17 +65,13 @@ export default function DeleteAction({
             type="button"
             onClick={handleDelete}
             className={
-                isBulk
+                className || (isBulk
                     ? "flex items-center gap-2 bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-full text-sm font-bold text-white transition-all transform active:scale-95 pointer-events-auto"
-                    : "flex items-center w-full text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                    : "flex items-center w-full text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors")
             }
         >
-            <Trash2 size={isBulk ? 14 : 18} />
-            {children ? (
-                children
-            ) : (
-                <span>{isBulk ? "Delete Permanently" : ""}</span>
-            )}
+            {!children && <Trash2 size={isBulk ? 14 : 18} />}
+            {children || (isBulk ? "Delete Permanently" : "")}
         </button>
     );
 }

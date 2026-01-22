@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 
 export default function StatusTabs({
     currentStatus,
@@ -9,32 +8,35 @@ export default function StatusTabs({
     const tabs = ["all", "available", "reserved", "sold"];
 
     return (
-        <div className="flex items-center gap-8 px-6 text-sm border-b border-slate-100 relative overflow-x-auto">
-            {tabs.map((tab) => (
-                <button
-                    key={tab}
-                    onClick={() => handleTabChange(tab)}
-                    className={`py-4 transition-colors relative font-medium capitalize whitespace-nowrap ${
-                        currentStatus === tab
-                            ? "text-primary"
-                            : "text-slate-500 hover:text-slate-700"
-                    }`}
-                >
-                    {tab === "all" ? "All Products" : tab + " Products"} (
-                    {counts[tab] || 0})
-                    {currentStatus === tab && (
-                        <motion.div
-                            layoutId="activeTabUnderline"
-                            className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
-                            transition={{
-                                type: "spring",
-                                stiffness: 380,
-                                damping: 30,
-                            }}
-                        />
-                    )}
-                </button>
-            ))}
+        <div className="flex items-center gap-1 bg-white border-b border-gray-200 relative overflow-x-auto no-scrollbar">
+            {tabs.map((tab) => {
+                const isActive = currentStatus === tab;
+                const count = counts[tab] || 0;
+                
+                return (
+                    <button
+                        key={tab}
+                        onClick={() => handleTabChange(tab)}
+                        className={`group relative flex items-center gap-2 px-6 py-4 focus:outline-none whitespace-nowrap`}
+                    >
+                        <span className={`text-[14px] font-semibold ${
+                            isActive ? "text-[#0a66c2]" : "text-gray-500 group-hover:text-gray-700"
+                        }`}>
+                            {tab === "all" ? "All" : tab.charAt(0).toUpperCase() + tab.slice(1)} Products
+                        </span>
+                        
+                        <span className={`text-[12px] font-medium ${
+                            isActive ? "text-[#0a66c2]" : "text-gray-400"
+                        }`}>
+                            ({count})
+                        </span>
+
+                        {isActive && (
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#0a66c2]" />
+                        )}
+                    </button>
+                );
+            })}
         </div>
     );
 }

@@ -236,7 +236,7 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
 
                 {/* Pagination Section */}
                 {brands.data.length > 0 && (
-                    <div className="p-4 border-t border-gray-50">
+                    <div className="p-4">
                         <Pagination
                             meta={brands}
                             onPageChange={(page) =>

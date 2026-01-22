@@ -1,6 +1,6 @@
 import React from "react";
 import FileUpload from "@/Components/forms/FileUpload";
-import { X, Image as ImageIcon, Star, Info } from "lucide-react";
+import { X, CheckCircle2, Trash2, Camera } from "lucide-react";
 import { useForm } from "@inertiajs/react";
 
 const GallerySection = ({
@@ -13,118 +13,99 @@ const GallerySection = ({
 }) => {
     const { delete: destroy } = useForm();
 
-    const handleSetPrimary = (index) => {
-        const updatedImages = [...data.images];
-        updatedImages.forEach((img, i) => {
-            img.is_primary = i === index;
-        });
-        setData("images", updatedImages);
-    };
-
     const handleRemoveExistingImage = (image) => {
-        if (
-            image.id &&
-            window.confirm("Are you sure you want to delete this image?")
-        ) {
+        if (image.id && window.confirm("Are you sure you want to remove this image?")) {
             destroy(route("admin.cars.image.destroy", image.id), {
                 preserveScroll: true,
-                onSuccess: () => {
-                    if (onImageRemove) {
-                        onImageRemove(image.id);
-                    }
-                },
+                onSuccess: () => onImageRemove && onImageRemove(image.id),
             });
         }
     };
 
-    const handleRemoveNewImage = (index) => {
-        const updatedImages = [...data.images];
-        updatedImages.splice(index, 1);
-        setData("images", updatedImages);
-    };
-
     return (
-        <div className="space-y-6">
-            {/* Existing Images */}
-            {existingImages && existingImages.length > 0 && (
+        <div className="space-y-10 font-sans">
+            {/* Existing Assets Section */}
+            {existingImages.length > 0 && (
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">
-                            Existing Images
-                        </label>
-                        <span className="text-xs text-slate-500">
-                            {existingImages.length} image(s)
+                        <div className="flex items-center gap-2.5">
+                            <div className="p-1.5 bg-blue-50 rounded-lg text-[#0a66c2]">
+                                <Camera size={16} />
+                            </div>
+                            <h3 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
+                                Live Fleet Assets ({existingImages.length})
+                            </h3>
+                        </div>
+                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded border border-gray-100 italic">
+                            Published to Marketplace
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5">
                         {existingImages.map((image, index) => (
-                            <div
-                                key={image.id || index}
-                                className="relative group rounded-lg overflow-hidden border border-slate-200"
+                            <div 
+                                key={image.id} 
+                                className="relative group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 ring-offset-2 hover:ring-2 hover:ring-[#0a66c2]/10"
                             >
-                                {/* Image */}
-                                <div className="aspect-square bg-slate-100 flex items-center justify-center">
-                                    {image.file_path ? (
-                                        <img
-                                            src={
-                                                image.file_path.startsWith(
-                                                    "http"
-                                                )
-                                                    ? image.file_path
-                                                    : `/${image.file_path}`
-                                            }
-                                            alt={`Vehicle image ${index + 1}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <ImageIcon className="w-8 h-8 text-slate-400" />
-                                    )}
-                                </div>
-
-                                {/* Primary Badge */}
+                                {/* Primary Image Badge */}
                                 {image.is_primary && (
-                                    <div className="absolute top-2 left-2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1">
-                                        <Star size={8} />
-                                        <span>Primary</span>
+                                    <div className="absolute top-2 left-2 z-20 bg-[#0a66c2] text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded shadow-lg flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2">
+                                        <div className="w-1 h-1 bg-white rounded-full animate-pulse" />
+                                        Cover Photo
                                     </div>
                                 )}
 
-                                {/* Remove Button */}
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        handleRemoveExistingImage(image)
-                                    }
-                                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <X size={14} />
-                                </button>
+                                <div className="relative aspect-[4/3] bg-gray-100">
+                                    <img
+                                        src={image.file_path.startsWith("http") ? image.file_path : `/${image.file_path}`}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        alt="Car"
+                                    />
+                                    
+                                    {/* Refined Overlay Actions */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleRemoveExistingImage(image);
+                                            }}
+                                            className="bg-white/10 hover:bg-red-500/90 backdrop-blur-md border border-white/20 text-white p-2.5 rounded-full transition-all transform hover:scale-110 flex items-center gap-2 shadow-2xl"
+                                        >
+                                            <Trash2 size={16} strokeWidth={2.5} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Status Footer */}
+                                <div className="p-3 bg-white">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] font-black text-gray-400 tracking-tighter uppercase whitespace-nowrap">
+                                            Asset ID #{image.id}
+                                        </span>
+                                        <div className="flex items-center gap-1.5">
+                                            <CheckCircle2 size={12} className="text-[#057642]" />
+                                            <span className="text-[9px] font-bold text-[#057642] uppercase tracking-widest italic">Live</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         ))}
-                    </div>
-
-                    <div className="text-xs text-slate-500 flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                        <Info size={12} />
-                        <span>
-                            Click the X button to remove existing images. Images
-                            will be permanently deleted when you save changes.
-                        </span>
                     </div>
                 </div>
             )}
 
-            {/* New Images Upload */}
-            <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">
-                        Upload New Images
-                    </label>
-                    <span className="text-xs text-slate-500">
-                        Max 10 images • PNG, JPG, WEBP
-                    </span>
+            {/* New Asset Contribution */}
+            <div className="space-y-4 pt-4 border-t border-dashed border-gray-200">
+                <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-green-50 rounded-lg text-[#057642]">
+                        <CheckCircle2 size={16} />
+                    </div>
+                    <h3 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
+                        Contribute New Media
+                    </h3>
                 </div>
-
+                
                 <FileUpload
                     field="images"
                     label=""
@@ -133,58 +114,7 @@ const GallerySection = ({
                     setData={setData}
                     errors={errors}
                     clearErrors={clearErrors}
-                    accept="image/*"
                 />
-
-                {/* Preview of newly uploaded images */}
-                {data.images && data.images.length > 0 && (
-                    <div className="mt-4">
-                        <div className="text-xs font-medium text-slate-700 mb-2">
-                            New Uploads (
-                            {
-                                data.images.filter((img) => img instanceof File)
-                                    .length
-                            }
-                            )
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                            {data.images
-                                .filter((img) => img instanceof File)
-                                .map((file, index) => (
-                                    <div
-                                        key={index}
-                                        className="relative group rounded-lg overflow-hidden border border-slate-200"
-                                    >
-                                        <div className="aspect-square bg-slate-100">
-                                            <img
-                                                src={URL.createObjectURL(file)}
-                                                alt={`New upload ${index + 1}`}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-
-                                        {/* Remove Button for new uploads */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleRemoveNewImage(index)
-                                            }
-                                            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
-                                        >
-                                            <X size={14} />
-                                        </button>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Help Text */}
-            <div className="text-xs text-slate-500 space-y-1">
-                <p>• First image will be set as primary by default</p>
-                <p>• Recommended size: 1200×800 pixels</p>
-                <p>• Max file size: 5MB per image</p>
             </div>
         </div>
     );

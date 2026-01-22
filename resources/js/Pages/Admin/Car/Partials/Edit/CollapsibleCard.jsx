@@ -3,12 +3,13 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 
 const CollapsibleCard = ({ title, children, isOpen, onToggle }) => {
     return (
-        <div className="bg-white rounded-sm border border-gray-200 shadow-sm overflow-hidden">
-            <div
-                className="px-5 py-4 flex justify-between items-center cursor-pointer hover:bg-gray-50/50 border-b border-gray-100"
+        <div className="bg-white border border-gray-200 rounded overflow-hidden shadow-sm">
+            <button
+                type="button"
+                className="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-50/50 transition-colors border-b border-gray-100"
                 onClick={onToggle}
             >
-                <h3 className="text-base font-semibold text-slate-800">
+                <h3 className="text-[16px] font-semibold text-gray-900 capitalize">
                     {title}
                 </h3>
                 <div className="text-gray-400">
@@ -18,7 +19,7 @@ const CollapsibleCard = ({ title, children, isOpen, onToggle }) => {
                         <ChevronDown size={20} />
                     )}
                 </div>
-            </div>
+            </button>
             {isOpen && <div className="p-6">{children}</div>}
         </div>
     );

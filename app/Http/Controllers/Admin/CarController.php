@@ -19,46 +19,51 @@ class CarController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Build the Query - Only load necessary relationships
-        $query = Car::with([
+        $query = Car::query()->select([
+            'id', 'brand_id', 'category_id', 'make', 'model', 'status', 'created_at', 'year', 'rental_type',
+        ]);
+        // dd($query);
+        // ২. Eager Loading with constraints
+        $query->with([
             'brand:id,name',
-            'priceDetails:id,car_id,daily_rate',
+            'category:id,name',
+            'priceDetails:id,car_id,daily_rate,currency',
             'images:id,car_id,file_path,thumbnail_path',
+            'specifications',
+            'policeDocuments',
         ]);
 
-        // 2. Search Logic
-        if ($request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('make', 'like', "%{$request->search}%")
-                    ->orWhere('model', 'like', "%{$request->search}%")
-                    ->orWhere('description', 'like', "%{$request->search}%");
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($sub) use ($search) {
+                $sub->where('make', 'like', "%{$search}%")
+                    ->orWhere('model', 'like', "%{$search}%");
             });
         }
 
-        // 3. Brand & Category Filters
-        if ($request->brand) {
+        // Filters
+        if ($request->filled('brand')) {
             $query->whereHas('brand', fn ($q) => $q->where('name', $request->brand));
         }
-        if ($request->category) {
-            $query->whereHas('category', fn ($q) => $q->where('name', $request->category));
-        }
-        if ($request->status && $request->status !== 'all') {
+
+        if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
-        // 4. Specification Filters (only use whereHas, don't eager load)
-        if ($request->transmission) {
+        if ($request->filled('transmission')) {
             $query->whereHas('specifications', fn ($q) => $q->where('transmission', $request->transmission));
         }
-        if ($request->fuel_type) {
+
+        if ($request->filled('fuel_type')) {
             $query->whereHas('specifications', fn ($q) => $q->where('fuel_type', $request->fuel_type));
         }
 
-        // 5. Execute Pagination
+        // ৪. Fast Pagination
         $cars = $query->latest()->paginate($request->per_page ?? 10)->withQueryString();
 
-        // 6. Cached Counts (Cache for 60 seconds to reduce database load)
-        $counts = Cache::remember('car_counts', 60, function () {
+        //
+        $counts = Cache::remember('car_counts', 3600, function () {
             return [
                 'all' => Car::count(),
                 'available' => Car::where('status', 'available')->count(),
@@ -71,7 +76,7 @@ class CarController extends Controller
             'cars' => $cars,
             'brands' => Brand::all(['id', 'name']),
             'categories' => Category::all(['id', 'name']),
-            'filters' => $request->all(),
+            'filters' => $request->only(['search', 'brand', 'status', 'transmission', 'fuel_type']),
             'counts' => $counts,
         ]);
     }
