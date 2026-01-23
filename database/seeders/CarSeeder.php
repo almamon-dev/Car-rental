@@ -13,8 +13,8 @@ class CarSeeder extends Seeder
 {
     public function run(): void
     {
-        $total = 15;
-        $chunkSize = 5;
+        $total = 500;
+        $chunkSize = 50;
 
         for ($i = 1; $i <= $total; $i++) {
 

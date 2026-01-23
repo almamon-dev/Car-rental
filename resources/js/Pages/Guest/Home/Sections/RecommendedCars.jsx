@@ -7,110 +7,27 @@ import {
     Heart,
     MapPin,
     Star,
-    Settings2,
-    Gauge,
-    Fuel,
-    Calendar,
     ArrowRight,
-    Verified,
-    ShieldCheck
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Skeleton } from "@/Components/ui/Skeleton";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
-/**
- * RECOMMENDED ASSETS (LINKEDIN MASTER STYLE SYNC)
- * 
- * Philosophy:
- * - Style Match: 1:1 synchronization with Category.jsx and Cars.jsx.
- * - Cinematic Assets: 16:10 wide-angle vibration hover.
- * - Technical Integrity: Precise data manifest without bulky icons.
- * - Palette: #f3f2ef/40 section background, pure white modular cards.
- */
+import { Link } from "@inertiajs/react";
 
-const dummyCars = [
-    {
-        id: 1,
-        name: "BMW M8 Competition",
-        brand: "BMW",
-        price: 380,
-        year: "2023",
-        mileage: "1.2K KM",
-        transmission: "M-Step",
-        fuel: "Petrol",
-        location: "Financial",
-        rating: 5.0,
-        img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=800&q=80",
-        status: "Certified",
-    },
-    {
-        id: 2,
-        name: "Porsche Taycan Turbo S",
-        brand: "Porsche",
-        price: 450,
-        year: "2024",
-        mileage: "240 KM",
-        transmission: "Auto",
-        fuel: "Electric",
-        location: "Downtown",
-        rating: 4.9,
-        img: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80",
-        status: "Active",
-    },
-    {
-        id: 3,
-        name: "Audi RS e-tron GT",
-        brand: "Audi",
-        price: 410,
-        year: "2024",
-        mileage: "500 KM",
-        transmission: "Auto",
-        fuel: "Electric",
-        location: "Gateway",
-        rating: 5.0,
-        img: "https://images.unsplash.com/photo-1603584173870-7f3bc1707294?auto=format&fit=crop&w=800&q=80",
-        status: "Verified",
-    },
-    {
-        id: 4,
-        name: "Tesla Model S Plaid",
-        brand: "Tesla",
-        price: 260,
-        year: "2024",
-        mileage: "110 KM",
-        transmission: "Auto",
-        fuel: "Electric",
-        location: "Tech Val",
-        rating: 4.8,
-        img: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=800&q=80",
-        status: "Certified",
-    },
-    {
-        id: 5,
-        name: "Mercedes S-Class 500",
-        brand: "Mercedes",
-        price: 490,
-        year: "2023",
-        mileage: "2.1K KM",
-        transmission: "9G-Tr",
-        fuel: "Petrol",
-        location: "Capital",
-        rating: 4.7,
-        img: "https://images.unsplash.com/photo-1541443131876-44b035dd1c51?auto=format&fit=crop&w=800&q=80",
-        status: "Active",
-    }
-];
-
-export default function RecommendedCars() {
+export default function RecommendedCars({ cars = [] }) {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
-    const [isInit, setIsInit] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setIsInit(true);
+        const timer = setTimeout(() => setIsLoading(false), 800);
+        return () => clearTimeout(timer);
     }, []);
+
+    // If no cars passed, we can show a placeholder or nothing
+    if (!cars || cars.length === 0) return null;
 
     return (
         <section className="py-12 lg:py-16 overflow-hidden font-sans">
@@ -121,7 +38,7 @@ export default function RecommendedCars() {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">Institutional Matrix</span>
+                            <span className="text-[10px] font-bold text-[#0a66c2]">Institutional Matrix</span>
                         </div>
                         <h2 className="text-[22px] font-bold text-[#000000e6] tracking-tight">
                             Personalized Asset <span className="text-[#0a66c2]">Suggestions</span>
@@ -152,7 +69,7 @@ export default function RecommendedCars() {
                         modules={[Navigation, Autoplay]}
                         spaceBetween={14}
                         slidesPerView={1.2}
-                        loop={true}
+                        loop={cars.length > 6}
                         speed={600}
                         autoplay={{ delay: 5000, disableOnInteraction: false }}
                         navigation={{
@@ -174,35 +91,41 @@ export default function RecommendedCars() {
                         }}
                         className="w-full"
                     >
-                        {dummyCars.map((car, i) => (
+                        {isLoading 
+                            ? [...Array(4)].map((_, i) => (
+                                <SwiperSlide key={`skel-${i}`}>
+                                    <CarSkeleton />
+                                </SwiperSlide>
+                              ))
+                            : cars.map((car, i) => (
                             <SwiperSlide key={i}>
-                                <motion.div
-                                    whileHover={{ y: -4 }}
-                                    className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full group transition-all duration-300"
+                                <div
+                                    className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full group transition-all duration-300 hover:-translate-y-1 hover:shadow-md relative"
                                 >
+                                    {/* Save Badge Sync */}
+                                    <div className="absolute top-2 left-0 z-10">
+                                        <div className="bg-[#6e2594] text-white px-2.5 py-0.5 text-[10px] font-bold rounded-r-full shadow-sm">
+                                            Save: ${Math.floor(Math.random() * 500) + 100}
+                                        </div>
+                                    </div>
                                     {/* --- MEDIA (EXACT SYNC - 16:10) --- */}
                                     <div className="relative aspect-[16/10] bg-gray-900 overflow-hidden">
-                                        <motion.img
-                                            src={car.img}
-                                            alt={car.name}
-                                            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700"
-                                            whileHover={{ 
-                                                scale: 1.2,
-                                                x: [0, -5, 5, 0], // Cinematic Vibration
-                                            }}
-                                            transition={{ duration: 1.2, ease: "easeOut" }}
+                                        <img
+                                            src={car.images && car.images.length > 0 ? `/${car.images[0].file_path}` : "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"}
+                                            alt={`${car.make} ${car.model}`}
+                                            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
                                         />
                                         
                                         {/* Status Badge Sync */}
                                         <div className="absolute top-2 left-2 flex flex-col gap-1.5">
                                              <div className="bg-white/95 px-2 py-0.5 rounded-md text-[9px] font-bold text-gray-900 border border-gray-100 shadow-sm flex items-center gap-1.5">
                                                  <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                                                 {car.status}
+                                                 {car.status === 'available' ? 'Certified' : car.status}
                                              </div>
                                         </div>
 
-                                        <button className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-gray-400 hover:text-red-500 transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-y-[-10px] group-hover:translate-y-0 duration-300">
-                                            <Heart size={14} />
+                                        <button className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-y-[-5px] group-hover:translate-y-0 duration-300">
+                                            <Heart size={15} />
                                         </button>
 
                                         {/* Light Overlay & Center Action */}
@@ -214,66 +137,81 @@ export default function RecommendedCars() {
                                         </div>
                                     </div>
 
-                                    {/* --- CONTENT (EXACT SYNC) --- */}
-                                    <div className="p-4 flex flex-col items-center text-center flex-1">
-                                        <div className="w-full mb-3">
-                                            <h4 className="text-[14px] font-bold text-gray-900 mb-0.5 group-hover:text-[#0a66c2] transition-colors line-clamp-1">
-                                                {car.name}
+                                    {/* --- CONTENT SECTION --- */}
+                                    <div className="p-4 flex flex-col flex-1 border-t border-gray-50 text-left">
+                                        <div className="mb-4">
+                                            <h4 className="text-[14px] font-bold text-gray-800 hover:text-[#0a66c2] transition-colors leading-tight line-clamp-2">
+                                                {car.brand?.name || car.make} {car.model} {car.year}
                                             </h4>
-                                            <div className="flex items-center justify-center gap-1.5 uppercase tracking-widest text-[10px] font-bold text-gray-400">
-                                                 <span>{car.brand}</span>
-                                                 <div className="w-1 h-1 rounded-full bg-gray-200" />
-                                                 <MapPin size={10} className="text-blue-500" />
-                                                 <span>{car.location}</span>
-                                            </div>
                                         </div>
 
-                                        {/* TECHNICAL MANIFEST (COMPACT) */}
-                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 w-full py-3 border-y border-gray-50 mb-4 bg-slate-50/20 -mx-4 px-4">
-                                            <SpecItem val={car.year} label="Series" />
-                                            <SpecItem val={car.mileage} label="Mileage" />
-                                            <SpecItem val={car.transmission} label="Trans" />
-                                            <SpecItem val={car.fuel} label="Grade" />
-                                        </div>
+                                        <ul className="space-y-1 text-[12.5px] text-gray-500 mb-4 list-none p-0">
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-gray-300 transform translate-y-[2px]">•</span>
+                                                <span>Category: <span className="text-gray-700 font-medium">{car.category?.name || 'Asset'}</span></span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-gray-300 transform translate-y-[2px]">•</span>
+                                                <span>Transmission: <span className="text-gray-700 font-medium">{car.specifications?.transmission || 'Auto'}</span></span>
+                                            </li>
+                                            <li className="flex items-start gap-2">
+                                                <span className="text-gray-300 transform translate-y-[1px]">•</span>
+                                                <span>Fuel Type: <span className="text-gray-700 font-medium">{car.specifications?.fuel_type || 'N/A'}</span></span>
+                                            </li>
+                                        </ul>
 
-                                        {/* Pricing & CTA */}
-                                        <div className="mt-auto w-full">
-                                            <div className="flex items-center justify-between mb-3 px-1">
-                                                <div className="flex flex-col items-start leading-none gap-1">
-                                                    <span className="text-[16px] font-black text-gray-900">${car.price}</span>
-                                                    <span className="text-[9px] text-gray-400 uppercase tracking-widest leading-none">per 24h</span>
-                                                </div>
-                                                <div className="flex items-center gap-0.5">
-                                                     <Star size={10} fill="#0a66c2" className="text-[#0a66c2]" />
-                                                     <span className="text-[10px] font-black text-gray-900">{car.rating}</span>
-                                                </div>
+                                        <div className="mt-auto border-t border-gray-100 pt-3 text-center">
+                                            <div className="flex items-center justify-center gap-2 mb-3">
+                                                <span className="text-[17px] font-bold text-[#0a66c2]">${Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                                                <span className="text-[13px] text-gray-400 line-through font-medium leading-none">${(Number(car.price_details?.daily_rate || 0) + 500).toLocaleString()}</span>
                                             </div>
                                             
-                                            {/* EXACT BUTTON STYLE MATCH */}
-                                            <button className="w-full py-[6px] px-4 rounded-full border border-[#0a66c2] text-[#0a66c2] text-[13px] font-bold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]">
-                                                Acquire Profile
-                                            </button>
+                                            <Link 
+                                                href={route('car.details', car.id)}
+                                                className="w-full py-[5px] inline-block px-4 rounded-full border border-[#0a66c2] text-[#0a66c2] text-[14px] font-semibold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]"
+                                            >
+                                                View Details
+                                            </Link>
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
             </div>
 
-            <style jsx global>{`
+            <style dangerouslySetInnerHTML={{ __html: `
                 .swiper-slide {
                     height: auto !important;
                 }
-            `}</style>
+            ` }} />
         </section>
     );
 }
 
+const CarSkeleton = () => (
+    <div className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full">
+        <Skeleton className="aspect-[16/10] rounded-none" />
+        <div className="p-4 flex flex-col flex-1">
+            <Skeleton className="h-4 rounded w-3/4 mb-4" />
+            <div className="space-y-3 mb-6">
+                <Skeleton className="h-3 rounded w-1/2" />
+                <Skeleton className="h-3 rounded w-2/3" />
+            </div>
+            <div className="mt-auto pt-3 border-t border-gray-100 flex justify-center">
+                <Skeleton className="h-5 rounded w-1/4" />
+            </div>
+        </div>
+        <div className="px-4 pb-4 mt-auto">
+            <Skeleton className="h-8 rounded-full w-full" />
+        </div>
+    </div>
+);
+
 const SpecItem = ({ val, label }) => (
-    <div className="flex flex-col items-start leading-none text-left">
+    <div className="flex flex-col items-start leading-none">
         <span className="text-[11px] font-bold text-gray-900 truncate mb-0.5">{val}</span>
-        <span className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter">{label}</span>
+        <span className="text-[8px] font-bold text-gray-400">{label}</span>
     </div>
 );

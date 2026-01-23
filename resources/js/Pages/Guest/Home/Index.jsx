@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import GuestLayout from "@/Layouts/GuestLayout";
-import { motion } from "framer-motion";
 
 // Import all sections
 import HeroSection from "./Sections/Hero";
@@ -14,200 +13,130 @@ import Cars from "./Products/Cars";
 import Category from "./Products/Category";
 import Brand from "./Products/Brand";
 
-// Loading animations
-const pageVariants = {
-    initial: { opacity: 0 },
-    in: {
-        opacity: 1,
-        transition: { duration: 0.5, ease: "easeInOut" },
-    },
-    out: { opacity: 0 },
-};
-
-const staggerContainer = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2,
-        },
-    },
-};
-
-const fadeUp = {
-    hidden: { opacity: 0, y: 20 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6, ease: "easeOut" },
-    },
-};
-
-export default function Index() {
+export default function Index({ categories, cars, brands }) {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         // Simulate loading time
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 500);
+        }, 300);
 
         return () => clearTimeout(timer);
     }, []);
 
     return (
         <GuestLayout>
-            <motion.div
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                className="bg-[#f3f2ef]/50 min-h-screen"
-            >
+            <div className="bg-[#f3f2ef]/50 min-h-screen">
                 {/* Progress Bar */}
                 <ScrollProgress />
 
                 {/* Hero Section */}
-                <motion.div variants={fadeUp}>
+                <div className="relative">
                     <HeroSection />
-                </motion.div>
+                </div>
 
-                {/* Staggered Sections - Tighter Spacing Sync */}
-                <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate="show"
-                    className="space-y-2 pb-10"
-                >
-                    {/* Category Section */}
-                    <motion.div variants={fadeUp}>
-                        <Category />
-                    </motion.div>
+                {/* Main Content Feed - LinkedIn Tighter Spacing */}
+                <div className="space-y-4 pb-16">
+                    {/* Category Selection */}
+                    <div className="bg-white/40 backdrop-blur-sm">
+                        <Category categories={categories} />
+                    </div>
 
-                    {/* Feature Cards */}
-                    <motion.div variants={fadeUp}>
+                    {/* Operational Features */}
+                    <div className="max-w-7xl mx-auto">
                         <CarRentalFeatures />
-                    </motion.div>
+                    </div>
 
-                    {/* Car Listings */}
-                    <motion.div variants={fadeUp}>
-                        <Cars />
-                    </motion.div>
+                    {/* Primary Asset Grid */}
+                    <div>
+                        <Cars cars={cars} />
+                    </div>
 
-                    {/* Brand Showcase */}
-                    <motion.div variants={fadeUp}>
-                        <Brand />
-                    </motion.div>
+                    {/* Partner Brands */}
+                    <div className="bg-white/60 py-4">
+                        <Brand brands={brands} />
+                    </div>
 
-                    {/* Rent Steps */}
-                    <motion.div variants={fadeUp}>
+                    {/* Procedural Steps */}
+                    <div className="max-w-7xl mx-auto">
                         <RentStepsSection />
-                    </motion.div>
+                    </div>
 
-                    {/* Recommended Cars */}
-                    <motion.div variants={fadeUp}>
-                        <RecommendedCars />
-                    </motion.div>
+                    {/* Curated Recommendations */}
+                    <div className="bg-white/40">
+                        <RecommendedCars cars={cars} />
+                    </div>
 
-                    {/* Client Feedback */}
-                    <motion.div variants={fadeUp}>
+                    {/* Market Reputation */}
+                    <div className="max-w-7xl mx-auto">
                         <ClientsFeedback />
-                    </motion.div>
+                    </div>
 
-                    {/* Pricing */}
-                    <motion.div variants={fadeUp}>
+                    {/* Acquisition Models (Pricing) */}
+                    <div className="bg-white/40">
                         <Pricing />
-                    </motion.div>
+                    </div>
 
-                    {/* FAQ */}
-                    <motion.div variants={fadeUp}>
+                    {/* Institutional Support (FAQ) */}
+                    <div className="max-w-7xl mx-auto">
                         <FAQ />
-                    </motion.div>
-                </motion.div>
+                    </div>
+                </div>
 
-                {/* Back to Top Button */}
+                {/* Navigation Assist */}
                 <BackToTopButton />
-            </motion.div>
+            </div>
         </GuestLayout>
     );
 }
 
-// Scroll Progress Component
+// Fixed Scroll Progress
 const ScrollProgress = () => {
-    const [scrollProgress, setScrollProgress] = useState(0);
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        const updateScrollProgress = () => {
-            const totalScroll = document.documentElement.scrollTop;
-            const windowHeight =
-                document.documentElement.scrollHeight -
-                document.documentElement.clientHeight;
-            const progress = (totalScroll / windowHeight) * 100;
-            setScrollProgress(progress);
+        const handleScroll = () => {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const current = window.pageYOffset;
+            setProgress((current / total) * 100);
         };
-
-        window.addEventListener("scroll", updateScrollProgress);
-        return () => window.removeEventListener("scroll", updateScrollProgress);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     return (
-        <motion.div
-            className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 z-50 origin-left"
-            style={{ scaleX: scrollProgress / 100 }}
-        />
+        <div className="fixed top-0 left-0 right-0 h-[3px] bg-[#0a66c2]/10 z-[100]">
+            <div 
+                className="h-full bg-gradient-to-r from-[#0a66c2] to-cyan-500 transition-all duration-150 ease-out" 
+                style={{ width: `${progress}%` }}
+            />
+        </div>
     );
 };
 
-// Back to Top Button Component
+// Fixed Back to Top
 const BackToTopButton = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        const toggleVisibility = () => {
-            if (window.pageYOffset > 500) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
-            }
+        const handleScroll = () => {
+            setIsVisible(window.pageYOffset > 600);
         };
-
-        window.addEventListener("scroll", toggleVisibility);
-        return () => window.removeEventListener("scroll", toggleVisibility);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
-    };
-
     return (
-        <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{
-                opacity: isVisible ? 1 : 0,
-                y: isVisible ? 0 : 20,
-            }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-40 w-14 h-14 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-full shadow-xl flex items-center justify-center hover:shadow-2xl transition-all duration-300"
+        <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className={`fixed bottom-10 right-10 z-[90] w-12 h-12 bg-white border border-gray-200 text-[#0a66c2] rounded-full shadow-lg flex items-center justify-center hover:bg-[#0a66c2] hover:text-white transition-all duration-300 active:scale-95 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
+            }`}
         >
-            <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 10l7-7m0 0l7 7m-7-7v18"
-                />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
-        </motion.button>
+        </button>
     );
 };

@@ -1,81 +1,29 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
-import { ChevronLeft, ChevronRight, ArrowRight, Verified, Star } from "lucide-react";
-import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, ArrowRight, Star } from "lucide-react";
+import { Skeleton } from "@/Components/ui/Skeleton";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
-/**
- * BRAND DIRECTORY (EXACT CATEGORY SYNC)
- * 
- * Philosophy:
- * - Style Match: 1:1 synchronization with Category.jsx (Short-card, Cinematic).
- * - Aspect Ratio: aspect-[21/9] for that ultra-wide professional film look.
- * - Interactive: Vibration hover, backdrop center-action, top-right hidden badge.
- * - Palette: #f3f2ef/70 background, Pure white modular cards.
- */
+import { Link } from "@inertiajs/react";
 
-const brands = [
-    {
-        name: "Porsche",
-        cars: 12,
-        logo: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Porsche_logo.svg",
-        img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",
-        description: "German engineering excellence in high-performance assets."
-    },
-    {
-        name: "BMW",
-        cars: 48,
-        logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW_logo.svg",
-        img: "https://images.unsplash.com/photo-1542362567-b05503f3f5f4?w=800",
-        description: "The definitive standard for executive luxury mobility."
-    },
-    {
-        name: "Mercedes",
-        cars: 35,
-        logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Benz_logo.svg",
-        img: "https://images.unsplash.com/photo-1541443131876-44b035dd1c51?w=800",
-        description: "Uncompromising comfort and prestige for global leaders."
-    },
-    {
-        name: "Tesla",
-        cars: 24,
-        logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg",
-        img: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=800",
-        description: "Next-generation energy and innovation in executive travel."
-    },
-    {
-        name: "Audi",
-        cars: 30,
-        logo: "https://upload.wikimedia.org/wikipedia/commons/9/92/Audi_logo.svg",
-        img: "https://images.unsplash.com/photo-1603584173870-7f3bc1707294?w=800",
-        description: "Sophisticated technology meets sleek professional design."
-    },
-    {
-        name: "Lexus",
-        cars: 20,
-        logo: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Lexus_logo.svg",
-        img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",
-        description: "Refined hybrid performance and institutional reliability."
-    }
-];
-
-export default function BrandSlider() {
+export default function BrandSlider({ brands = [] }) {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
-    const [isInit, setIsInit] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setIsInit(true);
+        const timer = setTimeout(() => setIsLoading(false), 800);
+        return () => clearTimeout(timer);
     }, []);
 
     return (
         <section className="w-full bg-transparent py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 
-                {/* --- PROFESSIONAL HEADER (EXACT SYNC) --- */}
+                {/* --- PROFESSIONAL HEADER --- */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h2 className="text-[20px] font-bold text-[#000000e6] leading-tight">
@@ -101,112 +49,98 @@ export default function BrandSlider() {
                     </div>
                 </div>
 
-                {/* --- CARDS SLIDER --- */}
+                {/* --- SHORT CARD SLIDER --- */}
                 <div className="relative group/swiper overflow-hidden">
-                    <Swiper
-                        modules={[Navigation, Autoplay]}
-                        spaceBetween={12}
-                        slidesPerView={1.2}
-                        loop={true}
-                        speed={500}
-                        autoplay={{ delay: 6000, disableOnInteraction: false }}
-                        navigation={{
-                            prevEl: prevRef.current,
-                            nextEl: nextRef.current,
-                        }}
-                        onSwiper={(swiper) => {
-                            if (prevRef.current && nextRef.current) {
-                                swiper.params.navigation.prevEl = prevRef.current;
-                                swiper.params.navigation.nextEl = nextRef.current;
-                                swiper.navigation.init();
-                                swiper.navigation.update();
-                            }
-                        }}
-                        breakpoints={{
-                            480: { slidesPerView: 2.2 },
-                            768: { slidesPerView: 3.2 },
-                            1024: { slidesPerView: 4 },
-                            1280: { slidesPerView: 5 },
-                        }}
-                        className="w-full"
-                    >
-                        {brands.map((brand, i) => (
-                            <SwiperSlide key={i}>
-                                <motion.div
-                                    whileHover={{ y: -4 }}
-                                    className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full group"
-                                >
-                                    {/* --- MEDIA (EXACT CATEGORY SYNC - 21/9) --- */}
-                                    <div className="relative aspect-[21/9] bg-gray-900 overflow-hidden">
-                                        <motion.img
-                                            src={brand.img}
-                                            alt={brand.name}
-                                            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700"
-                                            whileHover={{ 
-                                                scale: 1.2,
-                                                x: [0, -5, 5, 0], // Cinematic Vibration
-                                            }}
-                                            transition={{ duration: 1.5, ease: "easeOut" }}
-                                        />
-                                        
-                                        {/* Light Overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#0a66c2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                        
-                                        {/* Hidden Badge Sync */}
-                                        <div className="absolute top-2 right-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-lg">
-                                                <Star size={10} className="text-[#0a66c2] fill-[#0a66c2]" />
+                    {isLoading ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <div key={i} className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full">
+                                    <Skeleton className="aspect-[21/9] rounded-none" />
+                                    <div className="p-4 flex flex-col items-center text-center">
+                                        <Skeleton className="w-12 h-12 rounded-xl -mt-10 mb-2 shadow-sm" />
+                                        <Skeleton className="h-4 w-3/4 rounded" />
+                                        <Skeleton className="h-3 w-1/2 mt-2 rounded" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <Swiper
+                            modules={[Navigation, Autoplay]}
+                            spaceBetween={12}
+                            slidesPerView={1.2}
+                            loop={brands.length > 8}
+                            speed={500}
+                            autoplay={{ delay: 5000, disableOnInteraction: false }}
+                            navigation={{
+                                prevEl: prevRef.current,
+                                nextEl: nextRef.current,
+                            }}
+                            onSwiper={(swiper) => {
+                                if (prevRef.current && nextRef.current) {
+                                    swiper.params.navigation.prevEl = prevRef.current;
+                                    swiper.params.navigation.nextEl = nextRef.current;
+                                    swiper.navigation.init();
+                                    swiper.navigation.update();
+                                }
+                            }}
+                            breakpoints={{
+                                480: { slidesPerView: 2.2 },
+                                768: { slidesPerView: 3.2 },
+                                1024: { slidesPerView: 4 },
+                                1280: { slidesPerView: 5 },
+                            }}
+                            className="w-full"
+                        >
+                            {brands.map((brand, i) => (
+                                <SwiperSlide key={i}>
+                                    <Link
+                                        href={route('car.list', { brand: brand.slug })}
+                                        className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full group hover:-translate-y-1 transition-all duration-300 hover:shadow-md block"
+                                    >
+                                        <div className="relative aspect-[21/9] bg-gray-900 overflow-hidden">
+                                            <img
+                                                src={brand.logo ? `/${brand.logo}` : "https://images.unsplash.com/photo-1542362567-b05503f3f7f4?w=800"}
+                                                alt={brand.name}
+                                                className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-tr from-[#0a66c2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/10 backdrop-blur-[2px]">
+                                                <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center scale-50 group-hover:scale-100 transition-transform duration-500">
+                                                    <ArrowRight size={18} className="text-[#0a66c2]" />
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* Center Action */}
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/10 backdrop-blur-[2px]">
-                                            <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center scale-50 group-hover:scale-100 transition-transform duration-500 shadow-xl">
-                                                <ArrowRight size={18} className="text-[#0a66c2]" />
+                                        <div className="p-4 flex flex-col items-center text-center flex-1">
+                                            <div className="mb-1 w-12 h-12 rounded-xl bg-white flex items-center justify-center text-[#0a66c2] -mt-10 relative z-10 border border-gray-100 shadow-[0_8px_20px_rgba(0,0,0,0.06)] group-hover:border-[#0a66c2] transition-colors duration-500 p-2">
+                                                <img 
+                                                    src={brand.logo ? `/${brand.logo}` : "/default-brand.png"} 
+                                                    className="w-full h-full object-contain"
+                                                    alt={brand.name}
+                                                />
+                                            </div>
+                                            <h3 className="text-[14px] font-bold text-[#000000e6] mb-0.5 line-clamp-1 group-hover:text-[#0a66c2] transition-colors">
+                                                {brand.name}
+                                            </h3>
+                                            <div className="text-[11px] text-gray-500 font-medium">
+                                                {brand.cars_count || 0} Units Available
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {/* --- CONTENT (EXACT CATEGORY SYNC) --- */}
-                                    <div className="p-4 flex flex-col items-center text-center flex-1">
-                                        {/* Floating Logo (Floating Icon Match) */}
-                                        <div className="mb-1 w-12 h-12 rounded-xl bg-white flex items-center justify-center p-2.5 -mt-10 relative z-10 border border-gray-100 shadow-[0_8px_20px_rgba(0,0,0,0.06)] group-hover:border-[#0a66c2] transition-colors duration-500">
-                                            <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500" />
-                                        </div>
-                                        
-                                        <h4 className="text-[14px] font-bold text-gray-900 mb-0.5 mt-2 transition-colors duration-300 group-hover:text-[#0a66c2]">
-                                            {brand.name} Fleet
-                                        </h4>
-                                        <div className="flex items-center gap-1.5 mb-3">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                            <span className="text-[11px] font-bold text-gray-400">
-                                                {brand.cars} Active Units
-                                            </span>
-                                        </div>
-                                        
-                                        <p className="text-[12px] text-gray-400 line-clamp-2 leading-relaxed mb-4 group-hover:text-gray-500 transition-colors">
-                                            {brand.description}
-                                        </p>
-
-                                        {/* Action Button: Style Match */}
-                                        <div className="mt-auto w-full">
-                                            <button className="w-full py-[5px] px-4 rounded-full border border-[#0a66c2] text-[#0a66c2] text-[14px] font-semibold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]">
-                                                View Collection
-                                            </button>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
+                                    </Link>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    )}
                 </div>
             </div>
 
-            <style jsx global>{`
+            <style dangerouslySetInnerHTML={{ __html: `
                 .swiper-slide {
                     height: auto !important;
                 }
-            `}</style>
+            ` }} />
         </section>
     );
 }

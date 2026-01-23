@@ -34,13 +34,13 @@ export default function Hero() {
                             className="flex items-center justify-center lg:justify-start gap-2 mb-4"
                         >
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                            <span className="text-[12px] font-bold text-gray-500 uppercase tracking-wider">Online: 12 Elite Cars</span>
+                            <span className="text-[12px] font-bold text-gray-500">Online: 12 Elite Cars</span>
                         </motion.div>
 
                         <motion.h1 
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="text-[32px] sm:text-[42px] font-extrabold leading-[1.1] text-[#000000e6] tracking-tight mb-4"
+                            className="text-[32px] sm:text-[42px] font-bold leading-[1.2] text-gray-900 mb-4"
                         >
                             Professional car rentals for your <span className="text-[#0a66c2]">next journey</span>.
                         </motion.h1>
@@ -72,7 +72,7 @@ export default function Hero() {
                                             className={`transition-colors duration-300 ${isSearchFocused ? "text-[#0a66c2]" : "text-gray-500"}`} 
                                         />
                                         <div className="flex flex-col flex-1 min-w-0">
-                                            <label className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-wider leading-none mb-1 opacity-90">Find Vehicle</label>
+                                            <label className="text-[10px] font-bold text-[#0a66c2] leading-none mb-1 opacity-90">Find Vehicle</label>
                                             <input 
                                                 type="text" 
                                                 placeholder="e.g. BMW, Mercedes..." 
@@ -90,7 +90,7 @@ export default function Hero() {
                                     <div className="hidden sm:flex flex-1 items-center gap-3 px-4 py-3.5 cursor-text">
                                         <MapPin size={18} className="text-gray-400" />
                                         <div className="flex flex-col flex-1 min-w-0">
-                                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-1 opacity-90">Pick-up</label>
+                                            <label className="text-[10px] font-bold text-gray-400 leading-none mb-1 opacity-90">Pick-up</label>
                                             <input 
                                                 type="text" 
                                                 placeholder="Selection Location" 
@@ -128,10 +128,10 @@ export default function Hero() {
                                     {brand}
                                 </button>
                             ))}
-                            <button className="px-3 py-1.5 text-[12px] font-bold text-[#0a66c2] flex items-center gap-1 hover:underline">
-                                <span>See All</span>
+                            <Link href={route('car.list')} className="px-3 py-1.5 text-[12px] font-bold text-[#0a66c2] flex items-center gap-1 hover:underline">
+                                <span>Explore All</span>
                                 <ChevronRight size={14} />
-                            </button>
+                            </Link>
                         </motion.div>
                     </div>
 
@@ -154,7 +154,7 @@ export default function Hero() {
                             {/* Minimalism: Just one very discreet car label */}
                             <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm flex items-center gap-2">
                                 <Car size={14} className="text-[#0a66c2]" />
-                                <span className="text-[11px] font-black text-gray-900">Featured: BMW M8</span>
+                                <span className="text-[11px] font-bold text-gray-900">Featured: BMW M8</span>
                             </div>
                         </motion.div>
                     </div>

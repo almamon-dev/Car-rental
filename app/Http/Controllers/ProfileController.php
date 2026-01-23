@@ -60,16 +60,5 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
-
-    // car details
-
-    public function carDetails()
-    {
-        return Inertia::render(component: 'Guest/Home/Products/CarDetails');
-    }
-
-    public function carList()
-    {
-        return Inertia::render(component: 'Guest/Home/Products/CarList');
-    }
 }
+

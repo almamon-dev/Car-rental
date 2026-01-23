@@ -3,21 +3,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { ChevronLeft, ChevronRight, Quote, Star, Verified, Activity } from "lucide-react";
 import { motion } from "framer-motion";
+import { Skeleton } from "@/Components/ui/Skeleton";
 
 // Swiper Styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
-/**
- * CLIENT FEEDBACK DIRECTORY (LINKEDIN MASTER STYLE SYNC)
- * 
- * Philosophy:
- * - Style Match: Exact synchronization with Category.jsx and Cars.jsx.
- * - Modular Content: High-density testimonial cards with professional profiles.
- * - Narrative Integrity: Medium-weight italics for content, precise metadata for users.
- * - Palette: #f3f2ef/40 section background, pure white modular cards.
- */
 
 const testimonials = [
     {
@@ -51,8 +42,8 @@ const testimonials = [
         id: 4,
         name: "David Smith",
         role: "Operations Manager",
-        company: "Stellar Logistics",
-        content: "Transparent pricing protocols and verified asset status. The digital manifest system provides full operational transparency.",
+        company: "Apex Dynamics",
+        content: "Exceptional procedural transparency. The fleet management interface is intuitive, allowing for rapid asset deployment.",
         avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
         rating: 5,
     },
@@ -61,151 +52,167 @@ const testimonials = [
 export default function ClientsFeedback() {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
-    const [isInit, setIsInit] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setIsInit(true);
+        const timer = setTimeout(() => setIsLoading(false), 1000);
+        return () => clearTimeout(timer);
     }, []);
 
     return (
-        <section className="py-4 bg-transparent overflow-hidden font-sans relative">
-            <div className="max-w-7xl mx-auto px-6">
+        <section className="py-12 lg:py-16 bg-[#f3f2ef]/40 font-sans relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6 relative z-10">
                 
-                {/* --- ULTRA-COMPACT EXECUTIVE HEADER --- */}
-                <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                            <span className="text-[9px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">Validated Feedback</span>
+                {/* --- EXECUTIVE HEADER --- */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 border-b border-gray-200 pb-6 gap-4">
+                    <div className="max-w-2xl">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0a66c2]" />
+                            <span className="text-[10px] font-bold text-[#0a66c2]">Market Reputation</span>
                         </div>
-                        <h2 className="text-[20px] font-bold text-[#000000e6] tracking-tight">
-                            Performance <span className="text-[#0a66c2]">Analytics</span>
+                        <h2 className="text-[26px] font-bold text-gray-900 tracking-tight leading-tight">
+                            Institutional <span className="text-[#0a66c2]">Endorsements</span>
                         </h2>
+                        <p className="text-[13px] text-gray-500 mt-2 font-medium leading-relaxed italic">Verified testimonials from our enterprise deployment partners and logistics leads.</p>
                     </div>
 
-                    {/* Minimalist Controls */}
-                    <div className="flex gap-1.5">
+                    {/* Navigation Controls */}
+                    <div className="flex gap-2">
                         <button
                             ref={prevRef}
-                            className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors shadow-sm"
+                            className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#0a66c2] hover:text-white transition-all duration-300 shadow-sm disabled:opacity-50"
                         >
-                            <ChevronLeft size={16} />
+                            <ChevronLeft size={18} />
                         </button>
                         <button
                             ref={nextRef}
-                            className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors shadow-sm"
+                            className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#0a66c2] hover:text-white transition-all duration-300 shadow-sm disabled:opacity-50"
                         >
-                            <ChevronRight size={16} />
+                            <ChevronRight size={18} />
                         </button>
                     </div>
                 </div>
 
-                <div className="relative group/swiper">
-                    <Swiper
-                        modules={[Navigation, Autoplay, Pagination]}
-                        spaceBetween={14}
-                        slidesPerView={1}
-                        loop={true}
-                        speed={800}
-                        autoplay={{ delay: 5000, disableOnInteraction: false }}
-                        pagination={{
-                            clickable: true,
-                            el: ".custom-feedback-pagination",
-                        }}
-                        navigation={{
-                            prevEl: prevRef.current,
-                            nextEl: nextRef.current,
-                        }}
-                        onSwiper={(swiper) => {
-                            if (prevRef.current && nextRef.current) {
-                                swiper.params.navigation.prevEl = prevRef.current;
-                                swiper.params.navigation.nextEl = nextRef.current;
-                                swiper.navigation.init();
-                                swiper.navigation.update();
-                            }
-                        }}
-                        breakpoints={{
-                            768: { slidesPerView: 2 },
-                            1024: { slidesPerView: 3 },
-                        }}
-                        className="!pb-10"
-                    >
-                        {testimonials.map((item) => (
-                            <SwiperSlide key={item.id} className="h-auto">
-                                <motion.div 
-                                    whileHover={{ y: -3 }}
-                                    className="bg-white rounded-[12px] p-5 h-full border border-gray-200 flex flex-col relative group transition-all duration-300 shadow-sm"
-                                >
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="flex text-[#0a66c2] gap-0.5">
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star
-                                                    key={i}
-                                                    size={10}
-                                                    fill={i < item.rating ? "currentColor" : "none"}
-                                                    className={i < item.rating ? "text-[#0a66c2]" : "text-gray-100"}
-                                                />
-                                            ))}
+                {/* --- FEEDBACK SLIDER --- */}
+                <div className="relative">
+                    {isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="bg-white rounded-[16px] border border-gray-100 p-6 flex flex-col h-full shadow-sm">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <Skeleton className="w-12 h-12 rounded-full" />
+                                        <div className="flex-1">
+                                            <Skeleton className="h-4 w-1/2 mb-2 rounded" />
+                                            <Skeleton className="h-3 w-1/3 rounded" />
                                         </div>
-                                        <Quote size={20} className="text-gray-50 rotate-180" />
                                     </div>
-
-                                    <p className="text-[13px] text-gray-600 italic leading-relaxed mb-6 flex-1 font-medium">
-                                        "{item.content}"
-                                    </p>
-
-                                    <div className="flex items-center gap-3 pt-4 border-t border-gray-50">
-                                        <div className="shrink-0 w-9 h-9 rounded-full overflow-hidden border border-gray-100 p-0.5">
-                                            <img
-                                                src={item.avatar}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover rounded-full grayscale group-hover:grayscale-0 transition-all duration-500"
-                                            />
+                                    <div className="space-y-3 flex-1 mb-6">
+                                        <Skeleton className="h-3 w-full rounded" />
+                                        <Skeleton className="h-3 w-full rounded" />
+                                        <Skeleton className="h-3 w-2/3 rounded" />
+                                    </div>
+                                    <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
+                                        <Skeleton className="h-3 w-1/4 rounded" />
+                                        <div className="flex gap-1">
+                                            {[1, 2, 3, 4, 5].map(s => <Skeleton key={s} className="w-3 h-3 rounded-full" />)}
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="font-bold text-gray-900 text-[13px] leading-tight truncate">
-                                                {item.name}
-                                            </h4>
-                                            <div className="flex items-center gap-1 mt-0.5">
-                                                <span className="text-[9px] text-[#0a66c2] font-black uppercase tracking-tight truncate">
-                                                    {item.role}
-                                                </span>
-                                                <div className="w-0.5 h-0.5 rounded-full bg-gray-200 shrink-0" />
-                                                <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tight truncate">
-                                                    {item.company}
-                                                </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <Swiper
+                            modules={[Navigation, Autoplay, Pagination]}
+                            spaceBetween={24}
+                            slidesPerView={1}
+                            loop={true}
+                            autoplay={{ delay: 6000, disableOnInteraction: false }}
+                            breakpoints={{
+                                768: { slidesPerView: 2 },
+                                1024: { slidesPerView: 3 },
+                            }}
+                            onSwiper={(swiper) => {
+                                setTimeout(() => {
+                                    swiper.params.navigation.prevEl = prevRef.current;
+                                    swiper.params.navigation.nextEl = nextRef.current;
+                                    swiper.navigation.init();
+                                    swiper.navigation.update();
+                                });
+                            }}
+                            className="feedback-swiper !pb-12"
+                        >
+                            {testimonials.map((item) => (
+                                <SwiperSlide key={item.id} className="h-auto">
+                                    <div className="bg-white rounded-[16px] border border-gray-200 p-6 flex flex-col h-full transition-all duration-300 hover:shadow-md hover:border-[#0a66c2]/20 group relative overflow-hidden">
+                                        
+                                        {/* Pure Cinematic Quote Mark */}
+                                        <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-500">
+                                            <Quote size={80} strokeWidth={1} />
+                                        </div>
+
+                                        {/* User Metadata Profile */}
+                                        <div className="flex items-center gap-3 mb-6 relative">
+                                            <div className="relative">
+                                                <img 
+                                                    src={item.avatar} 
+                                                    alt={item.name} 
+                                                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-gray-100"
+                                                />
+                                                <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                                                    <Verified size={14} className="text-[#0a66c2] fill-[#0a66c2]/10" />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-[14px] font-bold text-gray-900 tracking-tight">{item.name}</h4>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="text-[11px] font-bold text-[#0a66c2]">{item.company}</span>
+                                                    <span className="w-1 h-1 rounded-full bg-gray-300" />
+                                                    <span className="text-[11px] text-gray-500 font-medium">{item.role}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <Verified size={12} className="text-blue-400 shrink-0" />
-                                    </div>
-                                </motion.div>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
 
-                    <div className="flex justify-center mt-0">
-                        <div className="custom-feedback-pagination !static !w-auto flex gap-1"></div>
-                    </div>
+                                        {/* Narrative Content */}
+                                        <div className="flex-1 mb-6 relative">
+                                            <p className="text-[14px] leading-relaxed text-gray-600 font-medium italic group-hover:text-gray-900 transition-colors duration-300">
+                                                "{item.content}"
+                                            </p>
+                                        </div>
+
+                                        {/* Operational Rating Meter */}
+                                        <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5">
+                                                <Activity size={12} className="text-[#0a66c2]" />
+                                                <span className="text-[10px] font-bold text-gray-400">Verification Status</span>
+                                            </div>
+                                            <div className="flex gap-0.5">
+                                                {[...Array(item.rating)].map((_, i) => (
+                                                    <Star key={i} size={12} className="text-amber-400 fill-amber-400" />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    )}
                 </div>
             </div>
 
-            <style jsx global>{`
-                .custom-feedback-pagination .swiper-pagination-bullet {
-                    width: 5px;
-                    height: 5px;
-                    background: #e2e8f0;
-                    opacity: 1;
+            <style dangerouslySetInnerHTML={{ __html: `
+                .feedback-swiper .swiper-pagination-bullet {
+                    background: #0a66c2 !important;
+                    opacity: 0.1;
+                    width: 6px;
+                    height: 6px;
                     transition: all 0.3s ease;
                 }
-                .custom-feedback-pagination .swiper-pagination-bullet-active {
-                    background: #0a66c2 !important;
-                    width: 14px;
-                    border-radius: 3px;
+                .feedback-swiper .swiper-pagination-bullet-active {
+                    opacity: 1;
+                    width: 20px;
+                    border-radius: 4px;
                 }
-                .swiper-slide {
-                    height: auto !important;
-                }
-            `}</style>
+            ` }} />
         </section>
     );
 }

@@ -2,20 +2,12 @@ import { useState } from "react";
 import { Check, Settings2, ShieldCheck, Zap } from "lucide-react";
 import { extraServices } from "./data";
 
-/**
- * ASSET ENHANCEMENTS (LINKEDIN MASTER STYLE SYNC)
- * 
- * Philosophy:
- * - High Density: Shrunken typography and tight list interaction.
- * - Modular Content: Integrated seamlessly into the Acquisition Console.
- * - Interaction: Clear binary state (selected/not) with institutional blue.
- */
 
 export default function ExtraServices({
     selectedExtras,
     handleExtraServiceToggle,
 }) {
-    const [isOpen, setIsOpen] = useState(true); // Default open for executive quick-access
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <div className="w-full bg-white rounded-[8px] border border-gray-100 overflow-hidden">
@@ -26,7 +18,7 @@ export default function ExtraServices({
             >
                 <div className="flex items-center gap-2">
                     <Settings2 size={14} className="text-[#0a66c2]" />
-                    <h3 className="text-[11px] font-bold text-gray-900 uppercase tracking-widest">
+                    <h3 className="text-[11px] font-bold text-gray-900">
                         Asset Enhancements
                     </h3>
                 </div>
@@ -71,7 +63,7 @@ export default function ExtraServices({
                                     <div className={`text-[12px] font-bold transition-colors ${selectedExtras.includes(service.id) ? "text-[#0a66c2]" : "text-gray-700"}`}>
                                         {service.name}
                                     </div>
-                                    <div className="text-[9px] font-medium text-gray-400 uppercase tracking-tighter">Operational Upgrade</div>
+                                    <div className="text-[9px] font-medium text-gray-400">Operational Upgrade</div>
                                 </div>
                             </div>
                             

@@ -1,17 +1,17 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Star, Heart, Share2, Verified, MapPin, Activity, Users, Copy, Check } from "lucide-react";
+import { Star, Heart, Share2, Verified, MapPin, Activity, Award, Check, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 /**
- * EXECUTIVE ASSET HEADER (INTERACTIVE MASTER SYNC)
+ * EXECUTIVE ASSET HEADER (STAR TECH INSPIRED)
  * 
  * Philosophy:
- * - Real-time Feedback: Integrated "live activity" indicators and success toasts.
- * - Style Match: 11px uppercase badges, blue vertical accents, and high-density typography.
- * - Micro-Interactions: Dynamic link copying and metric expansion on hover.
+ * - High Density: Tighter vertical and horizontal spacing for professional efficiency.
+ * - Modular Content: Information grouped into clear, high-contrast containers.
+ * - Palette: Pure white cards, #0a66c2 primary accents, subtle gray borders.
  */
 
 export default function HeroSection({
+    car,
     isBookmarked,
     setIsBookmarked,
     handleBookNow,
@@ -19,7 +19,6 @@ export default function HeroSection({
     const [isShared, setIsShared] = useState(false);
     const [liveUsers, setLiveUsers] = useState(4);
 
-    // Simulate multi-user activity (LinkedIn Style FOMO)
     useEffect(() => {
         const interval = setInterval(() => {
             setLiveUsers(prev => Math.max(2, Math.min(12, prev + (Math.random() > 0.5 ? 1 : -1))));
@@ -38,137 +37,116 @@ export default function HeroSection({
             <div className="max-w-7xl mx-auto px-6">
                 
                 {/* --- LIVE STATUS BAR --- */}
-                <div className="flex items-center gap-4 mb-6">
-                    <motion.div 
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="flex items-center gap-2 bg-[#f3f7fb] px-3 py-1.5 rounded-full border border-[#0a66c2]/10"
-                    >
-                         <Users size={12} className="text-[#0a66c2]" />
-                         <span className="text-[10px] font-black text-[#0a66c2] uppercase tracking-[0.1em]">
-                             {liveUsers} members viewing this protocol
+                <div className="flex flex-wrap items-center gap-3 mb-8">
+                    <div className="flex items-center gap-2 bg-[#f3f7fb] px-3.5 py-1.5 rounded-[4px] border border-[#0a66c2]/10 transition-all shadow-sm">
+                         <Activity size={12} className="text-[#0a66c2]" />
+                         <span className="text-[10px] font-bold text-[#0a66c2]">
+                             {liveUsers} Members Active
                          </span>
                          <div className="flex -space-x-1.5 ml-2">
                              {[1,2,3].map(i => (
                                  <div key={i} className="w-4 h-4 rounded-full border border-white bg-gray-200" />
                              ))}
                          </div>
-                    </motion.div>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-slate-50 px-3.5 py-1.5 rounded-[4px] border border-gray-100 transition-all shadow-sm">
+                         <Award size={12} className="text-amber-600" />
+                         <span className="text-[10px] font-bold text-gray-600">
+                             Tier-1 Asset Grade
+                         </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-green-50 px-3.5 py-1.5 rounded-[4px] border border-green-100 transition-all shadow-sm">
+                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                         <span className="text-[10px] font-bold text-green-700">
+                             Available for Deployment
+                         </span>
+                    </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                             <div className="bg-[#0a66c2]/10 px-3 py-1 rounded-md flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#0a66c2] animate-pulse" />
-                                <span className="text-[10px] font-black text-[#0a66c2] uppercase tracking-[0.2em]">Live Inventory: Verified</span>
+                <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+                    <div className="flex-1 space-y-6">
+                        <div className="space-y-2">
+                             <div className="flex items-center gap-2 mb-1">
+                                <span className="text-[11px] font-bold text-[#0a66c2] border-b-2 border-[#0a66c2]/20 pb-0.5">Asset Reference: #CAR-{car.id}</span>
                              </div>
-                             <div className="flex items-center gap-1.5 text-gray-400">
-                                <Verified size={14} className="text-blue-400" />
-                                <span className="text-[11px] font-bold uppercase tracking-widest text-blue-400">Institutional Asset</span>
+                             <h1 className="text-[32px] md:text-[40px] font-bold text-gray-900 leading-[1.2]">
+                                {car.make} <span className="text-[#0a66c2]">{car.model}</span>
+                                <span className="text-[18px] text-gray-400 font-medium ml-2 italic">({car.year})</span>
+                             </h1>
+                             <div className="flex flex-wrap items-center gap-5 mt-4">
+                                  <div className="flex items-center gap-2 bg-white border border-gray-200 px-3 py-1.5 rounded-[6px] shadow-sm hover:border-[#0a66c2]/30 transition-all group/loc">
+                                      <MapPin size={14} className="text-gray-400 group-hover/loc:text-[#0a66c2] transition-colors" />
+                                      <span className="text-[13px] font-bold text-gray-600">{car.location || "Central Business District"}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <div className="flex gap-0.5">
+                                          {[1,2,3,4,5].map(i => <Star key={i} size={14} fill={i <= 4 ? "#0a66c2" : "none"} className={i <= 4 ? "text-[#0a66c2]" : "text-gray-200"} />)}
+                                      </div>
+                                      <span className="text-[13px] font-bold text-gray-900">4.9</span>
+                                      <span className="text-[11px] font-medium text-gray-400">(124 Audits)</span>
+                                  </div>
                              </div>
                         </div>
 
-                        <div>
-                             <h1 className="text-[32px] sm:text-[40px] font-black text-[#000000e6] leading-tight tracking-tighter">
-                                BMW M8 <span className="text-[#0a66c2]">Competition</span>
-                             </h1>
-                             <div className="flex items-center gap-4 mt-2">
-                                 <motion.div 
-                                    whileHover={{ x: 5 }}
-                                    className="flex items-center gap-1.5 border-r border-gray-100 pr-4 cursor-pointer"
-                                 >
-                                     <div className="bg-gray-100 p-1 rounded-sm text-gray-600 group-hover/hero:bg-[#0a66c2]/10 group-hover/hero:text-[#0a66c2] transition-colors">
-                                         <Activity size={12} />
-                                     </div>
-                                     <span className="text-[13px] font-bold text-gray-600">Performance Luxury</span>
-                                 </motion.div>
-                                 <div className="flex items-center gap-1.5">
-                                     <MapPin size={14} className="text-blue-500" />
-                                     <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Financial District, Miami</span>
-                                 </div>
-                             </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <SmallInfoBadge label="Transmission" val={car.specifications?.transmission || "Auto"} />
+                            <SmallInfoBadge label="Fuel Architecture" val={car.specifications?.fuel_type || "Hybrid"} />
+                            <SmallInfoBadge label="Engine Class" val={car.specifications?.engine_capacity || "V8"} />
+                            <SmallInfoBadge label="Seating Mode" val="5 Passengers" />
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-end gap-4 w-full md:w-auto">
-                        <div className="flex items-center gap-2">
-                             <div className="bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 flex items-center gap-2 group/audit cursor-help">
-                                <Star size={12} fill="#0a66c2" className="text-[#0a66c2] group-hover/audit:scale-125 transition-transform" />
-                                <span className="text-[12px] font-black text-gray-900">4.9</span>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none border-l border-gray-200 pl-2">Reliability Consensus</span>
+                    <div className="w-full md:w-[360px] bg-[#f9f9f9] border border-gray-200 rounded-[12px] p-6 shadow-sm flex flex-col gap-6">
+                        <div className="flex justify-between items-start">
+                             <div>
+                                <span className="text-[11px] font-bold text-gray-400">Base Rate / 24H</span>
+                                <div className="flex items-baseline gap-1 mt-1">
+                                    <span className="text-[28px] font-bold text-gray-900">{car.price_details?.currency || '$'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                                    <span className="text-[13px] font-medium text-gray-400">Net</span>
+                                </div>
                              </div>
-                             
-                             <button 
-                                onClick={() => setIsBookmarked(!isBookmarked)}
-                                className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all ${
-                                    isBookmarked ? "bg-red-50 border-red-100 text-red-500" : "bg-white border-gray-200 text-gray-400 hover:text-red-500"
-                                } shadow-sm active:scale-95`}
-                             >
-                                <Heart size={16} fill={isBookmarked ? "currentColor" : "none"} />
-                             </button>
-
-                             <div className="relative">
+                             <div className="flex gap-2">
+                                 <button 
+                                    onClick={() => setIsBookmarked(!isBookmarked)}
+                                    className={`w-10 h-10 flex items-center justify-center rounded-[8px] border transition-all ${
+                                        isBookmarked ? "bg-red-50 border-red-200 text-red-500" : "bg-white border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500"
+                                    } shadow-sm`}
+                                 >
+                                    <Heart size={18} fill={isBookmarked ? "currentColor" : "none"} />
+                                 </button>
                                  <button 
                                     onClick={copyProtocol}
-                                    className={`w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 transition-all shadow-sm ${
-                                        isShared ? "text-green-500 border-green-200 bg-green-50" : "text-gray-400 hover:text-[#0a66c2]"
-                                    }`}
+                                    className="w-10 h-10 flex items-center justify-center rounded-[8px] bg-white border border-gray-200 text-gray-400 hover:border-[#0a66c2] hover:text-[#0a66c2] transition-all shadow-sm"
                                  >
-                                    {isShared ? <Check size={16} /> : <Share2 size={16} />}
+                                    {isShared ? <Check size={18} className="text-green-500" /> : <Share2 size={18} />}
                                  </button>
-                                 <AnimatePresence>
-                                     {isShared && (
-                                         <motion.div 
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            className="absolute bottom-full mb-3 right-0 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl"
-                                         >
-                                             Link Copied to Clipboard
-                                         </motion.div>
-                                     )}
-                                 </AnimatePresence>
                              </div>
                         </div>
-                        
-                        <div className="flex items-center gap-4">
-                            <div className="text-right leading-none">
-                                <div className="text-[24px] font-black text-gray-900">$380</div>
-                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Acquisition Reserve</div>
-                            </div>
-                            <button 
-                                onClick={handleBookNow}
-                                className="px-8 py-2.5 rounded-full bg-[#0a66c2] text-white text-[14px] font-bold hover:bg-[#004182] transition-all hover:shadow-[0_4px_12px_rgba(10,102,194,0.3)] active:scale-[0.98]"
-                            >
-                                Initiate Secure Acquisition
-                            </button>
+
+                        <button 
+                            onClick={handleBookNow}
+                            className="w-full bg-[#0a66c2] text-white py-3.5 rounded-[8px] text-[15px] font-bold hover:bg-[#004182] transition-all active:scale-[0.98] flex items-center justify-center gap-2 group"
+                        >
+                            <span>Initiate Secure Booking</span>
+                            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+
+                        <div className="flex items-center justify-center gap-2 mt-1">
+                            <Verified size={14} className="text-blue-500" />
+                            <span className="text-[11px] font-medium text-gray-500">Full Tier-1 Insurance Coverage</span>
                         </div>
                     </div>
-                </div>
-
-                <div className="mt-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 pb-2">
-                    <FeatureBadge label="Series" val="2023 Edition" pulse />
-                    <FeatureBadge label="Trans" val="M-Steptronic" />
-                    <FeatureBadge label="Power" val="617 HP" />
-                    <FeatureBadge label="Grid" val="AWD Pro" />
-                    <FeatureBadge label="Manifest" val="Full Service" />
-                    <FeatureBadge label="Security" val="Tier 2 Plus" color="text-green-600" />
                 </div>
             </div>
         </section>
     );
 }
 
-const FeatureBadge = ({ label, val, pulse, color }) => (
-    <motion.div 
-        whileHover={{ y: -3, backgroundColor: "#fff" }}
-        className="bg-[#f3f7fb]/50 border border-transparent hover:border-[#0a66c2]/20 p-3 rounded-lg transition-all group cursor-default"
-    >
-        <div className="flex items-center justify-between mb-1">
-            <label className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em]">{label}</label>
-            {pulse && <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />}
-        </div>
-        <span className={`text-[12px] font-bold ${color || "text-gray-900"} group-hover:text-[#0a66c2] transition-colors`}>{val}</span>
-    </motion.div>
+const SmallInfoBadge = ({ label, val }) => (
+    <div className="bg-white border border-gray-100 p-3 rounded-[8px] shadow-sm hover:border-[#0a66c2]/20 transition-all">
+        <div className="text-[10px] font-medium text-gray-400 mb-1">{label}</div>
+        <div className="text-[13px] font-bold text-gray-900">{val}</div>
+    </div>
 );

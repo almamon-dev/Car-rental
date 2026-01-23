@@ -11,15 +11,6 @@ import {
 } from "lucide-react";
 import ExtraServices from "./ExtraServices";
 
-/**
- * ACQUISITION CONSOLE (LINKEDIN MASTER STYLE SYNC)
- * 
- * Philosophy:
- * - High Density: Compressed inputs and shrunken typography.
- * - Modular Card: Pure white, 1px gray border, 12px rounded.
- * - Institutional: Focused on logistics and verified pricing.
- */
-
 export default function BookingWidget({
     selectedLocation,
     setSelectedLocation,
@@ -40,7 +31,7 @@ export default function BookingWidget({
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-slate-50/30">
                 <div className="flex items-center gap-2">
                     <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                    <h3 className="text-[13px] font-bold text-gray-900 uppercase tracking-widest">
+                    <h3 className="text-[13px] font-bold text-gray-900">
                         Acquisition Console
                     </h3>
                 </div>
@@ -54,7 +45,7 @@ export default function BookingWidget({
                 
                 {/* DEPLOYMENT MODE (Rental Type Sync) */}
                 <div>
-                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">
+                    <label className="block text-[10px] font-bold text-gray-700 mb-3">
                          Deployment Configuration
                     </label>
                     <div className="grid grid-cols-3 gap-2">
@@ -68,11 +59,11 @@ export default function BookingWidget({
                                 className={`py-3 px-1 rounded-[8px] border transition-all ${
                                     type.period === "Daily"
                                         ? "bg-blue-50/50 border-[#0a66c2] text-[#0a66c2]"
-                                        : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
+                                        : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
                                 }`}
                             >
                                 <div className="text-[12px] font-bold">{type.period}</div>
-                                <div className="text-[10px] font-black mt-1 uppercase tracking-tight">{type.price}</div>
+                                <div className="text-[10px] font-bold mt-1">{type.price}</div>
                             </button>
                         ))}
                     </div>
@@ -82,7 +73,7 @@ export default function BookingWidget({
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 gap-3">
                          <div className="space-y-1.5">
-                            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-700">
                                 <Activity size={10} className="text-[#0a66c2]" />
                                 Origin Terminal
                             </label>
@@ -103,7 +94,7 @@ export default function BookingWidget({
                          </div>
                          
                          <div className="space-y-1.5">
-                            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-700">
                                 <MapPin size={10} className="text-blue-400" />
                                 Destination
                             </label>
@@ -128,7 +119,7 @@ export default function BookingWidget({
                 {/* TEMPORAL WINDOW (Dates & Times) */}
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Deployment Start</label>
+                        <label className="block text-[10px] font-bold text-gray-700">Deployment Start</label>
                         <input
                             type="date"
                             value={bookingDates.pickup}
@@ -141,7 +132,7 @@ export default function BookingWidget({
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Deployment End</label>
+                        <label className="block text-[10px] font-bold text-gray-700">Deployment End</label>
                         <input
                             type="date"
                             value={bookingDates.dropoff}
@@ -171,8 +162,8 @@ export default function BookingWidget({
                     {priceSummary.extras > 0 && <ManifestItem label="Asset Enhancements" val={`$${priceSummary.extras}`} />}
                     
                     <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
-                         <span className="text-[14px] font-bold text-gray-900 uppercase tracking-widest">Total Liability</span>
-                         <span className="text-[20px] font-black text-[#0a66c2]">${priceSummary.total}</span>
+                         <span className="text-[14px] font-bold text-gray-900">Total Liability</span>
+                         <span className="text-[20px] font-bold text-[#0a66c2]">${priceSummary.total}</span>
                     </div>
                 </div>
 
@@ -202,14 +193,14 @@ export default function BookingWidget({
 
 const ManifestItem = ({ label, val }) => (
     <div className="flex items-center justify-between">
-        <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{label}</span>
-        <span className="text-[12px] font-black text-gray-900">{val}</span>
+        <span className="text-[11px] font-bold text-gray-500">{label}</span>
+        <span className="text-[12px] font-bold text-gray-900">{val}</span>
     </div>
 );
 
 const MetricItem = ({ Icon, label }) => (
     <div className="flex flex-col items-center">
         <Icon size={14} className="text-[#0a66c2] mb-1" />
-        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{label}</span>
+        <span className="text-[9px] font-bold text-gray-500">{label}</span>
     </div>
 );
