@@ -51,61 +51,90 @@ export default function CategoryCreate({ auth }) {
         <AdminLayout user={auth.user}>
             <Head title="Create Category | Admin Dashboard" />
 
-            <div className="bg-[#FDFDFD] min-h-screen pb-20 font-sans">
-                {/* Header: Ekhon sudhu Go Back button thakbe */}
-                <div className="bg-white border-b border-gray-100 px-8 py-6">
-                    <div className="flex justify-between items-center mx-auto">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                {/* Header Section */}
+                <div className="px-8 py-5 border-b border-gray-100 bg-white flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href={route("admin.category.index")}
+                            className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                        >
+                            <ChevronLeft size={20} />
+                        </Link>
                         <div>
-                            <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
-                                <span>Taxonomy</span>
-                            </div>
-                            <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                                {isMultiMode
-                                    ? "Bulk Create Categories"
-                                    : "Create New Category"}
+                            <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">
+                                Create Category Listing
                             </h1>
+                            <p className="text-[13px] text-gray-500 font-medium mt-0.5 tracking-widest">
+                                {isMultiMode ? "Bulk Creation Mode" : "Vehicle Segmentation Management"}
+                            </p>
                         </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsMultiMode(!isMultiMode);
+                                if (isMultiMode) setData("categories", [data.categories[0]]);
+                            }}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-[13px] font-semibold ${
+                                isMultiMode
+                                    ? "bg-slate-900 text-white border-slate-900"
+                                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                            }`}
+                        >
+                            <Layers size={16} />
+                            {isMultiMode ? "Multi Mode" : "Single Mode"}
+                        </button>
+
+                        <div className="h-6 w-[1px] bg-gray-200 mx-1" />
 
                         <Link
                             href={route("admin.category.index")}
-                            className="relative group flex items-center justify-end"
+                            className="px-5 py-2 text-[13px] font-semibold text-gray-600 hover:bg-gray-100 rounded-full transition-all"
                         >
-                            <span className="absolute right-12 whitespace-nowrap text-slate-500 font-bold text-[10px] uppercase tracking-widest opacity-100 group-hover:text-white transition-all duration-500 ease-in-out z-20 pointer-events-none">
-                                Go Back
-                            </span>
-                            <div className="flex items-center justify-center bg-white border border-slate-200 text-slate-500 h-10 w-10 group-hover:w-36 group-hover:bg-slate-900 group-hover:border-slate-900 group-hover:text-white rounded-full transition-all duration-500 ease-in-out shadow-sm overflow-hidden relative z-10">
-                                <ChevronLeft
-                                    size={18}
-                                    className="absolute right-2.5 transition-transform duration-500 group-hover:scale-110"
-                                />
-                            </div>
+                            Discard
                         </Link>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={processing}
+                            className="px-6 py-2 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all shadow-sm flex items-center gap-2"
+                        >
+                            {processing ? (
+                                <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                                <Save size={16} />
+                            )}
+                            {processing ? "Saving..." : "Create Category"}
+                        </button>
                     </div>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    className="mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 py-10"
+                    className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
                 >
                     {/* Left Column: Form Cards */}
-                    <div className="lg:col-span-8 space-y-6">
+                    <div className="lg:col-span-8 space-y-8">
                         {data.categories.map((category, index) => (
                             <div
                                 key={index}
-                                className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm relative"
+                                className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm relative animate-in fade-in slide-in-from-bottom-4 duration-500"
                             >
                                 {isMultiMode && (
-                                    <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-50">
-                                        <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                                            Category #{index + 1}
-                                        </span>
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-100">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                            <span className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
+                                                Category Entry #{index + 1}
+                                            </span>
+                                        </div>
                                         {data.categories.length > 1 && (
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    removeCategoryRow(index)
-                                                }
-                                                className="text-slate-300 hover:text-red-500 transition-colors"
+                                                onClick={() => removeCategoryRow(index)}
+                                                className="text-gray-400 hover:text-red-500 transition-colors bg-gray-50 hover:bg-red-50 p-2 rounded-full"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -113,10 +142,11 @@ export default function CategoryCreate({ auth }) {
                                     </div>
                                 )}
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 items-start">
+                                    <div className="space-y-8">
                                         <Input
                                             label="Category Name *"
+                                            placeholder="e.g. Luxury, SUV, Economy"
                                             value={category.name}
                                             onChange={(e) =>
                                                 handleInputChange(
@@ -125,14 +155,11 @@ export default function CategoryCreate({ auth }) {
                                                     e.target.value
                                                 )
                                             }
-                                            error={
-                                                errors[
-                                                    `categories.${index}.name`
-                                                ]
-                                            }
+                                            error={errors[`categories.${index}.name`]}
                                         />
                                         <Input
                                             label="Description"
+                                            placeholder="Brief description of this vehicle segment..."
                                             isTextArea={true}
                                             value={category.description}
                                             onChange={(e) =>
@@ -142,11 +169,7 @@ export default function CategoryCreate({ auth }) {
                                                     e.target.value
                                                 )
                                             }
-                                            error={
-                                                errors[
-                                                    `categories.${index}.description`
-                                                ]
-                                            }
+                                            error={errors[`categories.${index}.description`]}
                                             className="min-h-[140px]"
                                         />
                                     </div>
@@ -163,7 +186,7 @@ export default function CategoryCreate({ auth }) {
                                             errors={errors}
                                             clearErrors={clearErrors}
                                             field={`categories.${index}.image`}
-                                            label="Upload Category Image"
+                                            label="Category Image"
                                         />
                                     </div>
                                 </div>
@@ -174,108 +197,39 @@ export default function CategoryCreate({ auth }) {
                             <button
                                 type="button"
                                 onClick={addCategoryRow}
-                                className="w-full py-5 border-2 border-dashed border-slate-100 rounded-2xl flex items-center justify-center gap-2 text-slate-400 font-bold text-[10px] hover:border-slate-900 hover:text-slate-900 transition-all uppercase tracking-[0.2em] bg-white"
+                                className="w-full py-8 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 font-bold text-[12px] hover:border-[#0a66c2] hover:text-[#0a66c2] hover:bg-blue-50/30 transition-all uppercase tracking-widest bg-white"
                             >
-                                <Plus size={16} /> Add Another Entry
+                                <div className="p-2 bg-gray-50 rounded-full group-hover:bg-[#0a66c2]/10">
+                                    <Plus size={24} />
+                                </div>
+                                Add Another Entry
                             </button>
                         )}
                     </div>
 
-                    {/* Right Column: Sidebar Actions */}
-                    <div className="lg:col-span-4">
-                        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm sticky top-6">
-                            {/* Header Section: Text on Left, Switch on Right */}
-                            <div className="flex justify-between items-center mb-8">
-                                <div>
-                                    <h4 className="font-bold text-slate-800 text-sm tracking-tight mb-1">
-                                        Finish Process
-                                    </h4>
-                                    <p className="text-slate-400 text-[10px] uppercase tracking-wider font-medium">
-                                        {isMultiMode
-                                            ? "Bulk Save Categories"
-                                            : "Confirm Category"}
+                    {/* Right Column: Info Card */}
+                    <div className="lg:col-span-4 sticky top-8">
+                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                            <h3 className="text-[13px] font-bold text-gray-900 tracking-tight mb-6">INFORMATION</h3>
+                            <div className="space-y-4">
+                                <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-lg">
+                                    <p className="text-[12px] text-blue-700 leading-relaxed font-medium">
+                                        {isMultiMode 
+                                            ? "Bulk creation allows you to add multiple vehicle categories at once. Ensure each category has a distinctive name and representative image."
+                                            : "Define a new category to group your vehicles. Categories help customers filter and find the right vehicle for their needs."}
                                     </p>
                                 </div>
-
-                                {/* Compact Multi Mode Switch */}
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsMultiMode(!isMultiMode);
-                                        if (isMultiMode)
-                                            setData("categories", [
-                                                data.categories[0],
-                                            ]);
-                                    }}
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all duration-300 ${
-                                        isMultiMode
-                                            ? "bg-slate-900 border-slate-900 text-white shadow-sm"
-                                            : "bg-slate-50 border-slate-100 text-slate-500 hover:border-slate-200"
-                                    }`}
-                                    title={
-                                        isMultiMode
-                                            ? "Switch to Single Mode"
-                                            : "Switch to Multi Mode"
-                                    }
-                                >
-                                    <Layers
-                                        size={14}
-                                        className={
-                                            isMultiMode
-                                                ? "text-white"
-                                                : "text-slate-400"
-                                        }
-                                    />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest">
-                                        {isMultiMode ? "Multi" : "Single"}
-                                    </span>
-                                    {/* Visual Toggle Indicator */}
-                                    <div
-                                        className={`w-6 h-3 rounded-full relative transition-colors ml-1 ${
-                                            isMultiMode
-                                                ? "bg-green-500"
-                                                : "bg-slate-300"
-                                        }`}
-                                    >
-                                        <div
-                                            className={`absolute top-0.5 w-2 h-2 bg-white rounded-full transition-all ${
-                                                isMultiMode
-                                                    ? "right-0.5"
-                                                    : "left-0.5"
-                                            }`}
-                                        />
+                                <div className="space-y-3 pt-4">
+                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                                        <span>Total Entries</span>
+                                        <span className="text-gray-900">{data.categories.length}</span>
                                     </div>
-                                </button>
-                            </div>
-
-                            {/* Action Buttons: Full Width */}
-                            <div className="space-y-3">
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="w-full flex items-center justify-center gap-2 px-2 py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-black disabled:opacity-50 transition-all text-[10px] uppercase tracking-widest shadow-sm"
-                                >
-                                    {processing ? (
-                                        <Loader2
-                                            size={14}
-                                            className="animate-spin"
-                                        />
-                                    ) : (
-                                        <Save size={14} />
-                                    )}
-                                    {processing
-                                        ? "Saving..."
-                                        : isMultiMode
-                                        ? `Create ${data.categories.length} Categories`
-                                        : "Create Category"}
-                                </button>
-
-                                <Link
-                                    href={route("admin.category.index")}
-                                    className="w-full flex items-center justify-center gap-2 px-2 py-4 bg-white text-slate-400 font-bold border border-slate-100 rounded-xl hover:bg-slate-50 hover:text-red-500 transition-all text-[10px] uppercase tracking-widest"
-                                >
-                                    <XCircle size={14} /> Discard
-                                </Link>
+                                    <div className="h-[1px] bg-gray-100" />
+                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                                        <span>Mode</span>
+                                        <span className="text-[#0a66c2]">{isMultiMode ? "BULK" : "SINGLE"}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

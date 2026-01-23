@@ -14,7 +14,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+                sans: ["'Plus Jakarta Sans'", "Figtree", ...defaultTheme.fontFamily.sans],
             },
             borderRadius: {
                 lg: "var(--radius)",

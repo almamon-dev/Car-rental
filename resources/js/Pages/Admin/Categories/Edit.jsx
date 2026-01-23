@@ -25,76 +25,67 @@ export default function CategoryEdit({ auth, category }) {
         <AdminLayout user={auth.user}>
             <Head title={`Edit Category | ${category.name}`} />
 
-            <div className="bg-[#FDFDFD] min-h-screen pb-20 font-sans">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 {/* Header Section */}
-                <div className="bg-white border-b border-gray-100 px-8 py-6">
-                    <div className="flex justify-between items-center mx-auto">
-                        <div>
-                            <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
-                                <span>Taxonomy</span>
-                            </div>
-                            <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                                Edit Category
-                            </h1>
-                        </div>
-
-                        <Link href={route("admin.category.index")}>
-                            <motion.div
-                                initial="rest"
-                                whileHover="hover"
-                                animate="rest"
-                                className="flex items-center gap-2 px-4 py-2 bg-slate-900 rounded-[20px] cursor-pointer overflow-hidden relative shadow-sm"
-                            >
-                                <motion.div
-                                    variants={{
-                                        rest: { scale: 0, opacity: 0 },
-                                        hover: { scale: 1.5, opacity: 1 },
-                                    }}
-                                    className="absolute inset-0 bg-black rounded-full -z-10"
-                                    transition={{
-                                        duration: 0.5,
-                                        ease: "easeInOut",
-                                    }}
-                                />
-
-                                <motion.span
-                                    variants={{
-                                        rest: { x: 0 },
-                                        hover: { x: -2 },
-                                    }}
-                                    className="text-white font-bold text-[10px] uppercase tracking-widest"
-                                >
-                                    Go Back
-                                </motion.span>
-
-                                <motion.div
-                                    variants={{
-                                        rest: { x: 0 },
-                                        hover: { x: 2 },
-                                    }}
-                                    className="flex items-center justify-center bg-white/10 rounded-full p-1"
-                                >
-                                    <ChevronLeft
-                                        size={14}
-                                        className="text-white"
-                                    />
-                                </motion.div>
-                            </motion.div>
+                <div className="px-8 py-5 border-b border-gray-100 bg-white flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href={route("admin.category.index")}
+                            className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                        >
+                            <ChevronLeft size={20} />
                         </Link>
+                        <div>
+                            <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">
+                                Update Category listing
+                            </h1>
+                            <p className="text-[13px] text-gray-500 font-medium mt-0.5 tracking-widest">
+                                Editing {category.name} • Internal ID #{category.id}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href={route("admin.category.index")}
+                            className="px-5 py-2 text-[13px] font-semibold text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+                        >
+                            Discard
+                        </Link>
+                        <button
+                            onClick={handleSubmit}
+                            disabled={processing}
+                            className="px-6 py-2 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all shadow-sm flex items-center gap-2"
+                        >
+                            {processing ? (
+                                <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                                <Save size={16} />
+                            )}
+                            {processing ? "Updating..." : "Update Category"}
+                        </button>
                     </div>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    className="mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 py-10"
+                    className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
                 >
-                    {/* Left Column */}
-                    <div className="lg:col-span-8 space-y-6">
-                        <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-6">
+                    {/* Left Column: Form Details */}
+                    <div className="lg:col-span-8 space-y-8">
+                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm relative animate-in fade-in slide-in-from-bottom-4 duration-500">
+                             <div className="flex items-center gap-2 mb-8">
+                                <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                                <h3 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
+                                    General Information
+                                </h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 items-start">
+                                <div className="space-y-8">
                                     <Input
                                         label="Category Name *"
+                                        placeholder="e.g. Luxury, SUV, Economy"
                                         value={data.name}
                                         onChange={(e) =>
                                             setData("name", e.target.value)
@@ -103,6 +94,7 @@ export default function CategoryEdit({ auth, category }) {
                                     />
                                     <Input
                                         label="Description"
+                                        placeholder="Brief description of this vehicle segment..."
                                         isTextArea={true}
                                         value={data.description}
                                         onChange={(e) =>
@@ -123,7 +115,6 @@ export default function CategoryEdit({ auth, category }) {
                                         clearErrors={clearErrors}
                                         field="image"
                                         label="Category Image"
-                                        // initialData uses the path from DB which points to public
                                         initialData={category.icon}
                                     />
                                 </div>
@@ -131,43 +122,27 @@ export default function CategoryEdit({ auth, category }) {
                         </div>
                     </div>
 
-                    {/* Right Column (Sidebar) */}
-                    <div className="lg:col-span-4">
-                        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm sticky top-6">
-                            <div className="mb-6">
-                                <h4 className="font-bold text-slate-800 text-sm tracking-tight mb-1">
-                                    Finalize Changes
-                                </h4>
-                                <p className="text-slate-400 text-[10px] uppercase tracking-wider font-medium">
-                                    Confirm and update record
-                                </p>
-                            </div>
-
-                            <div className="space-y-3">
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="w-full flex items-center justify-center gap-2 px-2 py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-black disabled:opacity-50 transition-all text-[10px] uppercase tracking-widest shadow-sm"
-                                >
-                                    {processing ? (
-                                        <Loader2
-                                            size={14}
-                                            className="animate-spin"
-                                        />
-                                    ) : (
-                                        <Save size={14} />
-                                    )}
-                                    {processing
-                                        ? "Saving..."
-                                        : "Update Category"}
-                                </button>
-
-                                <Link
-                                    href={route("admin.category.index")}
-                                    className="w-full flex items-center justify-center gap-2 px-2 py-4 bg-white text-slate-400 font-bold border border-slate-100 rounded-xl hover:bg-slate-50 hover:text-red-500 transition-all text-[10px] uppercase tracking-widest"
-                                >
-                                    <XCircle size={14} /> Cancel
-                                </Link>
+                    {/* Right Column (Info Card) */}
+                    <div className="lg:col-span-4 sticky top-8">
+                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                            <h3 className="text-[13px] font-bold text-gray-900 tracking-tight mb-6">SUMMARY</h3>
+                            <div className="space-y-5">
+                                <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-lg">
+                                    <p className="text-[12px] text-emerald-700 leading-relaxed font-medium">
+                                        Properly categorized vehicles receive 40% higher engagement. Updating the description helps users understand the segment better.
+                                    </p>
+                                </div>
+                                <div className="space-y-3 pt-2">
+                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                                        <span>Created On</span>
+                                        <span className="text-gray-900">{new Date(category.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="h-[1px] bg-gray-100" />
+                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                                        <span>Last Updated</span>
+                                        <span className="text-gray-900">{new Date(category.updated_at).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

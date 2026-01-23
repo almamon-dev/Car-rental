@@ -177,36 +177,51 @@ export default function CarCreate({ auth, categories, brands }) {
                     <div className="lg:col-span-8 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col">
                             {/* Tabs Header with fixed Active state */}
-                            <div className="px-8 pt-6 border-b border-gray-100 overflow-x-auto custom-sidebar-scrollbar bg-slate-50/30">
-                                <TabsList className="w-full justify-start space-x-10 border-b-0 min-w-max bg-transparent h-auto p-0">
-                                    <TabsTrigger 
-                                        value="essentials" 
-                                        className="pb-4 text-[12px] font-black tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
-                                    >
-                                        <LayoutDashboard size={14} />
-                                        ESSENTIALS
-                                    </TabsTrigger>
-                                    <TabsTrigger 
-                                        value="technical" 
-                                        className="pb-4 text-[12px] font-black tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
-                                    >
-                                        <Settings2 size={14} />
-                                        TECHNICAL
-                                    </TabsTrigger>
-                                    <TabsTrigger 
-                                        value="media" 
-                                        className="pb-4 text-[12px] font-black tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
-                                    >
-                                        <Camera size={14} />
-                                        MEDIA
-                                    </TabsTrigger>
-                                    <TabsTrigger 
-                                        value="admin" 
-                                        className="pb-4 text-[12px] font-black tracking-widest flex items-center gap-2.5 transition-all border-b-2 border-transparent data-[state=active]:border-[#0a66c2] data-[state=active]:text-[#0a66c2] data-[state=active]:bg-blue-50/50 text-slate-400 hover:text-slate-600 rounded-none bg-transparent shadow-none px-6"
-                                    >
-                                        <ShieldCheck size={14} />
-                                        ADMINISTRATION
-                                    </TabsTrigger>
+                            <div className="px-8 border-b border-gray-100 overflow-x-auto no-scrollbar bg-white">
+                                <TabsList className="w-full justify-start space-x-0 border-b-0 min-w-max bg-transparent h-auto p-0 flex items-center">
+                                    {[
+                                        { id: "essentials", label: "Essentials" },
+                                        { id: "technical", label: "Technical" },
+                                        { id: "media", label: "Media" },
+                                        { id: "admin", label: "Administration" }
+                                    ].map((tab) => {
+                                        // Calculate completion counts
+                                        const mapping = {
+                                            essentials: ["brand_id", "category_id", "make", "model", "year", "daily_rate"],
+                                            technical: ["transmission", "mileage", "fuel_type", "steering", "color"],
+                                            media: ["images"],
+                                            admin: ["registration_number", "chassis_number", "engine_number"]
+                                        };
+                                        const fields = mapping[tab.id];
+                                        const filled = fields.filter(f => 
+                                            Array.isArray(data[f]) ? data[f].length > 0 : !!data[f]
+                                        ).length;
+                                        const total = fields.length;
+
+                                        return (
+                                            <TabsTrigger 
+                                                key={tab.id}
+                                                value={tab.id} 
+                                                className="relative group flex items-center gap-1.5 px-6 py-4.5 focus:outline-none whitespace-nowrap transition-all duration-200 border-none bg-transparent shadow-none data-[state=active]:bg-transparent rounded-none"
+                                            >
+                                                <div className="flex items-center gap-1.5 transition-colors duration-200">
+                                                    <span className={`text-[14px] font-semibold tracking-tight ${
+                                                        activeTab === tab.id ? "text-[#0a66c2]" : "text-[#5e6670] group-hover:text-gray-900"
+                                                    }`}>
+                                                        {tab.label}
+                                                    </span>
+                                                    <span className={`text-[13px] font-medium ${
+                                                        activeTab === tab.id ? "text-[#0a66c2]/80" : "text-[#8e97a2]"
+                                                    }`}>
+                                                        ({filled}/{total})
+                                                    </span>
+                                                </div>
+                                                {activeTab === tab.id && (
+                                                    <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0a66c2] rounded-t-sm" />
+                                                )}
+                                            </TabsTrigger>
+                                        );
+                                    })}
                                 </TabsList>
                             </div>
 

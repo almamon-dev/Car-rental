@@ -15,6 +15,7 @@ const CarTableRow = React.memo(function CarTableRow({
     const [imageLoading, setImageLoading] = useState(true);
     const [imageKey, setImageKey] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [menuStyles, setMenuStyles] = useState({});
     
     const previousItemId = useRef(item.id);
@@ -36,19 +37,16 @@ const CarTableRow = React.memo(function CarTableRow({
         if (isMenuOpen && buttonRef.current) {
             const rect = buttonRef.current.getBoundingClientRect();
             const spaceBelow = window.innerHeight - rect.bottom;
-            const menuHeight = 160; // Estimated max height
+            const menuHeight = 160; 
             
             let topPosition, leftPosition;
             
             if (spaceBelow < menuHeight) {
-                // Open upward if not enough space below
                 topPosition = rect.top + window.scrollY - menuHeight;
             } else {
-                // Open downward
                 topPosition = rect.bottom + window.scrollY + 8;
             }
             
-            // Align to right edge of button (128 is w-32 / 8rem)
             leftPosition = rect.right + window.scrollX - 128; 
 
             setMenuStyles({
@@ -71,17 +69,22 @@ const CarTableRow = React.memo(function CarTableRow({
         
         if (isMenuOpen) {
             document.addEventListener("mousedown", handleClickOutside);
-            window.addEventListener("scroll", () => setIsMenuOpen(false), { once: true });
+            window.addEventListener("scroll", () => setIsMenuOpen(false), { once: true, capture: true });
         }
         
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
-            window.removeEventListener("scroll", () => setIsMenuOpen(false));
+            window.removeEventListener("scroll", () => setIsMenuOpen(false), { capture: true });
         };
     }, [isMenuOpen]);
 
     const handleImageLoad = () => setImageLoading(false);
     const handleImageError = () => setImageLoading(false);
+
+    const handleDeleteTrigger = () => {
+        setIsMenuOpen(false);
+        setTimeout(() => setIsDeleteModalOpen(true), 50);
+    };
 
     return (
         <tr
@@ -104,10 +107,8 @@ const CarTableRow = React.memo(function CarTableRow({
                 </div>
             </td>
 
-            {/* Premium Vehicle Information Card */}
             <td className="py-4 px-4 min-w-[280px]">
                 <div className="flex items-start gap-4">
-                    {/* Visual Asset Container */}
                     <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shadow-sm relative group/img">
                         {item.images?.[0] ? (
                             <>
@@ -133,7 +134,6 @@ const CarTableRow = React.memo(function CarTableRow({
                         </div>
                     </div>
 
-                    {/* Meta Data Hierarchy */}
                     <div className="flex flex-col min-w-0 pt-0.5">
                         <div className="flex items-center gap-2 mb-1">
                             <span className="text-[9px] font-black bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md uppercase tracking-[1px] border border-slate-200/50">
@@ -281,7 +281,6 @@ const CarTableRow = React.memo(function CarTableRow({
                 </div>
             </td>
 
-            {/* Actions Section */}
             <td className="py-3 px-4 text-right pr-6">
                 <div className="relative inline-block">
                     <button
@@ -322,21 +321,25 @@ const CarTableRow = React.memo(function CarTableRow({
 
                             <div className="h-px bg-gray-100 my-1.5 mx-2" />
 
-                            <DeleteAction
-                                id={item.id}
-                                routeName="admin.cars.destroy"
-                                onSuccess={() => {
-                                    onDeleteSuccess();
-                                    setIsMenuOpen(false);
-                                }}
-                                className="flex items-center w-full px-4 py-2 text-[13px] font-semibold text-red-600 hover:bg-red-50 text-left"
+                            <button
+                                onClick={handleDeleteTrigger}
+                                className="flex items-center w-full px-4 py-2 text-[13px] font-semibold text-red-600 hover:bg-red-50 text-left transition-colors"
                             >
                                 <Trash2 size={16} className="mr-3 text-red-400" />
                                 <span>Delete</span>
-                            </DeleteAction>
+                            </button>
                         </div>,
                         document.body
                     )}
+
+                    <DeleteAction
+                        trigger={false}
+                        open={isDeleteModalOpen}
+                        onOpenChange={setIsDeleteModalOpen}
+                        id={item.id}
+                        routeName="admin.cars.destroy"
+                        onSuccess={onDeleteSuccess}
+                    />
                 </div>
             </td>
         </tr>
@@ -344,4 +347,3 @@ const CarTableRow = React.memo(function CarTableRow({
 });
 
 export default CarTableRow;
-
