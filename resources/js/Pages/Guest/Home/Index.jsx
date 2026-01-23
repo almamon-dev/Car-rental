@@ -63,6 +63,7 @@ export default function Index() {
                 animate="in"
                 exit="out"
                 variants={pageVariants}
+                className="bg-[#f3f2ef]/50 min-h-screen"
             >
                 {/* Progress Bar */}
                 <ScrollProgress />
@@ -72,12 +73,12 @@ export default function Index() {
                     <HeroSection />
                 </motion.div>
 
-                {/* Staggered Sections */}
+                {/* Staggered Sections - Tighter Spacing Sync */}
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"
                     animate="show"
-                    className="space-y-20"
+                    className="space-y-2 pb-10"
                 >
                     {/* Category Section */}
                     <motion.div variants={fadeUp}>

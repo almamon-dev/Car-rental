@@ -1,146 +1,97 @@
 import React from "react";
 import {
-    Zap,
+    Activity,
     Facebook,
     Twitter,
     Instagram,
     Linkedin,
     Apple,
+    ArrowRight,
     PlayCircle,
+    Verified,
+    Globe,
+    ShieldCheck,
+    ChevronDown
 } from "lucide-react";
+import { motion } from "framer-motion";
+
+/**
+ * EXECUTIVE GLOBAL FOOTER (LINKEDIN LIGHT MODE SYNC)
+ * 
+ * Philosophy:
+ * - High Density: Reduced padding and compact spacing.
+ * - Style Sync: LinkedIn Light Gray (#f8f9fa / #f3f2ef) palette.
+ * - Institutional: Tier-1 executive architecture for global mobility.
+ */
 
 export default function Footer() {
     return (
-        <footer className="bg-[#020617] text-slate-400 py-20 px-6 relative overflow-hidden">
-            {/* Top Border Glow */}
-            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
-
+        <footer className="footer bg-white border-t border-gray-200 py-10 lg:py-14 px-6 relative overflow-hidden font-sans">
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {/* Brand Section */}
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-emerald-500 p-2 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-                                <Zap
-                                    className="text-slate-950 fill-slate-950"
-                                    size={20}
-                                />
+                
+                {/* --- TOP GRID: DIRECTORY ARCHITECTURE --- */}
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8 gap-y-10 mb-12">
+                    
+                    {/* Brand Identifier */}
+                    <div className="col-span-2 lg:pr-10">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="bg-[#0a66c2] p-1.5 rounded-[4px] shadow-sm">
+                                <Activity className="text-white" size={16} />
                             </div>
-                            <span className="text-white font-black text-2xl tracking-tighter">
-                                CAR
-                                <span className="text-emerald-400">RENT</span>
+                            <span className="text-[#000000e6] font-black text-[18px] tracking-tighter uppercase">
+                                Elite<span className="text-[#0a66c2]">Fleet</span>
                             </span>
                         </div>
-                        <p className="text-sm leading-relaxed text-slate-400">
-                            The world's first luxury car rental platform powered
-                            by seamless concierge and 24/7 VIP support.
+                        <p className="text-[12px] leading-relaxed text-gray-500 font-medium mb-6">
+                            The global benchmark for luxury executive mobility. 
+                            Institutional Tier-1 asset management.
                         </p>
-                        <div className="flex gap-3">
-                            <SocialButton Icon={Facebook} />
-                            <SocialButton Icon={Instagram} />
-                            <SocialButton Icon={Twitter} />
+                        <div className="flex gap-2.5">
                             <SocialButton Icon={Linkedin} />
+                            <SocialButton Icon={Facebook} />
+                            <SocialButton Icon={Twitter} />
                         </div>
                     </div>
 
-                    {/* Navigation */}
-                    <div>
-                        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">
-                            Company
-                        </h4>
-                        <ul className="space-y-4 text-sm">
-                            <FooterLink label="Our Fleet" />
-                            <FooterLink label="Pricing Plans" />
-                            <FooterLink label="Partner With Us" />
-                            <FooterLink label="Careers" />
-                        </ul>
-                    </div>
-
-                    {/* Support */}
-                    <div>
-                        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">
-                            Support
-                        </h4>
-                        <ul className="space-y-4 text-sm">
-                            <FooterLink label="Help Center" />
-                            <FooterLink label="Safety Information" />
-                            <FooterLink label="Cancellation" />
-                            <FooterLink label="Terms of Service" />
-                        </ul>
-                    </div>
-
-                    {/* App & Payments */}
-                    <div className="space-y-6">
-                        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">
-                            Experience Mobile
-                        </h4>
-                        <div className="flex flex-col gap-3">
-                            {/* App Store Online Button */}
-                            <a
-                                href="#"
-                                className="flex items-center gap-3 bg-white/5 border border-white/10 hover:border-emerald-500/50 p-3 rounded-2xl transition-all group"
-                            >
-                                <Apple
-                                    className="text-white group-hover:text-emerald-400"
-                                    size={24}
-                                />
-                                <div>
-                                    <p className="text-[10px] uppercase font-bold text-slate-500">
-                                        Available on
-                                    </p>
-                                    <p className="text-sm font-bold text-white">
-                                        App Store
-                                    </p>
-                                </div>
-                            </a>
-                            {/* Google Play Online Button */}
-                            <a
-                                href="#"
-                                className="flex items-center gap-3 bg-white/5 border border-white/10 hover:border-emerald-500/50 p-3 rounded-2xl transition-all group"
-                            >
-                                <PlayCircle
-                                    className="text-white group-hover:text-emerald-400"
-                                    size={24}
-                                />
-                                <div>
-                                    <p className="text-[10px] uppercase font-bold text-slate-500">
-                                        Get it on
-                                    </p>
-                                    <p className="text-sm font-bold text-white">
-                                        Google Play
-                                    </p>
-                                </div>
-                            </a>
-                        </div>
+                    {/* Directory Columns */}
+                    <FooterColumn title="General" links={["Sign Up", "Help Center", "About", "Press", "Blog"]} />
+                    <FooterColumn title="Solutions" links={["Enterprise", "Fleet", "Small Business", "Agencies"]} />
+                    <FooterColumn title="Directory" links={["Members", "Assets", "Verification", "Services"]} />
+                    
+                    {/* Control Panel / Language */}
+                    <div className="col-span-1">
+                         <h4 className="text-gray-900 font-bold mb-4 text-[11px] uppercase tracking-[0.15em]">Control</h4>
+                         <button className="w-full flex items-center justify-between px-3 py-1.5 border border-gray-300 rounded-[4px] text-[12px] font-bold text-gray-600 hover:bg-gray-50 transition-all mb-4">
+                             <div className="flex items-center gap-2">
+                                <Globe size={14} className="text-[#0a66c2]" />
+                                <span>Language</span>
+                             </div>
+                             <ChevronDown size={14} />
+                         </button>
+                         <button className="w-full flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-[4px] text-[12px] font-bold text-gray-600 hover:bg-gray-50 transition-all">
+                             <ShieldCheck size={14} className="text-[#0a66c2]" />
+                             <span>Trust Center</span>
+                         </button>
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-                        © 2026 Car Rent Global / All Rights Reserved
-                    </p>
+                {/* --- BOTTOM INTERFACE: LEGAL & DEPLOYMENT --- */}
+                <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center flex-wrap justify-center gap-x-6 gap-y-2">
+                         <span className="text-[#000000e6] font-black text-[14px] tracking-tighter uppercase mr-2">
+                            Elite<span className="text-[#0a66c2]">Fleet</span> <span className="text-gray-400 font-normal lowercase ml-1">© 2026</span>
+                         </span>
+                         <LegalLink label="User Agreement" />
+                         <LegalLink label="Privacy Policy" />
+                         <LegalLink label="Cookie Policy" />
+                         <LegalLink label="Brand Policy" />
+                    </div>
 
-                    {/* Online Payment Icons Image */}
-                    <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/5 flex items-center gap-4">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                            We Accept
-                        </span>
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
-                            alt="PayPal"
-                            className="h-4 opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
-                        />
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
-                            alt="Visa"
-                            className="h-3 opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
-                        />
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                            alt="Mastercard"
-                            className="h-5 opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0"
-                        />
+                    {/* Verified Payment Grid (LinkedIn Style Grayscale) */}
+                    <div className="flex items-center gap-6 opacity-30 grayscale hover:opacity-60 transition-all duration-500">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-2.5" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-2" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-3.5" />
                     </div>
                 </div>
             </div>
@@ -148,18 +99,27 @@ export default function Footer() {
     );
 }
 
-// Helpers
-const FooterLink = ({ label }) => (
-    <li className="hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer text-slate-400 font-medium">
+const FooterColumn = ({ title, links }) => (
+    <div>
+        <h4 className="text-gray-900 font-bold mb-4 text-[11px] uppercase tracking-[0.15em]">{title}</h4>
+        <ul className="space-y-2.5">
+            {links.map(link => (
+                <li key={link} className="text-[12px] text-gray-500 font-bold hover:text-[#0a66c2] hover:underline cursor-pointer transition-colors decoration-[#0a66c2] decoration-2 underline-offset-4">
+                    {link}
+                </li>
+            ))}
+        </ul>
+    </div>
+);
+
+const LegalLink = ({ label }) => (
+    <span className="text-[11px] font-bold text-gray-500 hover:text-[#0a66c2] hover:underline cursor-pointer transition-colors decoration-[#0a66c2] underline-offset-2">
         {label}
-    </li>
+    </span>
 );
 
 const SocialButton = ({ Icon }) => (
-    <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:bg-emerald-500 hover:text-slate-950 hover:border-emerald-500 transition-all cursor-pointer group shadow-lg">
-        <Icon
-            size={18}
-            className="group-hover:scale-110 transition-transform"
-        />
+    <div className="text-gray-500 hover:text-[#0a66c2] transition-colors cursor-pointer p-0.5">
+        <Icon size={18} />
     </div>
 );

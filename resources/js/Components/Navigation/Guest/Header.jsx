@@ -133,13 +133,13 @@ const Header = () => {
                             <div className="hidden sm:flex items-center gap-3">
                                 <Link 
                                     href="/register" 
-                                    className="text-[14px] font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 px-4 py-2 rounded-full transition-all duration-200"
+                                    className="text-[14px] font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-100/80 px-4 py-2 rounded-full transition-all"
                                 >
                                     Join now
                                 </Link>
                                 <Link 
                                     href="/login"
-                                    className="text-[14px] font-semibold text-[#0a66c2] border border-[#0a66c2] px-6 py-1.5 rounded-full hover:bg-blue-50/50 hover:border-[#004182] hover:text-[#004182] hover:shadow-[inset_0_0_0_1px_rgba(10,102,194,1)] transition-all duration-200 active:scale-95"
+                                    className="text-[14px] font-bold text-[#0a66c2] border border-[#0a66c2] px-6 py-[5px] rounded-full hover:bg-blue-50/50 hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all active:scale-95"
                                 >
                                     Sign in
                                 </Link>

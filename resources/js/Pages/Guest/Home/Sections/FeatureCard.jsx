@@ -64,10 +64,9 @@ const CarRentalFeatures = () => {
     ];
 
     return (
-        <section className="py-20 px-6 max-w-7xl mx-auto font-sans bg-white relative overflow-hidden">
+        <section className="py-20 px-6 max-w-7xl mx-auto font-sans  relative overflow-hidden">
             {/* Subtle Background Accent */}
             <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50/30 -skew-x-12 translate-x-1/2 -z-10" />
-
             <div className="grid lg:grid-cols-12 gap-16 items-start">
                 
                 {/* --- LEFT SIDE: THE MANIFEST --- */}

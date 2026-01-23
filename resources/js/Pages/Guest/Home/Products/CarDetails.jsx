@@ -8,6 +8,16 @@ import SimilarCars from "./CarDetails/SimilarCars";
 import BookingModal from "./CarDetails/BookingModal";
 import ContactSupport from "./CarDetails/ContactSupport";
 
+/**
+ * EXECUTIVE ASSET DETAILS (LINKEDIN MASTER STYLE SYNC)
+ * 
+ * Philosophy:
+ * - Style Match: 1:1 synchronization with Category, Cars, and Brand sections.
+ * - High Density: Tighter vertical and horizontal spacing.
+ * - Institutional: Focused on data, verified status, and professional acquisition.
+ * - Palette: #f3f2ef/40 background, pure white modular cards, #0a66c2 primary accents.
+ */
+
 export default function CarDetails() {
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [activeFaqIndex, setActiveFaqIndex] = useState(null);
@@ -17,15 +27,15 @@ export default function CarDetails() {
     const [activeTab, setActiveTab] = useState("overview");
 
     const [selectedLocation, setSelectedLocation] = useState({
-        pickup: "Palace of Westminster",
-        dropoff: "Big Ben",
+        pickup: "Executive Terminal",
+        dropoff: "Corporate Plaza",
     });
 
     const [bookingDates, setBookingDates] = useState({
-        pickup: "2026-01-10",
-        dropoff: "2026-01-13",
-        pickupTime: "13:50",
-        dropoffTime: "13:50",
+        pickup: "2026-02-01",
+        dropoff: "2026-02-05",
+        pickupTime: "09:00",
+        dropoffTime: "17:00",
     });
 
     const [priceSummary, setPriceSummary] = useState({
@@ -60,31 +70,39 @@ export default function CarDetails() {
 
     return (
         <GuestLayout>
-            <HeroSection
-                isBookmarked={isBookmarked}
-                setIsBookmarked={setIsBookmarked}
-                hoveredButton={hoveredButton}
-                setHoveredButton={setHoveredButton}
-                handleBookNow={handleBookNow}
-            />
+            <main className="bg-[#f3f2ef]/40 min-h-screen font-sans">
+                {/* Hero / Header Section Sync */}
+                <HeroSection
+                    isBookmarked={isBookmarked}
+                    setIsBookmarked={setIsBookmarked}
+                    hoveredButton={hoveredButton}
+                    setHoveredButton={setHoveredButton}
+                    handleBookNow={handleBookNow}
+                />
 
-            <main className="bg-slate-50 py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col lg:flex-row gap-8">
-                        <div className="lg:w-7/12 space-y-8">
-                            <Gallery
-                                activeImageIndex={activeImageIndex}
-                                setActiveImageIndex={setActiveImageIndex}
-                            />
-                            <TabsContent
-                                activeTab={activeTab}
-                                setActiveTab={setActiveTab}
-                                activeFaqIndex={activeFaqIndex}
-                                setActiveFaqIndex={setActiveFaqIndex}
-                            />
+                <div className="max-w-7xl mx-auto px-6 py-8">
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        {/* Primary Content (Directory Main Flow) */}
+                        <div className="lg:w-8/12 space-y-4">
+                            <div className="bg-white rounded-[12px] border border-gray-200 shadow-sm overflow-hidden p-1">
+                                <Gallery
+                                    activeImageIndex={activeImageIndex}
+                                    setActiveImageIndex={setActiveImageIndex}
+                                />
+                            </div>
+                            
+                            <div className="bg-white rounded-[12px] border border-gray-200 shadow-sm">
+                                <TabsContent
+                                    activeTab={activeTab}
+                                    setActiveTab={setActiveTab}
+                                    activeFaqIndex={activeFaqIndex}
+                                    setActiveFaqIndex={setActiveFaqIndex}
+                                />
+                            </div>
                         </div>
 
-                        <div className="lg:w-5/12 space-y-8">
+                        {/* Sidebar (Acquisition Console) */}
+                        <div className="lg:w-4/12 space-y-6">
                             <BookingWidget
                                 selectedLocation={selectedLocation}
                                 setSelectedLocation={setSelectedLocation}
@@ -101,13 +119,18 @@ export default function CarDetails() {
                         </div>
                     </div>
                 </div>
+
+                {/* Recommendations Footer */}
+                <div className="bg-white border-t border-gray-200 py-12">
+                    <SimilarCars />
+                </div>
+
+                <BookingModal
+                    showBookingModal={showBookingModal}
+                    setShowBookingModal={setShowBookingModal}
+                    priceSummary={priceSummary}
+                />
             </main>
-            <SimilarCars />
-            <BookingModal
-                showBookingModal={showBookingModal}
-                setShowBookingModal={setShowBookingModal}
-                priceSummary={priceSummary}
-            />
         </GuestLayout>
     );
 }

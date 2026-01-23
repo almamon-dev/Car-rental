@@ -4,9 +4,21 @@ import {
     CheckCircle2,
     ShieldCheck,
     Clock as ClockIcon,
+    Calendar,
+    ArrowRight,
+    Settings2,
+    Activity
 } from "lucide-react";
 import ExtraServices from "./ExtraServices";
-import { scaleIn } from "./animations";
+
+/**
+ * ACQUISITION CONSOLE (LINKEDIN MASTER STYLE SYNC)
+ * 
+ * Philosophy:
+ * - High Density: Compressed inputs and shrunken typography.
+ * - Modular Card: Pure white, 1px gray border, 12px rounded.
+ * - Institutional: Focused on logistics and verified pricing.
+ */
 
 export default function BookingWidget({
     selectedLocation,
@@ -20,243 +32,184 @@ export default function BookingWidget({
 }) {
     return (
         <motion.div
-            variants={scaleIn}
-            className="bg-white rounded-2xl shadow-xl sticky top-24 border border-slate-200"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-[12px] border border-gray-200 shadow-sm sticky top-24 overflow-hidden font-sans"
         >
-            <div className="p-6 border-b border-slate-200">
-                <h3 className="text-xl font-bold text-slate-900">
-                    Book This Car
-                </h3>
-                <p className="text-slate-600 text-sm mt-1">
-                    Select your dates and preferences
-                </p>
+            {/* Header / Console Status */}
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-slate-50/30">
+                <div className="flex items-center gap-2">
+                    <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
+                    <h3 className="text-[13px] font-bold text-gray-900 uppercase tracking-widest">
+                        Acquisition Console
+                    </h3>
+                </div>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white border border-gray-100 text-[10px] font-bold text-green-600">
+                    <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                    SECURE
+                </div>
             </div>
 
-            <div className="p-6 space-y-6">
-                {/* Rental Type */}
+            <div className="p-5 space-y-6">
+                
+                {/* DEPLOYMENT MODE (Rental Type Sync) */}
                 <div>
-                    <label className="block text-sm font-bold text-slate-900 mb-3">
-                        Rental Type
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-3">
+                         Deployment Configuration
                     </label>
                     <div className="grid grid-cols-3 gap-2">
                         {[
-                            { period: "Day", price: "$189/day" },
-                            { period: "Week", price: "$1,199/week" },
-                            { period: "Month", price: "$3,999/month" },
+                            { period: "Daily", price: "$380" },
+                            { period: "Weekly", price: "$2,240" },
+                            { period: "Fleet", price: "Custom" },
                         ].map((type) => (
                             <button
                                 key={type.period}
-                                className={`p-4 rounded-xl text-center transition-all ${
-                                    type.period === "Day"
-                                        ? "bg-blue-50 border-2 border-blue-500"
-                                        : "bg-slate-50 border-2 border-transparent hover:border-slate-300"
+                                className={`py-3 px-1 rounded-[8px] border transition-all ${
+                                    type.period === "Daily"
+                                        ? "bg-blue-50/50 border-[#0a66c2] text-[#0a66c2]"
+                                        : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
                                 }`}
                             >
-                                <div className="font-bold text-slate-900">
-                                    {type.period}
-                                </div>
-                                <div className="text-sm text-slate-600 mt-1">
-                                    {type.price}
-                                </div>
+                                <div className="text-[12px] font-bold">{type.period}</div>
+                                <div className="text-[10px] font-black mt-1 uppercase tracking-tight">{type.price}</div>
                             </button>
                         ))}
                     </div>
                 </div>
 
-                {/* Locations */}
+                {/* LOGISTICS (Locations) */}
                 <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-bold text-slate-900 mb-2">
-                            <MapPin size={16} className="inline mr-2" />
-                            Pickup Location
-                        </label>
-                        <select
-                            value={selectedLocation.pickup}
-                            onChange={(e) =>
-                                setSelectedLocation((prev) => ({
-                                    ...prev,
-                                    pickup: e.target.value,
-                                }))
-                            }
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                        >
-                            <option>Palace of Westminster</option>
-                            <option>Miami International Airport</option>
-                            <option>Downtown Miami</option>
-                            <option>South Beach</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-bold text-slate-900 mb-2">
-                            <MapPin size={16} className="inline mr-2" />
-                            Dropoff Location
-                        </label>
-                        <select
-                            value={selectedLocation.dropoff}
-                            onChange={(e) =>
-                                setSelectedLocation((prev) => ({
-                                    ...prev,
-                                    dropoff: e.target.value,
-                                }))
-                            }
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                        >
-                            <option>Big Ben</option>
-                            <option>Miami International Airport</option>
-                            <option>Same as Pickup</option>
-                            <option>Custom Location</option>
-                        </select>
+                    <div className="grid grid-cols-1 gap-3">
+                         <div className="space-y-1.5">
+                            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                <Activity size={10} className="text-[#0a66c2]" />
+                                Origin Terminal
+                            </label>
+                            <select
+                                value={selectedLocation.pickup}
+                                onChange={(e) =>
+                                    setSelectedLocation((prev) => ({
+                                        ...prev,
+                                        pickup: e.target.value,
+                                    }))
+                                }
+                                className="w-full h-10 px-3 bg-[#f3f7fb]/50 border border-gray-200 rounded-[6px] text-[13px] font-bold text-gray-900 focus:border-[#0a66c2] outline-none transition-all"
+                            >
+                                <option>Executive Terminal</option>
+                                <option>Financial District Port</option>
+                                <option>Gateway International</option>
+                            </select>
+                         </div>
+                         
+                         <div className="space-y-1.5">
+                            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                <MapPin size={10} className="text-blue-400" />
+                                Destination
+                            </label>
+                            <select
+                                value={selectedLocation.dropoff}
+                                onChange={(e) =>
+                                    setSelectedLocation((prev) => ({
+                                        ...prev,
+                                        dropoff: e.target.value,
+                                    }))
+                                }
+                                className="w-full h-10 px-3 bg-[#f3f7fb]/50 border border-gray-200 rounded-[6px] text-[13px] font-bold text-gray-900 focus:border-[#0a66c2] outline-none transition-all"
+                            >
+                                <option>Corporate Plaza</option>
+                                <option>Return to Origin</option>
+                                <option>Custom Drop-off</option>
+                            </select>
+                         </div>
                     </div>
                 </div>
 
-                {/* Dates & Times */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">
-                            Pickup Date & Time
-                        </label>
+                {/* TEMPORAL WINDOW (Dates & Times) */}
+                <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Deployment Start</label>
                         <input
                             type="date"
                             value={bookingDates.pickup}
-                            onChange={(e) =>
-                                setBookingDates((prev) => ({
-                                    ...prev,
-                                    pickup: e.target.value,
-                                }))
-                            }
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm mb-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none"
                         />
-                        <input
+                         <input
                             type="time"
                             value={bookingDates.pickupTime}
-                            onChange={(e) =>
-                                setBookingDates((prev) => ({
-                                    ...prev,
-                                    pickupTime: e.target.value,
-                                }))
-                            }
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none mt-1"
                         />
                     </div>
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">
-                            Drop-off Date & Time
-                        </label>
+                    <div className="space-y-1.5">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Deployment End</label>
                         <input
                             type="date"
                             value={bookingDates.dropoff}
-                            onChange={(e) =>
-                                setBookingDates((prev) => ({
-                                    ...prev,
-                                    dropoff: e.target.value,
-                                }))
-                            }
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm mb-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none"
                         />
-                        <input
+                         <input
                             type="time"
                             value={bookingDates.dropoffTime}
-                            onChange={(e) =>
-                                setBookingDates((prev) => ({
-                                    ...prev,
-                                    dropoffTime: e.target.value,
-                                }))
-                            }
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none mt-1"
                         />
                     </div>
                 </div>
 
-                {/* Extra Services */}
-                <ExtraServices
-                    selectedExtras={selectedExtras}
-                    handleExtraServiceToggle={handleExtraServiceToggle}
-                />
+                {/* ENHANCEMENTS (Extra Services) */}
+                <div className="pt-2">
+                    <ExtraServices
+                        selectedExtras={selectedExtras}
+                        handleExtraServiceToggle={handleExtraServiceToggle}
+                    />
+                </div>
 
-                {/* Price Breakdown */}
-                <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                        <span className="text-slate-600">
-                            Base rate (3 days)
-                        </span>
-                        <span className="font-bold text-slate-900">
-                            ${priceSummary.baseRate}
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span className="text-slate-600">Insurance</span>
-                        <span className="font-bold text-slate-900">
-                            ${priceSummary.insurance}
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span className="text-slate-600">Service fee</span>
-                        <span className="font-bold text-slate-900">
-                            ${priceSummary.serviceFee}
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span className="text-slate-600">Extra services</span>
-                        <span className="font-bold text-slate-900">
-                            ${priceSummary.extras}
-                        </span>
-                    </div>
-                    <div className="pt-3 border-t border-slate-200">
-                        <div className="flex items-center justify-between">
-                            <span className="text-lg font-bold text-slate-900">
-                                Total
-                            </span>
-                            <span className="text-2xl font-bold text-blue-600">
-                                ${priceSummary.total}
-                            </span>
-                        </div>
+                {/* FINANCIAL MANIFEST (Price Breakdown) */}
+                <div className="bg-[#f3f7fb]/50 border border-gray-100 rounded-[12px] p-4 space-y-2.5">
+                    <ManifestItem label="Base Allocation (4 Days)" val={`$${priceSummary.baseRate}`} />
+                    <ManifestItem label="Institutional Insurance" val={`$${priceSummary.insurance}`} />
+                    <ManifestItem label="Operational Fee" val={`$${priceSummary.serviceFee}`} />
+                    {priceSummary.extras > 0 && <ManifestItem label="Asset Enhancements" val={`$${priceSummary.extras}`} />}
+                    
+                    <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
+                         <span className="text-[14px] font-bold text-gray-900 uppercase tracking-widest">Total Liability</span>
+                         <span className="text-[20px] font-black text-[#0a66c2]">${priceSummary.total}</span>
                     </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                {/* ACTIONS */}
+                <div className="space-y-2">
+                    <button
                         onClick={handleBookNow}
-                        className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                        className="w-full py-2.5 bg-[#0a66c2] text-white text-[14px] font-bold rounded-full hover:bg-[#004182] transition-all active:scale-[0.98] shadow-sm flex items-center justify-center gap-2"
                     >
-                        Book Now
-                    </motion.button>
-                    <button className="w-full py-3 bg-white border-2 border-slate-300 text-slate-900 font-medium rounded-xl hover:bg-slate-50 transition-colors">
-                        Save for Later
+                        Confirm Acquisition <ArrowRight size={16} />
+                    </button>
+                    <button className="w-full py-2 rounded-full border border-gray-200 text-gray-500 text-[12px] font-bold hover:bg-gray-50 transition-all">
+                        Synchronize to Calendar
                     </button>
                 </div>
 
-                {/* Trust Badges */}
-                <div className="flex items-center justify-center gap-6 pt-4 border-t border-slate-200">
-                    <div className="text-center">
-                        <ShieldCheck
-                            size={20}
-                            className="text-green-500 mx-auto mb-1"
-                        />
-                        <div className="text-xs text-slate-600">
-                            Secure Booking
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <ClockIcon
-                            size={20}
-                            className="text-blue-500 mx-auto mb-1"
-                        />
-                        <div className="text-xs text-slate-600">
-                            24/7 Support
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <CheckCircle2
-                            size={20}
-                            className="text-purple-500 mx-auto mb-1"
-                        />
-                        <div className="text-xs text-slate-600">Best Price</div>
-                    </div>
+                {/* TRUST METRICS */}
+                <div className="flex items-center justify-center gap-5 pt-4 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
+                    <MetricItem Icon={ShieldCheck} label="T-1 Secure" />
+                    <MetricItem Icon={Activity} label="24/7 Ops" />
+                    <MetricItem Icon={CheckCircle2} label="Verified" />
                 </div>
             </div>
         </motion.div>
     );
 }
+
+const ManifestItem = ({ label, val }) => (
+    <div className="flex items-center justify-between">
+        <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{label}</span>
+        <span className="text-[12px] font-black text-gray-900">{val}</span>
+    </div>
+);
+
+const MetricItem = ({ Icon, label }) => (
+    <div className="flex flex-col items-center">
+        <Icon size={14} className="text-[#0a66c2] mb-1" />
+        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{label}</span>
+    </div>
+);

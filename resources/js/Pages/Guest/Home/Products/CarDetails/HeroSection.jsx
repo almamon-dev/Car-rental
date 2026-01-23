@@ -1,267 +1,174 @@
-import { motion } from "framer-motion";
-import { Star, Heart, Share2, Eye, Calendar, BadgeCheck } from "lucide-react"; // Icons
-import { stats, heroStats } from "./data";
-import { fadeInUp, transition } from "./animations";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, Heart, Share2, Verified, MapPin, Activity, Users, Copy, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+
+/**
+ * EXECUTIVE ASSET HEADER (INTERACTIVE MASTER SYNC)
+ * 
+ * Philosophy:
+ * - Real-time Feedback: Integrated "live activity" indicators and success toasts.
+ * - Style Match: 11px uppercase badges, blue vertical accents, and high-density typography.
+ * - Micro-Interactions: Dynamic link copying and metric expansion on hover.
+ */
 
 export default function HeroSection({
     isBookmarked,
     setIsBookmarked,
-    hoveredButton,
-    setHoveredButton,
     handleBookNow,
-    handleShare,
 }) {
+    const [isShared, setIsShared] = useState(false);
+    const [liveUsers, setLiveUsers] = useState(4);
+
+    // Simulate multi-user activity (LinkedIn Style FOMO)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setLiveUsers(prev => Math.max(2, Math.min(12, prev + (Math.random() > 0.5 ? 1 : -1))));
+        }, 8000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const copyProtocol = () => {
+        navigator.clipboard.writeText(window.location.href);
+        setIsShared(true);
+        setTimeout(() => setIsShared(false), 2000);
+    };
+
     return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInUp}
-            className="relative overflow-hidden bg-gradient-to-br mt-10 from-slate-900 via-slate-800 to-slate-900"
-        >
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80')] opacity-5"></div>
-
-            <section className="w-full overflow-x-hidden py-12 md:py-10 bg-gradient-to-b from-slate-50 to-white relative min-h-[700px] flex items-center">
-                <div className="relative w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
-                    {/* LEFT CONTENT */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -40 }}
+        <section className="w-full bg-white pt-24 pb-10 border-b border-gray-200 font-sans group/hero">
+            <div className="max-w-7xl mx-auto px-6">
+                
+                {/* --- LIVE STATUS BAR --- */}
+                <div className="flex items-center gap-4 mb-6">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={transition}
-                        className="w-full lg:w-1/2 lg:pr-12 relative z-20"
+                        className="flex items-center gap-2 bg-[#f3f7fb] px-3 py-1.5 rounded-full border border-[#0a66c2]/10"
                     >
-                        {/* BADGES */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3, ...transition }}
-                            className="flex flex-wrap items-center gap-3 mb-6"
-                        >
-                            <span className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-bold rounded-full flex items-center gap-2 shadow-lg">
-                                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                                PREMIUM FLEET
-                            </span>
-                            <span className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-medium rounded-full border border-slate-200">
-                                2023 Model
-                            </span>
-                            <span className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-medium rounded-full border border-slate-200 flex items-center gap-2">
-                                <Star
-                                    size={12}
-                                    className="fill-yellow-400 text-yellow-400"
-                                />
-                                4.9 (128 reviews)
-                            </span>
-                        </motion.div>
+                         <Users size={12} className="text-[#0a66c2]" />
+                         <span className="text-[10px] font-black text-[#0a66c2] uppercase tracking-[0.1em]">
+                             {liveUsers} members viewing this protocol
+                         </span>
+                         <div className="flex -space-x-1.5 ml-2">
+                             {[1,2,3].map(i => (
+                                 <div key={i} className="w-4 h-4 rounded-full border border-white bg-gray-200" />
+                             ))}
+                         </div>
+                    </motion.div>
+                </div>
 
-                        {/* CAR STATS */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1.4, ...transition }}
-                            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
-                        >
-                            {heroStats.map((stat, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ scale: 0.8 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ delay: 1.5 + index * 0.1 }}
-                                    className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center hover:border-blue-200 hover:shadow-lg transition-all duration-300"
-                                >
-                                    <div className="text-2xl mb-2">
-                                        {stat.icon}
-                                    </div>
-                                    <div className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                                        {stat.value}
-                                    </div>
-                                    <div className="text-xs text-slate-500 font-medium mt-1">
-                                        {stat.label}
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-
-                        {/* ACTION BUTTONS */}
-                        <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                            <motion.button
-                                whileHover={{
-                                    scale: 1.05,
-                                    boxShadow:
-                                        "0 20px 40px rgba(59, 130, 246, 0.3)",
-                                }}
-                                whileTap={{ scale: 0.95 }}
-                                onMouseEnter={() => setHoveredButton("book")}
-                                onMouseLeave={() => setHoveredButton(null)}
-                                onClick={handleBookNow}
-                                className="group relative bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-8 py-4 rounded-full font-bold shadow-lg overflow-hidden text-base"
-                            >
-                                <span className="relative z-10 flex items-center justify-center gap-3">
-                                    <Calendar size={20} />
-                                    Book Now
-                                    <motion.svg
-                                        animate={{
-                                            x: hoveredButton === "book" ? 5 : 0,
-                                        }}
-                                        className="w-5 h-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M13 7l5 5m0 0l-5 5m5-5H6"
-                                        />
-                                    </motion.svg>
-                                </span>
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </motion.button>
-
-                            <div className="flex gap-2">
-                                <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() =>
-                                        setIsBookmarked(!isBookmarked)
-                                    }
-                                    className={`p-3 rounded-full border ${
-                                        isBookmarked
-                                            ? "border-red-200 bg-red-50 text-red-500"
-                                            : "border-slate-200 bg-white text-slate-700"
-                                    } hover:shadow-lg transition-all duration-300`}
-                                >
-                                    <Heart
-                                        size={20}
-                                        className={
-                                            isBookmarked ? "fill-current" : ""
-                                        }
-                                    />
-                                </motion.button>
-
-                                <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={handleShare}
-                                    className="p-3 rounded-full border border-slate-200 bg-white text-slate-700 hover:shadow-lg transition-all duration-300"
-                                >
-                                    <Share2 size={20} />
-                                </motion.button>
-
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    className="px-4 py-3 rounded-full border border-slate-200 bg-white text-slate-700 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 flex items-center gap-2"
-                                >
-                                    <Eye size={18} />
-                                    <span className="text-sm font-medium">
-                                        1.2K views
-                                    </span>
-                                </motion.button>
-                            </div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                             <div className="bg-[#0a66c2]/10 px-3 py-1 rounded-md flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#0a66c2] animate-pulse" />
+                                <span className="text-[10px] font-black text-[#0a66c2] uppercase tracking-[0.2em]">Live Inventory: Verified</span>
+                             </div>
+                             <div className="flex items-center gap-1.5 text-gray-400">
+                                <Verified size={14} className="text-blue-400" />
+                                <span className="text-[11px] font-bold uppercase tracking-widest text-blue-400">Institutional Asset</span>
+                             </div>
                         </div>
 
-                        {/* COMPANY STATS */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1.8, ...transition }}
-                            className="grid grid-cols-2 md:grid-cols-4 gap-6"
-                        >
-                            {stats.map((stat, index) => (
-                                <div key={index} className="text-center">
-                                    <motion.div
-                                        initial={{ scale: 0.8 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ delay: 2 + index * 0.1 }}
-                                        className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-2"
-                                    >
-                                        {stat.value}
-                                    </motion.div>
-                                    <div
-                                        className={`text-xs uppercase tracking-widest font-semibold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}
-                                    >
-                                        {stat.label}
-                                    </div>
-                                </div>
-                            ))}
-                        </motion.div>
-                    </motion.div>
+                        <div>
+                             <h1 className="text-[32px] sm:text-[40px] font-black text-[#000000e6] leading-tight tracking-tighter">
+                                BMW M8 <span className="text-[#0a66c2]">Competition</span>
+                             </h1>
+                             <div className="flex items-center gap-4 mt-2">
+                                 <motion.div 
+                                    whileHover={{ x: 5 }}
+                                    className="flex items-center gap-1.5 border-r border-gray-100 pr-4 cursor-pointer"
+                                 >
+                                     <div className="bg-gray-100 p-1 rounded-sm text-gray-600 group-hover/hero:bg-[#0a66c2]/10 group-hover/hero:text-[#0a66c2] transition-colors">
+                                         <Activity size={12} />
+                                     </div>
+                                     <span className="text-[13px] font-bold text-gray-600">Performance Luxury</span>
+                                 </motion.div>
+                                 <div className="flex items-center gap-1.5">
+                                     <MapPin size={14} className="text-blue-500" />
+                                     <span className="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Financial District, Miami</span>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
 
-                    {/* RIGHT SIDE - PRICE CARD */}
-                    <div className="w-full lg:w-1/2 relative">
-                        <motion.div className="bg-white/95 backdrop-blur-xl border border-white/40 rounded-2xl p-6 shadow-2xl">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <div className="text-3xl font-bold text-slate-900">
-                                        $189
-                                        <span className="text-slate-500 text-lg">
-                                            /day
-                                        </span>
-                                    </div>
-                                    <div className="text-sm text-slate-400">
-                                        + taxes & fees
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <BadgeCheck
-                                        size={20}
-                                        className="text-blue-500"
-                                    />
-                                    <span className="text-sm text-slate-700">
-                                        Instant Confirm
-                                    </span>
-                                </div>
-                            </div>
+                    <div className="flex flex-col items-end gap-4 w-full md:w-auto">
+                        <div className="flex items-center gap-2">
+                             <div className="bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 flex items-center gap-2 group/audit cursor-help">
+                                <Star size={12} fill="#0a66c2" className="text-[#0a66c2] group-hover/audit:scale-125 transition-transform" />
+                                <span className="text-[12px] font-black text-gray-900">4.9</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none border-l border-gray-200 pl-2">Reliability Consensus</span>
+                             </div>
+                             
+                             <button 
+                                onClick={() => setIsBookmarked(!isBookmarked)}
+                                className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all ${
+                                    isBookmarked ? "bg-red-50 border-red-100 text-red-500" : "bg-white border-gray-200 text-gray-400 hover:text-red-500"
+                                } shadow-sm active:scale-95`}
+                             >
+                                <Heart size={16} fill={isBookmarked ? "currentColor" : "none"} />
+                             </button>
 
-                            <div className="space-y-3 mb-6">
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-600">
-                                        Minimum rental
-                                    </span>
-                                    <span className="font-medium text-slate-900">
-                                        3 days
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-600">
-                                        Security deposit
-                                    </span>
-                                    <span className="font-medium text-slate-900">
-                                        $500
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-600">
-                                        Free cancellation
-                                    </span>
-                                    <span className="font-medium text-green-600">
-                                        48 hours
-                                    </span>
-                                </div>
+                             <div className="relative">
+                                 <button 
+                                    onClick={copyProtocol}
+                                    className={`w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 transition-all shadow-sm ${
+                                        isShared ? "text-green-500 border-green-200 bg-green-50" : "text-gray-400 hover:text-[#0a66c2]"
+                                    }`}
+                                 >
+                                    {isShared ? <Check size={16} /> : <Share2 size={16} />}
+                                 </button>
+                                 <AnimatePresence>
+                                     {isShared && (
+                                         <motion.div 
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute bottom-full mb-3 right-0 whitespace-nowrap bg-gray-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-xl"
+                                         >
+                                             Link Copied to Clipboard
+                                         </motion.div>
+                                     )}
+                                 </AnimatePresence>
+                             </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-4">
+                            <div className="text-right leading-none">
+                                <div className="text-[24px] font-black text-gray-900">$380</div>
+                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Acquisition Reserve</div>
                             </div>
-
-                            <div className="pt-4 border-t border-slate-200">
-                                <div className="text-sm text-slate-600 mb-2">
-                                    Estimated total for 3 days
-                                </div>
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="text-3xl font-bold text-blue-600">
-                                        $567
-                                    </div>
-                                    <div className="text-xs text-slate-500">
-                                        All inclusive
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={handleBookNow}
-                                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-xl hover:shadow-lg transition-all duration-300"
-                                >
-                                    Check Availability
-                                </button>
-                            </div>
-                        </motion.div>
+                            <button 
+                                onClick={handleBookNow}
+                                className="px-8 py-2.5 rounded-full bg-[#0a66c2] text-white text-[14px] font-bold hover:bg-[#004182] transition-all hover:shadow-[0_4px_12px_rgba(10,102,194,0.3)] active:scale-[0.98]"
+                            >
+                                Initiate Secure Acquisition
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </section>
-        </motion.div>
+
+                <div className="mt-10 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 pb-2">
+                    <FeatureBadge label="Series" val="2023 Edition" pulse />
+                    <FeatureBadge label="Trans" val="M-Steptronic" />
+                    <FeatureBadge label="Power" val="617 HP" />
+                    <FeatureBadge label="Grid" val="AWD Pro" />
+                    <FeatureBadge label="Manifest" val="Full Service" />
+                    <FeatureBadge label="Security" val="Tier 2 Plus" color="text-green-600" />
+                </div>
+            </div>
+        </section>
     );
 }
+
+const FeatureBadge = ({ label, val, pulse, color }) => (
+    <motion.div 
+        whileHover={{ y: -3, backgroundColor: "#fff" }}
+        className="bg-[#f3f7fb]/50 border border-transparent hover:border-[#0a66c2]/20 p-3 rounded-lg transition-all group cursor-default"
+    >
+        <div className="flex items-center justify-between mb-1">
+            <label className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.15em]">{label}</label>
+            {pulse && <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />}
+        </div>
+        <span className={`text-[12px] font-bold ${color || "text-gray-900"} group-hover:text-[#0a66c2] transition-colors`}>{val}</span>
+    </motion.div>
+);

@@ -1,207 +1,190 @@
-import React from "react";
-import { Zap, ArrowRight, Star } from "lucide-react"; // Sparkles এর বদলে Zap
+import React, { useState, useEffect } from "react";
+import { Zap, Verified, Check, ArrowRight, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
+
+/**
+ * INSTITUTIONAL PRICING ARCHITECTURE (LINKEDIN MASTER STYLE SYNC)
+ * 
+ * Philosophy:
+ * - Style Match: 1:1 synchronization with Category.jsx and Cars.jsx.
+ * - High Density: Tighter vertical spacing and compact module cards.
+ * - Technical Integrity: Clear pricing tiers without bulky tech-startup gradients.
+ * - Palette: #f3f2ef/40 background, pure white modular cards, #0a66c2 accents.
+ */
 
 const pricingData = [
     {
-        title: "Starter",
+        title: "Standard Plan",
+        id: "Tier 1",
         price: "299",
-        offer: "30% Offer",
+        description: "Essential mobility for short-term professional deployment.",
         features: [
-            "50% Downpayment",
-            "Insurance not Included",
-            "Doorstep Not Included",
-            "Roadside Assistance",
-            "Minimal Insurance Coverage",
-            "Additional Perks - GPS",
-            "No Flexible timing & extension",
+            "Standard Asset Allocation",
+            "Institutional Insurance (Base)",
+            "Terminal Pickup Required",
+            "24/7 Roadside Support",
+            "GPS Telematics Integration",
+            "Standard Extending Window",
         ],
         isRecommended: false,
-        isCustom: false,
     },
     {
-        title: "Premium",
+        title: "Executive Plan",
+        id: "Tier 2",
         price: "1299",
-        offer: "100% Offer",
+        description: "Priority access for high-frequency executive transit.",
         features: [
-            "25% Downpayment",
-            "Insurance Included",
-            "Doorstep Delivery Available",
-            "Roadside Assistance",
-            "Personal Injury Protection",
-            "Additional Perks GPS, Car Seat",
-            "Flexible timing & extension",
-        ],
-        isRecommended: false,
-        isCustom: false,
-    },
-    {
-        title: "Enterprise",
-        price: "1599",
-        features: [
-            "0% Downpayment",
-            "Insurance Included",
-            "Doorstep Delivery Available",
-            "Roadside Assistance",
-            "Personal Injury Protection",
-            "Additional Perks GPS, Car Seat",
-            "Flexible timing & extension",
+            "Premium Asset Allocation",
+            "Comprehensive Coverage (T2)",
+            "On-Demand Doorstep Delivery",
+            "Priority Roadside Support",
+            "Full VIP Support Console",
+            "Flexible Extension Protocol",
         ],
         isRecommended: true,
-        isCustom: false,
     },
     {
-        title: "Custom Plan",
-        price: "Contact Us",
+        title: "Enterprise Plan",
+        id: "Tier 3",
+        price: "1599",
+        description: "Scaling mobility solutions for large-scale institutional networks.",
         features: [
-            "Weekend/Weekly Deals",
-            "Membership Discounts",
-            "Insurance Upgrades",
-            "Personal Accident Insurance",
-            "Minimal Insurance Coverage",
-            "No Long term Commitment",
-            "Refundable Deposit",
-            "Priority Service",
+            "Elite Asset Allocation Only",
+            "Full Liability Protection (Institutional)",
+            "Global Deployment Console",
+            "Dedicated Account Manager",
+            "Enhanced Fleet Telematics",
+            "Custom Operational Protocol",
         ],
         isRecommended: false,
-        isCustom: true, // Special Blue/Cyan Card
+    },
+    {
+        title: "Custom Protocol",
+        id: "Vault",
+        price: "Contact",
+        description: "Bespoke fleet management for unique operational requirements.",
+        features: [
+            "Tailored Fleet Sourcing",
+            "Specific Risk Underwriting",
+            "Institutional Member Rates",
+            "No Commitment Deployment",
+            "Refundable Member Deposit",
+            "Direct API Integration",
+        ],
+        isRecommended: false,
     },
 ];
 
 export default function Pricing() {
     return (
-        <section className="py-24 bg-white font-sans relative overflow-hidden">
-            {/* Background Decoration */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-blue-50/30 -z-10 blur-3xl rounded-full" />
-
+        <section className="py-6 bg-transparent overflow-hidden font-sans">
             <div className="max-w-7xl mx-auto px-6">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 gap-6">
-                    <div className="text-center md:text-left">
-                        <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                            <Zap
-                                className="text-blue-500 fill-blue-500"
-                                size={18}
-                            />
-                            <span className="text-blue-600 font-bold tracking-widest uppercase text-sm">
-                                Pricing Plans
-                            </span>
+                
+                {/* --- COMPACT EXECUTIVE HEADER (MATCH SYNC) --- */}
+                <div className="flex items-center justify-between mb-10 border-b border-gray-100 pb-5">
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
+                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">Financial Architecture</span>
                         </div>
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                            Choose Your{" "}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                                Rental Plan
-                            </span>
+                        <h2 className="text-[22px] font-bold text-[#000000e6] tracking-tight">
+                            Institutional <span className="text-[#0a66c2]">Pricing Models</span>
                         </h2>
-                        <p className="text-gray-500 mt-4 text-lg font-medium">
-                            Flexible pricing options tailored to your journey
-                            and budget requirements.
-                        </p>
+                        <p className="text-[12.5px] text-gray-500 mt-1 font-medium italic">Standardized mobility tiers for secure asset acquisition and deployment.</p>
+                    </div>
+
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-gray-100 shadow-sm text-[10px] font-bold text-[#0a66c2] uppercase tracking-widest leading-none">
+                         <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                         Rates Verified
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+                {/* --- PRICING GRID --- */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {pricingData.map((plan, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className={`relative rounded-[2rem] p-8 border transition-all duration-500 flex flex-col ${
-                                plan.isCustom
-                                    ? "bg-slate-900 text-white border-transparent shadow-2xl shadow-blue-500/20"
-                                    : "bg-white border-gray-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_60px_-15px_rgba(59,130,246,0.1)]"
-                            }`}
+                            transition={{ delay: index * 0.05 }}
+                            whileHover={{ y: -4 }}
+                            className={`relative bg-white rounded-[12px] border ${
+                                plan.isRecommended ? "border-[#0a66c2]/50 shadow-md ring-1 ring-[#0a66c2]/10" : "border-gray-200 shadow-sm"
+                            } p-6 flex flex-col h-full group transition-all duration-300`}
                         >
-                            {/* Recommended Badge */}
-                            {plan.isRecommended && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-5 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold shadow-lg">
-                                    <Star size={12} fill="currentColor" />{" "}
-                                    Recommended
-                                </div>
-                            )}
-
-                            {/* Title & Price */}
-                            <div className="mb-8">
-                                <p
-                                    className={`font-bold text-sm uppercase tracking-widest mb-4 ${
-                                        plan.isCustom
-                                            ? "text-cyan-400"
-                                            : "text-blue-600"
-                                    }`}
-                                >
-                                    {plan.title}
-                                </p>
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="text-4xl font-black tracking-tighter mb-1">
-                                            {plan.price !== "Contact Us"
-                                                ? `$${plan.price}`
-                                                : plan.price}
-                                        </h3>
-                                        {plan.price !== "Contact Us" && (
-                                            <p
-                                                className={`text-sm font-bold ${
-                                                    plan.isCustom
-                                                        ? "text-slate-400"
-                                                        : "text-gray-400"
-                                                }`}
-                                            >
-                                                Per Month
-                                            </p>
-                                        )}
+                            {/* Tier Identifier */}
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-[10px] font-black text-[#0a66c2] uppercase tracking-[0.2em]">{plan.id}</span>
+                                {plan.isRecommended && (
+                                    <div className="flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-md">
+                                        <ShieldCheck size={10} className="text-[#0a66c2]" />
+                                        <span className="text-[9px] font-black text-[#0a66c2] uppercase">Recommended</span>
                                     </div>
+                                )}
+                            </div>
 
-                                    {plan.offer && (
-                                        <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">
-                                            {plan.offer}
-                                        </span>
+                            <div className="mb-6">
+                                <h3 className="text-[18px] font-bold text-gray-900 leading-tight mb-1">{plan.title}</h3>
+                                <p className="text-[12px] text-gray-400 font-medium leading-snug line-clamp-2">{plan.description}</p>
+                            </div>
+
+                            <div className="mb-8">
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-[28px] font-black text-gray-900 leading-none">
+                                        {plan.price !== "Contact" ? `$${plan.price}` : plan.price}
+                                    </span>
+                                    {plan.price !== "Contact" && (
+                                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest leading-none">/ 30 Days</span>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Features List */}
-                            <div className="space-y-4 mb-10 flex-1">
+                            {/* Features Manifest (Icon-Free Style) */}
+                            <div className="space-y-3 mb-8 flex-1">
                                 {plan.features.map((feature, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex items-start gap-3"
-                                    >
-                                        <Zap
-                                            size={14}
-                                            className={`${
-                                                plan.isCustom
-                                                    ? "text-cyan-400"
-                                                    : "text-blue-500"
-                                            } mt-1 flex-shrink-0 fill-current`}
-                                        />
-                                        <span
-                                            className={`text-sm font-semibold leading-snug ${
-                                                plan.isCustom
-                                                    ? "text-slate-300"
-                                                    : "text-gray-600"
-                                            }`}
-                                        >
+                                    <div key={i} className="flex items-start gap-2.5">
+                                        <div className="shrink-0 w-3.5 h-3.5 rounded-full bg-blue-50 flex items-center justify-center mt-0.5">
+                                             <Check size={10} className="text-[#0a66c2]" strokeWidth={3} />
+                                        </div>
+                                        <span className="text-[12px] font-bold text-gray-600 leading-tight">
                                             {feature}
                                         </span>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Button */}
-                            <button
-                                className={`w-full py-4 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all duration-300 ${
-                                    plan.isCustom
-                                        ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
-                                        : "bg-slate-900 text-white hover:bg-blue-600"
-                                }`}
-                            >
-                                Choose Plan <ArrowRight size={18} />
-                            </button>
+                            {/* LinkedIn Primary Button Protocol */}
+                            <div className="mt-auto">
+                                <button className={`w-full py-2.5 px-4 rounded-full font-bold text-[13px] transition-all duration-200 active:scale-[0.98] ${
+                                    plan.isRecommended 
+                                        ? "bg-[#0a66c2] text-white hover:bg-[#004182] shadow-sm" 
+                                        : "border border-[#0a66c2] text-[#0a66c2] hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2]"
+                                }`}>
+                                    {plan.price === "Contact" ? "Request Quote" : "Acquire Protocol"}
+                                </button>
+                            </div>
                         </motion.div>
                     ))}
                 </div>
+
+                {/* --- ADDITIONAL INFO BAR --- */}
+                <div className="mt-8 py-4 px-6 bg-slate-100/50 rounded-[12px] border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                     <div className="flex items-center gap-4">
+                         <div className="flex -space-x-2">
+                             {[1,2,3].map(i => (
+                                 <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+                                     <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" className="w-full h-full object-cover" />
+                                 </div>
+                             ))}
+                         </div>
+                         <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Joined by 3,400+ Institutional Members</p>
+                     </div>
+                     <button className="flex items-center gap-1.5 text-[11px] font-black text-[#0a66c2] uppercase tracking-widest hover:underline">
+                         View Regional Pricing Models <ArrowRight size={14} />
+                     </button>
+                </div>
+
             </div>
         </section>
     );

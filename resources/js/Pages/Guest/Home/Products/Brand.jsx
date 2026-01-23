@@ -1,215 +1,198 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
-import { ChevronLeft, ChevronRight, Zap } from "lucide-react"; // Sparkles এর বদলে Zap
+import { ChevronLeft, ChevronRight, ArrowRight, Verified, Star } from "lucide-react";
 import { motion } from "framer-motion";
+
 import "swiper/css";
 import "swiper/css/navigation";
 
+/**
+ * BRAND DIRECTORY (EXACT CATEGORY SYNC)
+ * 
+ * Philosophy:
+ * - Style Match: 1:1 synchronization with Category.jsx (Short-card, Cinematic).
+ * - Aspect Ratio: aspect-[21/9] for that ultra-wide professional film look.
+ * - Interactive: Vibration hover, backdrop center-action, top-right hidden badge.
+ * - Palette: #f3f2ef/70 background, Pure white modular cards.
+ */
+
 const brands = [
     {
-        id: 1,
-        name: "BMW",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg",
-        color: "#0066B1",
-    },
-    {
-        id: 2,
-        name: "Mercedes",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
-        color: "#242424",
-    },
-    {
-        id: 3,
-        name: "Audi",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/9/92/Audi-Logo_2016.svg",
-        color: "#000000",
-    },
-    {
-        id: 4,
-        name: "Tesla",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png",
-        color: "#E31937",
-    },
-    {
-        id: 5,
         name: "Porsche",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/3/38/Porsche_logo.png",
-        color: "#BF0D2A",
+        cars: 12,
+        logo: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Porsche_logo.svg",
+        img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800",
+        description: "German engineering excellence in high-performance assets."
     },
     {
-        id: 6,
+        name: "BMW",
+        cars: 48,
+        logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/BMW_logo.svg",
+        img: "https://images.unsplash.com/photo-1542362567-b05503f3f5f4?w=800",
+        description: "The definitive standard for executive luxury mobility."
+    },
+    {
+        name: "Mercedes",
+        cars: 35,
+        logo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Benz_logo.svg",
+        img: "https://images.unsplash.com/photo-1541443131876-44b035dd1c51?w=800",
+        description: "Uncompromising comfort and prestige for global leaders."
+    },
+    {
+        name: "Tesla",
+        cars: 24,
+        logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg",
+        img: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?w=800",
+        description: "Next-generation energy and innovation in executive travel."
+    },
+    {
+        name: "Audi",
+        cars: 30,
+        logo: "https://upload.wikimedia.org/wikipedia/commons/9/92/Audi_logo.svg",
+        img: "https://images.unsplash.com/photo-1603584173870-7f3bc1707294?w=800",
+        description: "Sophisticated technology meets sleek professional design."
+    },
+    {
         name: "Lexus",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/5/50/Lexus_Logo_2020.svg",
-        color: "#1C1C1C",
-    },
-    {
-        id: 7,
-        name: "Lamborghini",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/d/df/Lamborghini_Logo.svg",
-        color: "#FFC107",
-    },
-    {
-        id: 8,
-        name: "Ferrari",
-        logo: "https://upload.wikimedia.org/wikipedia/en/d/d1/Ferrari-Logo.svg",
-        color: "#D40000",
-    },
+        cars: 20,
+        logo: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Lexus_logo.svg",
+        img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800",
+        description: "Refined hybrid performance and institutional reliability."
+    }
 ];
 
-export default function FixedBrandSlider() {
-    const brandPrevRef = useRef(null);
-    const brandNextRef = useRef(null);
-    const [brandSwiperInstance, setBrandSwiperInstance] = useState(null);
-    const [hoveredBrand, setHoveredBrand] = useState(null);
+export default function BrandSlider() {
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
+    const [isInit, setIsInit] = useState(false);
 
     useEffect(() => {
-        if (brandSwiperInstance) {
-            brandSwiperInstance.params.navigation.prevEl = brandPrevRef.current;
-            brandSwiperInstance.params.navigation.nextEl = brandNextRef.current;
-            brandSwiperInstance.navigation.init();
-            brandSwiperInstance.navigation.update();
-        }
-    }, [brandSwiperInstance]);
+        setIsInit(true);
+    }, []);
 
     return (
-        <section className="w-full py-20 bg-gray-50">
-            <div className="w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+        <section className="w-full bg-transparent py-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                
+                {/* --- PROFESSIONAL HEADER (EXACT SYNC) --- */}
+                <div className="flex items-center justify-between mb-8">
                     <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <Zap className="text-blue-600 w-5 h-5 fill-blue-600" />
-                            <span className="text-blue-600 font-bold tracking-widest uppercase text-sm">
-                                Trusted Brands
-                            </span>
-                        </div>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-3">
-                            Premium Automotive{" "}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                                Partners
-                            </span>
+                        <h2 className="text-[20px] font-bold text-[#000000e6] leading-tight">
+                            Explore Trusted Brands
                         </h2>
-                        <p className="text-gray-600 text-base md:text-lg max-w-lg">
-                            Partnering with the world's finest automotive
-                            manufacturers
-                        </p>
+                        <p className="text-[13px] text-gray-500 mt-1">Directly integrated with elite automotive manufacturers</p>
                     </div>
 
-                    {/* Brand Navigation Buttons - Design Kept, Colors Updated */}
-                    <div className="flex gap-2">
+                    {/* Minimalist Controls */}
+                    <div className="flex gap-1.5">
                         <button
-                            ref={brandPrevRef}
-                            className="group w-12 h-12 md:w-14 md:h-14 rounded-full border border-gray-200 bg-white
-                                flex items-center justify-center hover:bg-blue-600 transition-all duration-300
-                                shadow-sm hover:shadow-md"
+                            ref={prevRef}
+                            className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors shadow-sm"
                         >
-                            <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-white transition-colors" />
+                            <ChevronLeft size={18} />
                         </button>
                         <button
-                            ref={brandNextRef}
-                            className="group w-12 h-12 md:w-14 md:h-14 rounded-full border border-gray-100 bg-white
-                                flex items-center justify-center hover:bg-blue-600 transition-all duration-300
-                                shadow-sm hover:shadow-md"
+                            ref={nextRef}
+                            className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors shadow-sm"
                         >
-                            <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-white transition-colors" />
+                            <ChevronRight size={18} />
                         </button>
                     </div>
                 </div>
 
-                {/* Swiper remains the same... */}
-                <div className="relative">
+                {/* --- CARDS SLIDER --- */}
+                <div className="relative group/swiper overflow-hidden">
                     <Swiper
                         modules={[Navigation, Autoplay]}
-                        spaceBetween={24}
-                        slidesPerView={2}
+                        spaceBetween={12}
+                        slidesPerView={1.2}
                         loop={true}
-                        speed={800}
-                        autoplay={{
-                            delay: 3000,
-                            disableOnInteraction: false,
-                            pauseOnMouseEnter: true,
-                        }}
+                        speed={500}
+                        autoplay={{ delay: 6000, disableOnInteraction: false }}
                         navigation={{
-                            prevEl: brandPrevRef.current,
-                            nextEl: brandNextRef.current,
+                            prevEl: prevRef.current,
+                            nextEl: nextRef.current,
                         }}
-                        onSwiper={setBrandSwiperInstance}
+                        onSwiper={(swiper) => {
+                            if (prevRef.current && nextRef.current) {
+                                swiper.params.navigation.prevEl = prevRef.current;
+                                swiper.params.navigation.nextEl = nextRef.current;
+                                swiper.navigation.init();
+                                swiper.navigation.update();
+                            }
+                        }}
                         breakpoints={{
                             480: { slidesPerView: 2.2 },
-                            640: { slidesPerView: 3 },
-                            768: { slidesPerView: 4 },
-                            1024: { slidesPerView: 5 },
-                            1280: { slidesPerView: 6 },
+                            768: { slidesPerView: 3.2 },
+                            1024: { slidesPerView: 4 },
+                            1280: { slidesPerView: 5 },
                         }}
-                        className="!pb-8"
+                        className="w-full"
                     >
                         {brands.map((brand, i) => (
-                            <SwiperSlide key={brand.id}>
+                            <SwiperSlide key={i}>
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: i * 0.08 }}
-                                    whileHover={{ y: -10 }}
-                                    onMouseEnter={() =>
-                                        setHoveredBrand(brand.id)
-                                    }
-                                    onMouseLeave={() => setHoveredBrand(null)}
-                                    className="group cursor-pointer"
+                                    whileHover={{ y: -4 }}
+                                    className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full group"
                                 >
-                                    <div
-                                        className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm
-                                        hover:shadow-xl transition-all duration-500 hover:border-gray-200"
-                                    >
-                                        <div className="relative w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-                                            <motion.div
-                                                animate={{
-                                                    scale:
-                                                        hoveredBrand ===
-                                                        brand.id
-                                                            ? 1.5
-                                                            : 0,
-                                                    opacity:
-                                                        hoveredBrand ===
-                                                        brand.id
-                                                            ? 0.3
-                                                            : 0,
-                                                }}
-                                                className="absolute inset-0 rounded-full blur-xl"
-                                                style={{
-                                                    backgroundColor: "#3b82f6",
-                                                }}
-                                            />
-                                            <motion.img
-                                                src={brand.logo}
-                                                alt={brand.name}
-                                                className="relative max-w-full max-h-16 object-contain"
-                                                animate={{
-                                                    scale:
-                                                        hoveredBrand ===
-                                                        brand.id
-                                                            ? 1.1
-                                                            : 1,
-                                                }}
-                                                transition={{ duration: 0.3 }}
-                                            />
+                                    {/* --- MEDIA (EXACT CATEGORY SYNC - 21/9) --- */}
+                                    <div className="relative aspect-[21/9] bg-gray-900 overflow-hidden">
+                                        <motion.img
+                                            src={brand.img}
+                                            alt={brand.name}
+                                            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700"
+                                            whileHover={{ 
+                                                scale: 1.2,
+                                                x: [0, -5, 5, 0], // Cinematic Vibration
+                                            }}
+                                            transition={{ duration: 1.5, ease: "easeOut" }}
+                                        />
+                                        
+                                        {/* Light Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#0a66c2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                        
+                                        {/* Hidden Badge Sync */}
+                                        <div className="absolute top-2 right-2 translate-y-[-10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-lg">
+                                                <Star size={10} className="text-[#0a66c2] fill-[#0a66c2]" />
+                                            </div>
                                         </div>
-                                        <div className="text-center">
-                                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                                {brand.name}
-                                            </h3>
-                                            <motion.div
-                                                className="w-6 h-0.5 mx-auto bg-gradient-to-r from-blue-600 to-cyan-500"
-                                                animate={{
-                                                    width:
-                                                        hoveredBrand ===
-                                                        brand.id
-                                                            ? "3rem"
-                                                            : "1.5rem",
-                                                }}
-                                                transition={{ duration: 0.3 }}
-                                            />
+
+                                        {/* Center Action */}
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/10 backdrop-blur-[2px]">
+                                            <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center scale-50 group-hover:scale-100 transition-transform duration-500 shadow-xl">
+                                                <ArrowRight size={18} className="text-[#0a66c2]" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* --- CONTENT (EXACT CATEGORY SYNC) --- */}
+                                    <div className="p-4 flex flex-col items-center text-center flex-1">
+                                        {/* Floating Logo (Floating Icon Match) */}
+                                        <div className="mb-1 w-12 h-12 rounded-xl bg-white flex items-center justify-center p-2.5 -mt-10 relative z-10 border border-gray-100 shadow-[0_8px_20px_rgba(0,0,0,0.06)] group-hover:border-[#0a66c2] transition-colors duration-500">
+                                            <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500" />
+                                        </div>
+                                        
+                                        <h4 className="text-[14px] font-bold text-gray-900 mb-0.5 mt-2 transition-colors duration-300 group-hover:text-[#0a66c2]">
+                                            {brand.name} Fleet
+                                        </h4>
+                                        <div className="flex items-center gap-1.5 mb-3">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                            <span className="text-[11px] font-bold text-gray-400">
+                                                {brand.cars} Active Units
+                                            </span>
+                                        </div>
+                                        
+                                        <p className="text-[12px] text-gray-400 line-clamp-2 leading-relaxed mb-4 group-hover:text-gray-500 transition-colors">
+                                            {brand.description}
+                                        </p>
+
+                                        {/* Action Button: Style Match */}
+                                        <div className="mt-auto w-full">
+                                            <button className="w-full py-[5px] px-4 rounded-full border border-[#0a66c2] text-[#0a66c2] text-[14px] font-semibold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]">
+                                                View Collection
+                                            </button>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -218,6 +201,12 @@ export default function FixedBrandSlider() {
                     </Swiper>
                 </div>
             </div>
+
+            <style jsx global>{`
+                .swiper-slide {
+                    height: auto !important;
+                }
+            `}</style>
         </section>
     );
 }

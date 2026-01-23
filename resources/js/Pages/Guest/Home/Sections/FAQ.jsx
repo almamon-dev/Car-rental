@@ -1,134 +1,197 @@
-import React, { useState } from "react";
-import { Plus, Minus, Zap } from "lucide-react"; // Zap আইকন যোগ করা হয়েছে
+import React, { useState, useMemo } from "react";
+import { ArrowRight, Verified, Search, HelpCircle, ShieldCheck, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+/**
+ * ALTERNATIVE INTERACTIVE FAQ (EXECUTIVE SEARCH DIRECTORY)
+ * 
+ * Philosophy:
+ * - Search-First: A professional utility with real-time filtering.
+ * - Grid-Modular: Cards instead of a vertical list for a "Knowledge Base" feel.
+ * - High Density: Compact typography and spatial efficiency.
+ * - Style Sync: LinkedIn Light palette with #0a66c2 accents.
+ */
 
 const faqData = [
     {
-        question: "How old do I need to be to rent a car?",
-        answer: "Typically, you must be at least 21 years old, though some premium models may require you to be 25 or older.",
+        id: "PROTOCOL-01",
+        category: "Requirements",
+        question: "What is the mandatory age requirement?",
+        answer: "Standard administrative protocol requires members to be at least 21 years of age. For Tier-1 High-Performance assets, a 25-year threshold is enforced.",
     },
     {
-        question: "What documents do I need to rent a car?",
-        answer: "Generally, you need a valid driver's license and proof of insurance. International travelers may need an International Driving Permit (IDP).",
+        id: "PROTOCOL-02",
+        category: "Documents",
+        question: "Which documents are required?",
+        answer: "Valid government operator license and verified institutional insurance. International operatives must present a global permit.",
     },
     {
-        question: "What types of vehicles are available for rent?",
-        answer: "We offer a wide range from compact city cars and luxury sedans to spacious SUVs and premium high-performance sports cars.",
+        id: "PROTOCOL-03",
+        category: "Fleet",
+        question: "What assets are available within the matrix?",
+        answer: "Spans compact urban utility modules, executive sedans, COMMAND-class SUVs, and elite high-performance units.",
     },
     {
-        question: "Can I rent a car with a debit card?",
-        answer: "Yes, we accept major debit cards, though a security deposit may be held during the rental period depending on your chosen plan.",
+        id: "PROTOCOL-04",
+        category: "Billing",
+        question: "Is acquisition possible via debit interfaces?",
+        answer: "Yes. Major debit rails are supported; a security escrow may be held depending on your membership tier.",
     },
     {
-        question: "What is your fuel policy?",
-        answer: "We operate on a full-to-full policy. You'll receive the car with a full tank and should return it full to avoid refueling charges.",
+        id: "PROTOCOL-05",
+        category: "Logistics",
+        question: "What is the fuel replenishment policy?",
+        answer: "1:1 parity protocol. Assets are deployed full and must be returned full to bypass refueling surcharges.",
     },
     {
-        question: "Can I add additional drivers to my rental agreement?",
-        answer: "Absolutely. Additional drivers can be added at the time of pickup, provided they meet our age and licensing requirements.",
+        id: "PROTOCOL-06",
+        category: "Account",
+        question: "Can additional operatives be added?",
+        answer: "Positive. Secondary operators can be authorized at acquisition, provided they clear verification protocols.",
     },
 ];
 
+const categories = ["All", "Requirements", "Documents", "Fleet", "Billing", "Logistics", "Account"];
+
 export default function FAQ() {
-    const [openIndex, setOpenIndex] = useState(0); // প্রথমটি ডিফল্টভাবে খোলা রাখার জন্য
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeCategory, setActiveCategory] = useState("All");
+    const [openId, setOpenId] = useState(null);
+
+    const filteredFaqs = useMemo(() => {
+        return faqData.filter(faq => {
+            const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesCategory = activeCategory === "All" || faq.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+    }, [searchQuery, activeCategory]);
 
     return (
-        <section className="py-24 bg-white font-sans relative overflow-hidden">
-            {/* Background Decorative */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-blue-50/20 -z-10 blur-xl rounded-full" />
-
-            <div className="max-w-4xl mx-auto px-6">
-                {/* Header Section */}
-                <div className="text-center mb-16">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                        <Zap
-                            className="text-blue-500 fill-blue-500"
-                            size={18}
-                        />
-                        <span className="text-blue-600 font-bold tracking-widest uppercase text-sm">
-                            Support Center
-                        </span>
-                    </div>
-                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                        Frequently Asked{" "}
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                            Questions
-                        </span>
-                    </h2>
-                    <p className="text-gray-500 mt-4 text-lg font-medium">
-                        Explore to learn more about how we can empower your
-                        journey.
-                    </p>
-                </div>
-
-                {/* Accordion List */}
-                <div className="space-y-4">
-                    {faqData.map((faq, index) => (
-                        <div
-                            key={index}
-                            className={`rounded-xl border transition-all duration-300 ${
-                                openIndex === index
-                                    ? "border-blue-100 bg-blue-50/30"
-                                    : "border-gray-100 bg-white"
-                            }`}
-                        >
-                            <button
-                                onClick={() =>
-                                    setOpenIndex(
-                                        openIndex === index ? -1 : index
-                                    )
-                                }
-                                className="w-full flex justify-between items-center text-left p-6 group"
-                            >
-                                <span
-                                    className={`text-lg font-bold transition-colors ${
-                                        openIndex === index
-                                            ? "text-blue-600"
-                                            : "text-slate-800 group-hover:text-blue-500"
-                                    }`}
-                                >
-                                    {faq.question}
-                                </span>
-
-                                {/* Icon Circle Toggle */}
-                                <div
-                                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
-                                        openIndex === index
-                                            ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 rotate-180"
-                                            : "bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-500"
-                                    }`}
-                                >
-                                    {openIndex === index ? (
-                                        <Minus size={20} />
-                                    ) : (
-                                        <Plus size={20} />
-                                    )}
-                                </div>
-                            </button>
-
-                            {/* Animated Answer Section with Framer Motion */}
-                            <AnimatePresence>
-                                {openIndex === index && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{
-                                            duration: 0.3,
-                                            ease: "easeInOut",
-                                        }}
-                                    >
-                                        <div className="px-6 pb-6">
-                                            <p className="text-slate-600 leading-relaxed max-w-2xl text-base">
-                                                {faq.answer}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+        <section className="py-6 bg-transparent overflow-hidden font-sans relative">
+            <div className="max-w-7xl mx-auto px-6">
+                
+                {/* --- COMPACT EXECUTIVE HEADER (SEARCH INTEGRATED) --- */}
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
+                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">Institutional Support</span>
                         </div>
-                    ))}
+                        <h2 className="text-[24px] font-bold text-[#000000e6] tracking-tight">
+                            Operational <span className="text-[#0a66c2]">Knowledge Matrix</span>
+                        </h2>
+                    </div>
+
+                    {/* LinkedIn Style Search Bar */}
+                    <div className="relative w-full lg:w-[320px]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                        <input 
+                            type="text"
+                            placeholder="Find specific protocol..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-[#edf3f8] border border-transparent focus:border-[#0a66c2] focus:bg-white rounded-[4px] text-[13px] font-medium text-gray-900 placeholder:text-gray-500 outline-none transition-all"
+                        />
+                    </div>
                 </div>
+
+                {/* --- FILTER CHIPS (LINKEDIN STYLE) --- */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                     {categories.map(cat => (
+                         <button
+                            key={cat}
+                            onClick={() => setActiveCategory(cat)}
+                            className={`px-4 py-1.5 rounded-full text-[11px] font-bold transition-all border ${
+                                activeCategory === cat 
+                                    ? "bg-[#0a66c2] text-white border-[#0a66c2] shadow-sm" 
+                                    : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
+                            }`}
+                         >
+                            {cat}
+                         </button>
+                     ))}
+                </div>
+
+                {/* --- INTERACTIVE GRID --- */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <AnimatePresence mode="popLayout">
+                        {filteredFaqs.map((faq) => (
+                            <motion.div
+                                layout
+                                key={faq.id}
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.98 }}
+                                transition={{ duration: 0.2 }}
+                                className={`group relative rounded-[8px] border p-4 transition-all duration-300 ${
+                                    openId === faq.id 
+                                        ? "border-[#0a66c2] bg-[#f3f7fb] ring-1 ring-[#0a66c2]/10" 
+                                        : "border-gray-200 bg-white hover:border-gray-300"
+                                }`}
+                            >
+                                <div className="flex flex-col h-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[9px] font-black text-[#0a66c2] uppercase tracking-widest">{faq.category}</span>
+                                        <Info size={12} className="text-gray-300 group-hover:text-gray-400" />
+                                    </div>
+                                    
+                                    <h3 className="text-[14px] font-bold text-[#000000e6] leading-snug pr-4 mb-2">
+                                        {faq.question}
+                                    </h3>
+
+                                    <div className="mt-auto pt-2">
+                                        <button 
+                                            onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
+                                            className="text-[11px] font-black text-[#0a66c2] uppercase tracking-widest hover:underline flex items-center gap-1"
+                                        >
+                                            {openId === faq.id ? "Minimize Brief" : "Access Brief"}
+                                            <ArrowRight size={12} className={`transition-transform duration-300 ${openId === faq.id ? "-rotate-90" : ""}`} />
+                                        </button>
+                                    </div>
+
+                                    {/* Expansion Panel */}
+                                    <AnimatePresence>
+                                        {openId === faq.id && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="pt-3 mt-3 border-t border-gray-200">
+                                                    <p className="text-[12px] text-gray-500 font-medium leading-relaxed">
+                                                        {faq.answer}
+                                                    </p>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+
+                {/* --- EMPTY STATE --- */}
+                {filteredFaqs.length === 0 && (
+                    <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-[12px]">
+                         <HelpCircle size={40} className="text-gray-200 mx-auto mb-4" />
+                         <p className="text-[13px] font-bold text-gray-400 uppercase tracking-widest">No matching protocol found in database</p>
+                    </div>
+                )}
+
+                {/* --- CONCIERGE ACCESS (SYNCED) --- */}
+                <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 py-4 px-6 bg-slate-50 border border-gray-100 rounded-[8px]">
+                     <div className="flex items-center gap-3">
+                         <ShieldCheck size={16} className="text-[#0a66c2]" />
+                         <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest leading-none">Institutional Protocol Verification Level: Tier 1</span>
+                     </div>
+                     <button className="py-1.5 px-6 rounded-full bg-[#0a66c2] text-white text-[12px] font-bold hover:bg-[#004182] transition-all shadow-sm">
+                        Contact Command Center
+                     </button>
+                </div>
+
             </div>
         </section>
     );
