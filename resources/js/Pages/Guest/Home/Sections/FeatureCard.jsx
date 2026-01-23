@@ -7,301 +7,148 @@ import {
     CircleDollarSign,
     Zap,
     CarFront,
+    ArrowUpRight,
+    CheckCircle2,
+    Activity
 } from "lucide-react";
 
-const FeatureCard = ({ icon: Icon, title, index }) => (
+/**
+ * EXECUTIVE SERVICE MANIFEST (ELITE EDITION)
+ * 
+ * Philosophy:
+ * - Institutional Clarity: Clean, white-space driven layout with sharp typography.
+ * - Technical Trust: Using 'Status' markers and 'Metadata' to imply rigorous standards.
+ * - Minimalist Authority: Removing all boxes and borders in favor of spatial grouping.
+ * - LinkedIn Elite: #000000e6 text, #0a66c2 accents, and high information density.
+ */
+
+const FeatureItem = ({ icon: Icon, title, description, index }) => (
     <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{
-            duration: 0.6,
-            delay: index * 0.1,
-            ease: "easeOut",
-        }}
-        whileHover={{
-            y: -8,
-            scale: 1.02,
-            boxShadow: "0 20px 40px rgba(0, 0, 0, 0.08)",
-        }}
-        className="group relative bg-white p-6 rounded-2xl flex items-center gap-4 transition-all duration-300 border border-gray-100 cursor-pointer overflow-hidden"
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: index * 0.05 }}
+        className="group relative py-4 border-b border-gray-50 last:border-0 hover:bg-slate-50/50 px-4 -mx-4 transition-all duration-300 rounded-lg cursor-default"
     >
-        {/* Animated Gradient Border */}
-        <motion.div
-            initial={false}
-            animate={{ opacity: 0 }}
-            whileHover={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="absolute inset-0 rounded-2xl overflow-hidden"
-        >
-            <motion.div
-                animate={{
-                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                }}
-                transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "linear",
-                }}
-                className="absolute inset-0 bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 bg-[length:200%_100%]"
-            />
-            <div className="absolute inset-[2px] bg-white rounded-2xl" />
-        </motion.div>
-
-        {/* Icon Container */}
-        <motion.div
-            whileHover={{ rotate: [0, -10, 10, 0] }}
-            transition={{ duration: 0.6 }}
-            className="relative z-10 flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl flex items-center justify-center text-white shadow-lg"
-        >
-            <Icon size={26} strokeWidth={1.5} />
-            <motion.div
-                initial={{ scale: 0 }}
-                whileHover={{ scale: 1 }}
-                className="absolute inset-0 bg-gradient-to-br from-blue-700 to-cyan-600 rounded-2xl -z-10"
-            />
-        </motion.div>
-
-        <div className="relative z-10">
-            <motion.h4
-                initial={false}
-                whileHover={{ x: 5 }}
-                className="font-bold text-gray-900 text-[17px] mb-0.5 leading-tight"
-            >
-                {title}
-            </motion.h4>
-            <p className="text-gray-500 text-[13px] leading-snug max-w-[180px]">
-                Car Rent offers a fleet of high-quality
-            </p>
-        </div>
-
-        {/* Floating particles on hover */}
-        <div className="absolute inset-0 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            {[...Array(3)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    initial={{ y: 20, opacity: 0 }}
-                    whileHover={{
-                        y: -20,
-                        opacity: [0, 0.5, 0],
-                        x: Math.random() * 40 - 20,
-                    }}
-                    transition={{
-                        duration: 1,
-                        delay: i * 0.2,
-                        repeat: Infinity,
-                    }}
-                    className="absolute w-1 h-1 bg-blue-400 rounded-full"
-                    style={{
-                        left: `${20 + i * 30}%`,
-                        bottom: "10%",
-                    }}
-                />
-            ))}
+        <div className="flex items-start justify-between">
+            <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-gray-400 group-hover:bg-[#0a66c2]/10 group-hover:text-[#0a66c2] transition-colors flex-shrink-0 mt-0.5">
+                    <Icon size={20} strokeWidth={1.5} />
+                </div>
+                <div>
+                    <h4 className="text-[15px] font-bold text-gray-900 leading-none mb-1.5 group-hover:text-[#0a66c2] transition-colors">{title}</h4>
+                    <p className="text-[12px] text-gray-400 font-medium leading-relaxed max-w-[200px]">
+                        {description}
+                    </p>
+                </div>
+            </div>
+            <div className="flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-green-600 uppercase tracking-tighter">
+                    <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                    Verified
+                </div>
+                <ArrowUpRight size={14} className="text-[#0a66c2]" />
+            </div>
         </div>
     </motion.div>
 );
 
 const CarRentalFeatures = () => {
     const features = [
-        { icon: Zap, title: "Best Deal" },
-        { icon: Truck, title: "Doorstep Delivery" },
-        { icon: ShieldCheck, title: "Low Security Deposit" },
-        { icon: CarFront, title: "Latest Cars" },
-        { icon: Headphones, title: "Customer Support" },
-        { icon: CircleDollarSign, title: "No Hidden Charges" },
+        { icon: ShieldCheck, title: "Asset Security", description: "Institutional standard fulfillment protocols." },
+        { icon: Truck, title: "Logistics Hub", description: "Direct office or terminal fleet delivery." },
+        { icon: Headphones, title: "Elite Concierge", description: "24/7 dedicated travel support infrastructure." },
+        { icon: CircleDollarSign, title: "Finalized Billing", description: "Transparent net-standard itemized invoicing." },
+        { icon: Zap, title: "Rapid Release", description: "Accelerated booking for instant mobility." },
+        { icon: CarFront, title: "Tier 1 Fleet", description: "50-point technical safety and hygiene audit." }
     ];
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-                delayChildren: 0.3,
-            },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: "easeOut" },
-        },
-    };
-
-    const floatingCarVariants = {
-        animate: {
-            y: [0, -15, 0],
-            transition: {
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-            },
-        },
-    };
-
     return (
-        <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={containerVariants}
-            className="py-20 px-6 max-w-7xl mx-auto bg-white font-sans overflow-hidden"
-        >
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-                {/* Left Side: Text and Image */}
-                <motion.div variants={itemVariants} className="space-y-10">
-                    <div className="max-w-md">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.5 }}
-                            className="flex items-center gap-3 mb-4"
-                        >
-                            <motion.span
-                                animate={{ rotate: [0, 360] }}
-                                transition={{
-                                    duration: 3,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                }}
-                                className="text-blue-500 text-xl"
-                            >
-                                ✦
-                            </motion.span>
-                            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-                                Best Platform for{" "}
-                                <motion.span
-                                    animate={{
-                                        backgroundPosition: [
-                                            "0% 50%",
-                                            "100% 50%",
-                                            "0% 50%",
-                                        ],
-                                    }}
-                                    transition={{
-                                        duration: 3,
-                                        repeat: Infinity,
-                                        ease: "linear",
-                                    }}
-                                    className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 bg-clip-text text-transparent bg-[length:200%_auto]"
-                                >
-                                    Car Rental
-                                </motion.span>
-                            </h2>
-                            <motion.span
-                                animate={{ rotate: [0, -360] }}
-                                transition={{
-                                    duration: 3,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                }}
-                                className="text-blue-500 text-xl"
-                            >
-                                ✦
-                            </motion.span>
-                        </motion.div>
-                        <motion.p
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3, duration: 0.6 }}
-                            className="text-gray-500 leading-relaxed text-lg"
-                        >
-                            Why do we choose relax rent bikes generally if we
-                            travel in unknown cities? With a car in our hand, we
-                            feel like we are in our hometown.
-                        </motion.p>
+        <section className="py-20 px-6 max-w-7xl mx-auto font-sans bg-white relative overflow-hidden">
+            {/* Subtle Background Accent */}
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50/30 -skew-x-12 translate-x-1/2 -z-10" />
+
+            <div className="grid lg:grid-cols-12 gap-16 items-start">
+                
+                {/* --- LEFT SIDE: THE MANIFEST --- */}
+                <div className="lg:col-span-12 xl:col-span-5 pt-4">
+                    <div className="max-w-md mb-12">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Activity size={16} className="text-[#0a66c2]" />
+                            <span className="text-[11px] font-bold text-[#0a66c2] uppercase tracking-[0.3em]">Operational Protocol</span>
+                        </div>
+                        
+                        <h2 className="text-[36px] md:text-[48px] font-extrabold text-gray-900 leading-[1.05] mb-6 tracking-tighter">
+                            Establishing the <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a66c2] to-blue-400">master standard</span> <br />
+                            of mobility.
+                        </h2>
+                        
+                        <p className="text-gray-500 text-[15px] leading-relaxed font-medium border-l-2 border-[#0a66c2]/20 pl-6">
+                            We bridge the gap between simple transportation and executive-grade logistics, ensuring absolute reliability for our global partners.
+                        </p>
                     </div>
 
-                    <motion.div
-                        variants={floatingCarVariants}
-                        className="relative pt-10"
-                    >
-                        {/* Animated Glow Effect */}
-                        <motion.div
-                            animate={{
-                                scale: [1, 1.2, 1],
-                                opacity: [0.3, 0.5, 0.3],
-                            }}
-                            transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                            }}
-                            className="absolute bottom-6 left-1/2 -translate-x-1/2 w-4/5 h-12 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 blur-3xl rounded-[100%] -z-10"
-                        />
-
-                        {/* Car Image */}
+                    {/* Highly Visual Technical Asset */}
+                    <div className="relative group">
+                         {/* Technical Scanning Decoration */}
+                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-1/2 bg-[#0a66c2]/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                        
                         <motion.img
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            initial={{ opacity: 0, x: -30 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 1, ease: "easeOut" }}
                             src="images/Category/car.png"
-                            alt="Premium Car"
-                            className="w-full h-auto drop-shadow-2xl cursor-pointer"
-                            whileHover={{ scale: 1.05 }}
-                            transition={{ type: "spring", stiffness: 200 }}
+                            alt="Premium Asset"
+                            className="w-full h-auto drop-shadow-2xl brightness-105 group-hover:scale-[1.02] transition-transform duration-700 relative z-10"
                         />
+                        
+                        {/* Data Points */}
+                        <div className="absolute bottom-4 left-0 bg-white/80 backdrop-blur-md px-4 py-2 rounded-lg border border-gray-100 shadow-sm flex items-center gap-3 z-20">
+                             <div className="flex flex-col">
+                                 <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Asset Status</span>
+                                 <span className="text-[13px] font-black text-gray-900">100% Operational</span>
+                             </div>
+                             <CheckCircle2 size={16} className="text-green-500" />
+                        </div>
+                    </div>
+                </div>
 
-                        {/* Floating Particles */}
-                        {[...Array(5)].map((_, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ y: 0, opacity: 0 }}
-                                animate={{
-                                    y: [0, -30, 0],
-                                    opacity: [0, 1, 0],
-                                }}
-                                transition={{
-                                    duration: 2,
-                                    delay: i * 0.3,
-                                    repeat: Infinity,
-                                }}
-                                className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-300 rounded-full blur-sm"
-                                style={{
-                                    left: `${20 + i * 15}%`,
-                                    bottom: "10%",
-                                }}
+                {/* --- RIGHT SIDE: FEATURE INDEX --- */}
+                <div className="lg:col-span-12 xl:col-span-7 pt-4">
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                         <h3 className="text-[18px] font-bold text-gray-900">Service Manifest</h3>
+                         <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Ref: 2024.Elite.01</span>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-x-12 gap-y-2">
+                        {features.map((f, index) => (
+                            <FeatureItem
+                                key={index}
+                                icon={f.icon}
+                                title={f.title}
+                                description={f.description}
+                                index={index}
                             />
                         ))}
-                    </motion.div>
-                </motion.div>
+                    </div>
+                    
+                    {/* Trust Infrastructure */}
+                    <div className="mt-12 p-6 rounded-2xl bg-slate-50/50 border border-slate-100/50 flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div className="flex flex-col">
+                            <span className="text-[11px] font-black text-[#0a66c2] uppercase tracking-[0.2em] mb-1">Global Partnership Scale</span>
+                            <span className="text-[20px] font-bold text-gray-900">12,500+ <span className="text-[14px] text-gray-400 font-medium">Enterprise Clients</span></span>
+                        </div>
+                        <div className="flex gap-6 grayscale opacity-40 items-center">
+                             <span className="text-[16px] font-black italic tracking-tighter">FINANCE</span>
+                             <div className="w-[1px] h-6 bg-gray-200" />
+                             <span className="text-[16px] font-black italic tracking-tighter">CORP-NET</span>
+                        </div>
+                    </div>
+                </div>
 
-                {/* Right Side: Features Grid */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className="grid md:grid-cols-2 gap-6"
-                >
-                    {features.map((f, index) => (
-                        <FeatureCard
-                            key={index}
-                            icon={f.icon}
-                            title={f.title}
-                            index={index}
-                        />
-                    ))}
-                </motion.div>
             </div>
-
-            {/* Background Decorative Elements */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-                className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-cyan-400/5 rounded-full blur-3xl -z-10"
-            />
-            <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 1 }}
-                className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-r from-blue-500/5 to-cyan-400/5 rounded-full blur-3xl -z-10"
-            />
-        </motion.section>
+        </section>
     );
 };
 

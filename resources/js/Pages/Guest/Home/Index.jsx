@@ -9,7 +9,7 @@ import RecommendedCars from "./Sections/RecommendedCars";
 import ClientsFeedback from "./Sections/ClientsFeedback";
 import Pricing from "./Sections/Pricing";
 import FAQ from "./Sections/FAQ";
-import FeatureCard from "./Sections/FeatureCard";
+import CarRentalFeatures from "./Sections/FeatureCard";
 import Cars from "./Products/Cars";
 import Category from "./Products/Category";
 import Brand from "./Products/Brand";
@@ -86,7 +86,7 @@ export default function Index() {
 
                     {/* Feature Cards */}
                     <motion.div variants={fadeUp}>
-                        <FeatureCard />
+                        <CarRentalFeatures />
                     </motion.div>
 
                     {/* Car Listings */}
