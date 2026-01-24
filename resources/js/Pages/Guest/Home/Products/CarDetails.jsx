@@ -6,17 +6,16 @@ import TabsContent from "./CarDetails/TabsContent";
 import BookingWidget from "./CarDetails/BookingWidget";
 import SimilarCars from "./CarDetails/SimilarCars";
 import BookingModal from "./CarDetails/BookingModal";
-import ContactSupport from "./CarDetails/ContactSupport";
 import { Skeleton } from "@/Components/ui/Skeleton";
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, Head } from "@inertiajs/react";
 
 /**
  * EXECUTIVE ASSET DETAILS (STAR TECH INSPIRED / LINKEDIN SYNC)
  * 
  * Philosophy:
- * - High Density: Tighter vertical and horizontal spacing for professional efficiency.
- * - Modular Content: Information grouped into clear, high-contrast containers.
- * - Palette: #f3f2ef/40 background, pure white modular cards, #0a66c2 primary accents.
+ * - High Density Tech (Star Tech Inspired): Extreme vertical/horizontal efficiency.
+ * - Sharp Modular Content: Information in high-contrast containers with minimal rounding.
+ * - Palette: Pure White (#ffffff) background, #084c8d primary accents, deep black text.
  */
 
 const CarDetailsSkeleton = () => (
@@ -101,6 +100,8 @@ export default function CarDetails({ car, locations }) {
     const [isBookmarked, setIsBookmarked] = useState(car.is_favorited || false);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
+    const [availability, setAvailability] = useState(null); // null, 'checking', 'available', 'busy'
+    const [rateMode, setRateMode] = useState("Daily"); // Daily, Weekly, Monthly
 
     const toggleFavorite = () => {
         if (!auth.user) {
@@ -126,10 +127,10 @@ export default function CarDetails({ car, locations }) {
     });
 
     const [bookingDates, setBookingDates] = useState({
-        pickup: "2026-02-10",
-        dropoff: "2026-02-15",
-        pickupTime: "10:00",
-        dropoffTime: "18:00",
+        pickup: "",
+        dropoff: "",
+        pickupTime: "",
+        dropoffTime: "",
     });
 
     const [priceSummary, setPriceSummary] = useState({
@@ -137,8 +138,50 @@ export default function CarDetails({ car, locations }) {
         insurance: 750,
         serviceFee: 250,
         extras: 0,
-        total: Number(car.price_details?.daily_rate || 0) + 750 + 250,
+        multiplier: 1,
+        total: (Number(car.price_details?.daily_rate || 0) * 1) + 750 + 250,
     });
+
+    useEffect(() => {
+        if (!bookingDates.pickup || !bookingDates.dropoff) {
+            setPriceSummary(prev => ({
+                ...prev,
+                multiplier: 0,
+                total: prev.insurance + prev.serviceFee + prev.extras
+            }));
+            return;
+        }
+
+        const start = new Date(`${bookingDates.pickup}T${bookingDates.pickupTime}`);
+        const end = new Date(`${bookingDates.dropoff}T${bookingDates.dropoffTime}`);
+        
+        let diffMs = end - start;
+        if (diffMs < 0) diffMs = 0;
+        
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24)) || 1;
+        
+        let multiplier = diffDays;
+        if (rateMode === 'Weekly') multiplier = Math.max(1, Math.ceil(diffDays / 7));
+        if (rateMode === 'Monthly') multiplier = Math.max(1, Math.ceil(diffDays / 30));
+
+        const rates = {
+            Daily: Number(car.price_details?.daily_rate || 0),
+            Weekly: Number(car.price_details?.weekly_rate || 0),
+            Monthly: Number(car.price_details?.monthly_rate || 0),
+        };
+
+        const currentBase = rates[rateMode];
+
+        setPriceSummary(prev => {
+            const newBaseTotal = currentBase * multiplier;
+            return {
+                ...prev,
+                baseRate: currentBase,
+                multiplier: multiplier,
+                total: newBaseTotal + prev.insurance + prev.serviceFee + prev.extras
+            };
+        });
+    }, [bookingDates, rateMode]);
 
     const [selectedExtras, setSelectedExtras] = useState([]);
 
@@ -146,6 +189,10 @@ export default function CarDetails({ car, locations }) {
         const timer = setTimeout(() => setIsLoading(false), 800);
         return () => clearTimeout(timer);
     }, []);
+
+    const handleRateModeChange = (mode) => {
+        setRateMode(mode);
+    };
 
     const handleExtraServiceToggle = (service) => {
         if (selectedExtras.includes(service.id)) {
@@ -171,7 +218,12 @@ export default function CarDetails({ car, locations }) {
 
     return (
         <GuestLayout>
-            <main className="bg-[#f3f2ef]/40 min-h-screen font-sans">
+            <Head>
+                <title>{`${car.brand?.name || car.make} ${car.model} (${car.year})`}</title>
+                <meta name="description" content={`Rent the ${car.brand?.name || car.make} ${car.model} ${car.year}. Features: ${car.transmission}, ${car.fuel_type}, ${car.mileage}. Book now for just ${car.currency}${Number(car.price_details?.daily_rate || 0).toLocaleString()} per day.`} />
+                <meta name="keywords" content={`${car.make} ${car.model}, rent ${car.make}, ${car.brand?.name} rental, luxury car hire, ${car.category?.name}`} />
+            </Head>
+            <main className="bg-white min-h-screen font-sans pb-12">
                 {/* Hero / Header Section Sync */}
                 <HeroSection
                     car={car}
@@ -180,13 +232,14 @@ export default function CarDetails({ car, locations }) {
                     hoveredButton={hoveredButton}
                     setHoveredButton={setHoveredButton}
                     handleBookNow={handleBookNow}
+                    availability={availability}
                 />
 
-                <div className="max-w-7xl mx-auto px-6 py-8">
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        {/* Primary Content (Directory Main Flow) */}
+                <div className="max-w-7xl mx-auto px-4 py-4">
+                    <div className="flex flex-col lg:flex-row gap-4">
+                        {/* Primary Content (Minimal Modular Flow) */}
                         <div className="lg:w-8/12 space-y-4">
-                            <div className="bg-white rounded-[12px] border border-gray-200 shadow-sm overflow-hidden p-1">
+                            <div className="bg-white rounded-[8px] border border-gray-200 shadow-sm overflow-hidden">
                                 <Gallery
                                     images={car.images}
                                     activeImageIndex={activeImageIndex}
@@ -194,7 +247,7 @@ export default function CarDetails({ car, locations }) {
                                 />
                             </div>
                             
-                            <div className="bg-white rounded-[12px] border border-gray-200 shadow-sm">
+                            <div className="bg-white rounded-[8px] border border-gray-200 shadow-sm">
                                 <TabsContent
                                     car={car}
                                     activeTab={activeTab}
@@ -206,7 +259,7 @@ export default function CarDetails({ car, locations }) {
                         </div>
 
                         {/* Sidebar (Acquisition Console) */}
-                        <div className="lg:w-4/12 space-y-6">
+                        <div className="lg:w-4/12 space-y-4">
                             <BookingWidget
                                 car={car}
                                 locations={locations}
@@ -220,14 +273,18 @@ export default function CarDetails({ car, locations }) {
                                     handleExtraServiceToggle
                                 }
                                 handleBookNow={handleBookNow}
+                                availability={availability}
+                                setAvailability={setAvailability}
+                                rateMode={rateMode}
+                                onRateModeChange={handleRateModeChange}
                             />
-                            <ContactSupport />
+                           
                         </div>
                     </div>
                 </div>
 
                 {/* Recommendations Footer */}
-                <div className="bg-white border-t border-gray-200 py-12">
+                <div className="bg-white py-12">
                     <SimilarCars />
                 </div>
 

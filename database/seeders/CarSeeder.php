@@ -58,7 +58,7 @@ class CarSeeder extends Seeder
             'pexels-wolfart-10822041.jpg',
         ];
 
-        $total = 20; // Seeding 20 realistic cars
+        $total = 2000; // Seeding 20 realistic cars
 
         for ($i = 0; $i < $total; $i++) {
             $modelData = $carModels[$i % count($carModels)];
@@ -68,6 +68,14 @@ class CarSeeder extends Seeder
 
             $brandId = $brand ? $brand->id : $brands->random()->id;
             $categoryId = $category ? $category->id : $categories->random()->id;
+
+            $transmission = Arr::random(['Automatic', 'Manual']);
+            $fuelType = Arr::random(['Petrol', 'Hybrid', 'Electric', 'Diesel']);
+            if ($modelData['category'] === 'Electric Vehicle') {
+                $fuelType = 'Electric';
+                $transmission = 'Automatic';
+            }
+            $baseRate = rand(150, 500) * 100;
 
             $car = \App\Models\Car::create([
                 'brand_id' => $brandId,
@@ -79,48 +87,69 @@ class CarSeeder extends Seeder
                 'rental_type' => 'daily',
                 'description' => "This is a premium {$modelData['make']} {$modelData['model']} available for executive rental. Perfect for business trips or luxury leisure. Maintained to Startech-grade standards.",
                 'status' => 'available',
+                'transmission' => $transmission,
+                'fuel_type' => $fuelType,
+                'mileage' => rand(8, 18).' km/L (Combined)',
+                'steering' => 'Precision Electronic Power Steering',
+                'engine_capacity' => ($fuelType === 'Electric' ? 'Electric Drive' : rand(2000, 4800).'cc Displacement'),
+                'color' => Arr::random(['Mineral White Metallic', 'Obsidion Black Pearl', 'Quicksilver Metallic', 'Deep Sea Blue Metallic', 'Guards Red Core', 'Daytona Grey Silk']),
+                'daily_rate' => $baseRate,
+                'weekly_rate' => $baseRate * 6,
+                'monthly_rate' => $baseRate * 22,
+                'currency' => '৳',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
             $carId = $car->id;
 
-            $this->insertRelatedData($carId, $i, $modelData);
+            $this->insertRelatedData($carId, $i, $modelData, $transmission, $fuelType, $baseRate);
 
-            // Gallery Images
-            $selectedImages = Arr::random($allImages, min(4, count($allImages)));
-            foreach ($selectedImages as $imgName) {
-                $sourcePath = public_path('images/cars/'.$imgName);
-                if (File::exists($sourcePath)) {
-                    $file = new UploadedFile($sourcePath, $imgName, mime_content_type($sourcePath), null, true);
-                    $uploadData = Helper::uploadFile($file, 'cars/gallery', true);
-                    if ($uploadData) {
-                        DB::table('car_images')->insert([
-                            'car_id' => $carId,
-                            'file_path' => $uploadData['original'],
-                            'thumbnail_path' => $uploadData['thumbnail'],
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
+            // Gallery Images - Optimized for large seeding
+            // For first 20 cars, we do real uploads, then reuse paths
+            static $uploadedPaths = [];
+            
+            if (count($uploadedPaths) < 15) {
+                $selectedImages = Arr::random($allImages, min(4, count($allImages)));
+                foreach ($selectedImages as $imgName) {
+                    $sourcePath = public_path('images/cars/'.$imgName);
+                    if (File::exists($sourcePath)) {
+                        $file = new UploadedFile($sourcePath, $imgName, mime_content_type($sourcePath), null, true);
+                        $uploadData = Helper::uploadFile($file, 'cars/gallery', true);
+                        if ($uploadData) {
+                            $pathData = [
+                                'file_path' => $uploadData['original'],
+                                'thumbnail_path' => $uploadData['thumbnail'],
+                            ];
+                            $uploadedPaths[] = $pathData;
+                            DB::table('car_images')->insert(array_merge($pathData, [
+                                'car_id' => $carId,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]));
+                        }
                     }
+                }
+            } else {
+                // Reuse existing paths to speed up significantly
+                $pathsToUse = Arr::random($uploadedPaths, 3);
+                foreach ($pathsToUse as $p) {
+                    DB::table('car_images')->insert(array_merge($p, [
+                        'car_id' => $carId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]));
                 }
             }
 
-            if (($i + 1) % 5 == 0) {
+            if (($i + 1) % 50 == 0) {
                 $this->command->info('Inserted '.($i + 1).' realistic cars...');
             }
         }
     }
 
-    private function insertRelatedData($carId, $i, $modelData)
+    private function insertRelatedData($carId, $i, $modelData, $transmission, $fuelType, $dailyRate)
     {
-        $transmission = Arr::random(['Automatic', 'Manual']);
-        $fuelType = Arr::random(['Petrol', 'Hybrid', 'Electric', 'Diesel']);
-        if ($modelData['category'] === 'Electric Vehicle') {
-            $fuelType = 'Electric';
-            $transmission = 'Automatic';
-        }
-
-        // Specifications
+        // Specifications (Duplicate for backward compatibility if needed)
         DB::table('car_specifications')->insert([
             'car_id' => $carId,
             'transmission' => $transmission,
@@ -135,12 +164,11 @@ class CarSeeder extends Seeder
         ]);
 
         // Pricing
-        $baseRate = rand(150, 500);
         DB::table('car_price_details')->insert([
             'car_id' => $carId,
-            'daily_rate' => $baseRate * 100, // Higher range for BDT
-            'weekly_rate' => $baseRate * 100 * 6,
-            'monthly_rate' => $baseRate * 100 * 22,
+            'daily_rate' => $dailyRate,
+            'weekly_rate' => $dailyRate * 6,
+            'monthly_rate' => $dailyRate * 22,
             'security_deposit' => 10000,
             'tax_percentage' => 5,
             'currency' => '৳',

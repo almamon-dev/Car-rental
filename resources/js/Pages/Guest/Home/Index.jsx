@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GuestLayout from "@/Layouts/GuestLayout";
+import { Head } from "@inertiajs/react";
 
 // Import all sections
 import HeroSection from "./Sections/Hero";
@@ -28,6 +29,11 @@ export default function Index({ categories, cars, brands, locations }) {
 
     return (
         <GuestLayout>
+            <Head>
+                <title>Home</title>
+                <meta name="description" content="Premium car rental services in Bangladesh. Rent top-quality executive cars, SUVs, and luxury vehicles at the best daily, weekly, and monthly rates." />
+                <meta name="keywords" content="car rental bangladesh, rent a car dhaka, luxury car rental, executive car hire, suv rental, toyota rental" />
+            </Head>
             <div className="bg-[#f3f2ef]/50 min-h-screen">
                 {/* Progress Bar */}
                 <ScrollProgress />

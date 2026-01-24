@@ -10,10 +10,11 @@ class Car extends Model
 {
     protected $fillable = [
         'make', 'model', 'slug', 'year', 'rental_type', 'description', 'brand_id', 'category_id', 'location_id',
-        'status',
+        'status', 'transmission', 'fuel_type', 'mileage', 'steering', 'engine_capacity', 'color',
+        'daily_rate', 'weekly_rate', 'monthly_rate', 'currency'
     ];
 
-    protected $appends = ['image_url', 'name'];
+    protected $appends = ['image_url', 'name', 'average_rating'];
 
     public function getImageUrlAttribute()
     {
@@ -85,5 +86,15 @@ class Car extends Model
     public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(CarReview::class)->latest();
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->where('status', 'approved')->avg('rating') ?: 5, 1);
     }
 }

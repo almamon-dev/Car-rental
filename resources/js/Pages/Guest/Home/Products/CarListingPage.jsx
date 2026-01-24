@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import GuestLayout from "@/Layouts/GuestLayout";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Link, router, usePage, Head } from "@inertiajs/react";
 import {
     Search,
     Filter,
@@ -175,8 +175,13 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
 
     return (
         <GuestLayout>
-            <div className="bg-[#f3f2ef] py-6 min-h-screen font-sans">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-6">
+            <Head>
+                <title>{filters.categories.length > 0 ? `${filters.categories[0].replace(/-/g, ' ')} Cars` : 'Browse Our Fleet'}</title>
+                <meta name="description" content="Explore our wide range of available cars for rent. Filter by category, brand, price, and location to find the perfect vehicle for your needs." />
+                <meta name="keywords" content="car list, car selection, toyota, bmw, audi, suv, sedan, rent a car fleet" />
+            </Head>
+            <div className="bg-[#f2f4f8] py-4 min-h-screen font-sans">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     
 
                     <div className="lg:grid lg:grid-cols-12 gap-5 items-start">
@@ -185,13 +190,13 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                         <aside className="lg:col-span-3 space-y-4 order-1 sticky top-6">
                             
                             {/* Filter Header with Clear Link */}
-                            <div className="bg-white rounded border border-gray-200 p-4 transition-all duration-300">
+                            <div className="bg-white rounded border border-gray-200 p-3 transition-all duration-300">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.filters}</h4>
                                     {hasActiveFilters && (
                                         <button 
                                             onClick={clearAllFilters}
-                                            className="text-[12px] font-bold text-[#0a66c2] hover:text-[#004182] hover:underline flex items-center gap-1 transition-all"
+                                            className="text-[12px] font-bold text-[#3749bb] hover:text-[#004182] hover:underline flex items-center gap-1 transition-all"
                                         >
                                             <span className="text-[14px]">×</span> {t.listing.clear_all}
                                         </button>
@@ -209,7 +214,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                                     <div className="relative h-8 w-full flex items-center mb-8">
                                         <div className="absolute w-full h-2.5 bg-gray-100 rounded-full border border-gray-200/50"></div>
                                         <div 
-                                            className="absolute h-2.5 bg-[#0a66c2] rounded-full"
+                                            className="absolute h-2.5 bg-[#3749bb] rounded-full"
                                             style={{ 
                                                 left: `${(filters.min_price / (maxPrice || 1)) * 100}%`, 
                                                 right: `${100 - (filters.max_price / (maxPrice || 1)) * 100}%` 
@@ -237,13 +242,13 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                                             type="number" 
                                             value={filters.min_price} 
                                             onChange={(e) => setFilters({ ...filters, min_price: Math.max(0, Number(e.target.value)) })}
-                                            className="w-full text-center px-3 py-2 border border-gray-200 rounded text-[14px] font-bold text-gray-700 outline-none focus:border-[#0a66c2]"
+                                            className="w-full text-center px-3 py-2 border border-gray-200 rounded text-[14px] font-bold text-gray-700 outline-none focus:border-[#3749bb]"
                                         />
                                         <input 
                                             type="number" 
                                             value={filters.max_price} 
                                             onChange={(e) => setFilters({ ...filters, max_price: Math.min(maxPrice, Number(e.target.value)) })}
-                                            className="w-full text-center px-3 py-2 border border-gray-200 rounded text-[14px] font-bold text-gray-700 outline-none focus:border-[#0a66c2]"
+                                            className="w-full text-center px-3 py-2 border border-gray-200 rounded text-[14px] font-bold text-gray-700 outline-none focus:border-[#3749bb]"
                                         />
                                     </div>
                                 </div>
@@ -253,7 +258,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                             <div className="bg-white border border-gray-200 rounded overflow-hidden">
                                 <button onClick={() => toggleMenu('locations')} className={`w-full p-4 flex items-center justify-between ${openMenus.locations ? 'border-b border-gray-100' : ''}`}>
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.pickup_location}</h4>
-                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.locations ? 'rotate-180 text-[#0a66c2]' : ''}`} />
+                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.locations ? 'rotate-180 text-[#3749bb]' : ''}`} />
                                 </button>
                                 {openMenus.locations && (
                                     <div className="px-5 py-5 space-y-3 max-h-[270px] overflow-y-auto custom-scrollbar">
@@ -267,7 +272,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                                                             onChange={() => handleFilterChange('locations', loc.id)} 
                                                             className="custom-checkbox" 
                                                         />
-                                                        <span className="text-[13px] font-medium text-gray-700 group-hover:text-[#0a66c2] transition-colors">{loc.name}</span>
+                                                        <span className="text-[13px] font-medium text-gray-700 group-hover:text-[#3749bb] transition-colors">{loc.name}</span>
                                                     </div>
                                                 </label>
                                             ))
@@ -281,7 +286,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('availability')} className={`w-full p-4 flex items-center justify-between ${openMenus.availability ? 'border-b border-gray-100' : ''}`}>
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.availability}</h4>
-                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.availability ? 'rotate-180 text-[#0a66c2]' : ''}`} />
+                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.availability ? 'rotate-180 text-[#3749bb]' : ''}`} />
                                 </button>
                                 {openMenus.availability && (
                                     <div className="px-5 py-5 space-y-3">
@@ -299,7 +304,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('categories')} className={`w-full p-4 flex items-center justify-between ${openMenus.categories ? 'border-b border-gray-100' : ''}`}>
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.categories}</h4>
-                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.categories ? 'rotate-180 text-[#0a66c2]' : ''}`} />
+                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.categories ? 'rotate-180 text-[#3749bb]' : ''}`} />
                                 </button>
                                 {openMenus.categories && (
                                     <div className="px-5 py-5 space-y-3 max-h-[270px] overflow-y-auto custom-scrollbar">
@@ -320,7 +325,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('brands')} className={`w-full p-4 flex items-center justify-between ${openMenus.brands ? 'border-b border-gray-100' : ''}`}>
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.brands}</h4>
-                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.brands ? 'rotate-180 text-[#0a66c2]' : ''}`} />
+                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.brands ? 'rotate-180 text-[#3749bb]' : ''}`} />
                                 </button>
                                 {openMenus.brands && (
                                     <div className="px-5 py-5 space-y-3 max-h-[270px] overflow-y-auto custom-scrollbar">
@@ -341,7 +346,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('transmission')} className={`w-full p-4 flex items-center justify-between ${openMenus.transmission ? 'border-b border-gray-100' : ''}`}>
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.transmission}</h4>
-                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.transmission ? 'rotate-180 text-[#0a66c2]' : ''}`} />
+                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.transmission ? 'rotate-180 text-[#3749bb]' : ''}`} />
                                 </button>
                                 {openMenus.transmission && (     
                                     <div className="px-5 py-5 space-y-3 max-h-[270px] overflow-y-auto custom-scrollbar">
@@ -359,7 +364,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('fuel')} className={`w-full p-4 flex items-center justify-between ${openMenus.fuel ? 'border-b border-gray-100' : ''}`}>
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.fuel_type}</h4>
-                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.fuel ? 'rotate-180 text-[#0a66c2]' : ''}`} />
+                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.fuel ? 'rotate-180 text-[#3749bb]' : ''}`} />
                                 </button>
                                 {openMenus.fuel && (
                                     <div className="px-5 py-5 space-y-3">
@@ -377,7 +382,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                         {/* --- LISTING --- */}
                         <main className="w-full lg:col-span-9 order-2 relative min-h-[400px]">
                             {/* --- REFERENCE STYLE TOOLBAR --- */}
-                            <div className="flex flex-row justify-between items-center mb-4 bg-white p-3 rounded shadow-sm border border-gray-100">
+                            <div className="flex flex-row justify-between items-center mb-4 bg-white p-3 rounded-[4px] border border-gray-100">
                                 <div className="px-1 flex flex-col">
                                     <h2 className="text-[15px] font-bold text-gray-800">
                                         {filters.categories.length > 0 ? filters.categories[0].replace(/-/g, ' ') : t.listing.title}
@@ -424,11 +429,11 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                             {/* Centered Master Loader - REMOVED for Skeletons */}
 
                             {data.length === 0 ? (
-                                <div className="bg-white rounded-lg border border-gray-200 p-12 text-center shadow-sm">
+                                <div className="bg-white rounded-[4px] border border-gray-200 p-12 text-center shadow-sm">
                                     <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300"><Search size={24} /></div>
                                     <h3 className="text-[18px] font-bold text-gray-700 mb-2">{t.listing.no_assets}</h3>
                                     <p className="text-[14px] text-gray-500 mb-6">{t.listing.adjust_filters}</p>
-                                    <button onClick={clearAllFilters} className="px-6 py-2 bg-[#0a66c2] text-white text-[13px] font-bold rounded hover:bg-[#004182] transition-colors">{t.listing.reset_filters}</button>
+                                    <button onClick={clearAllFilters} className="px-6 py-2 bg-[#3749bb] text-white text-[13px] font-bold rounded hover:bg-[#004182] transition-colors">{t.listing.reset_filters}</button>
                                 </div>
                             ) : (
                                 <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ${isLoading ? 'opacity-70 grayscale-[50%]' : 'opacity-100'}`}>
@@ -451,12 +456,12 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                                 
                                 {last_page > 1 && (
                                     <div className="flex justify-center items-center gap-2">
-                                        {links.map((link, i) => (
+                                         {links.map((link, i) => (
                                             link.url ? (
                                                 <Link 
                                                     key={i} 
                                                     href={link.url} 
-                                                    className={`min-w-[36px] h-9 px-3 rounded flex items-center justify-center text-[13px] font-bold transition-all ${link.active ? "bg-[#0a66c2] text-white shadow-sm" : "bg-white border border-gray-200 text-gray-600 hover:border-[#0a66c2] hover:text-[#0a66c2]"}`} 
+                                                    className={`min-w-[36px] h-9 px-3 rounded-[4px] flex items-center justify-center text-[13px] font-bold transition-all ${link.active ? "bg-[#3749bb] text-white" : "bg-white border border-gray-200 text-gray-600 hover:border-[#3749bb] hover:text-[#3749bb]"}`} 
                                                     preserveScroll 
                                                     preserveState
                                                 >
@@ -465,7 +470,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                                             ) : (
                                                 <span 
                                                     key={i} 
-                                                    className={`min-w-[36px] h-9 px-3 rounded flex items-center justify-center text-[13px] font-bold bg-white border border-gray-100 text-gray-300 cursor-not-allowed ${link.label.includes('...') ? "" : "hidden"}`}
+                                                    className={`min-w-[36px] h-9 px-3 rounded-[4px] flex items-center justify-center text-[13px] font-bold bg-white border border-gray-100 text-gray-300 cursor-not-allowed ${link.label.includes('...') ? "" : "hidden"}`}
                                                 >
                                                     {link.label.replace('&laquo; Previous', '<').replace('Next &raquo;', '>')}
                                                 </span>
@@ -485,7 +490,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
                 .slider-range-input::-webkit-slider-thumb {
                     pointer-events: auto; appearance: none; width: 22px; height: 22px; border-radius: 50%;
-                    background: #fff; border: 4.5px solid #0a66c2;
+                    background: #fff; border: 4.5px solid #3749bb;
                     cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.25);
                     transition: all 0.2s ease;
                 }
@@ -507,8 +512,8 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                     outline: none;
                 }
                 .custom-checkbox:checked {
-                    background-color: #0a66c2;
-                    border-color: #0a66c2;
+                    background-color: #3749bb;
+                    border-color: #3749bb;
                 }
                 .custom-checkbox:checked::after {
                     content: "";
@@ -540,21 +545,21 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
 
 function CarCardSkeleton() {
     return (
-        <div className="bg-white rounded overflow-hidden shadow-sm border border-gray-200 flex flex-col h-full">
+        <div className="bg-white rounded-[4px] overflow-hidden border border-gray-200 flex flex-col h-full">
             <Skeleton className="aspect-[16/10] rounded-none" />
             <div className="p-4 flex flex-col flex-1">
-                <Skeleton className="h-4 rounded w-3/4 mb-4" />
+                <Skeleton className="h-4 rounded-[2px] w-3/4 mb-4" />
                 <div className="space-y-3 mb-6">
-                    <Skeleton className="h-3 rounded w-1/2" />
-                    <Skeleton className="h-3 rounded w-2/3" />
-                    <Skeleton className="h-3 rounded w-1/2" />
+                    <Skeleton className="h-3 rounded-[2px] w-1/2" />
+                    <Skeleton className="h-3 rounded-[2px] w-2/3" />
+                    <Skeleton className="h-3 rounded-[2px] w-1/2" />
                 </div>
                 <div className="mt-auto pt-3 border-t border-gray-100 flex justify-center">
-                    <Skeleton className="h-5 rounded w-1/4" />
+                    <Skeleton className="h-5 rounded-[2px] w-1/4" />
                 </div>
             </div>
             <div className="px-4 pb-4">
-                <Skeleton className="h-8 rounded-full w-full" />
+                <Skeleton className="h-8 rounded-[4px] w-full" />
             </div>
         </div>
     );
@@ -563,10 +568,10 @@ function CarCardSkeleton() {
 function CarCard({ car, toggleFavorite }) {
     const { t } = useLanguage();
     return (
-        <div className="bg-white rounded overflow-hidden shadow-sm border border-gray-200 group transition-all hover:shadow-md flex flex-col h-full relative">
-            {/* --- SAVE BADGE (RIBBON STYLE) --- */}
-            <div className="absolute top-3 left-0 z-10">
-                <div className="bg-[#0a66c2] text-white px-4 py-1 text-[12px] font-black rounded-r-full shadow-md tracking-wide">
+        <div className="bg-white rounded-[4px] border border-gray-200 group transition-all flex flex-col h-full relative">
+            {/* --- SAVE BADGE (STAR TECH CHIP STYLE) --- */}
+            <div className="absolute top-2 left-2 z-10">
+                <div className="bg-[#3749bb] text-white px-2 py-0.5 text-[10px] font-black rounded-[2px] shadow-sm uppercase">
                     {t.listing.save}: {car.price_details?.currency || '৳'}{Math.floor(Number(car.price_details?.daily_rate || 0) * 0.2).toLocaleString()}
                 </div>
             </div>
@@ -584,8 +589,8 @@ function CarCard({ car, toggleFavorite }) {
                 </button>
             </div>
 
-            <div className="p-4 flex flex-col flex-1 border-gray-50">
-                <h3 className="text-[14px] font-bold text-gray-800 hover:text-[#0a66c2] transition-colors leading-tight mb-4 line-clamp-2">
+            <div className="p-4 flex flex-col flex-1 border-gray-50 text-left">
+                <h3 className="text-[14px] font-bold text-gray-900 group-hover:text-[#3749bb] transition-colors leading-tight mb-4 line-clamp-2">
                     {car.brand?.name || car.make} {car.model} {car.year}
                 </h3>
                 
@@ -599,12 +604,12 @@ function CarCard({ car, toggleFavorite }) {
                 {/* Key Highlights */}
                 {car.features && car.features.length > 0 && (
                     <div className="mb-5">
-                        <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t.listing.key_highlights}</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter block mb-2 leading-none">{t.listing.key_highlights}</span>
                         <div className="grid grid-cols-1 gap-1">
                             {car.features.slice(0, 3).map((feat, idx) => (
                                 <div key={idx} className="flex items-center gap-1.5">
-                                     <div className="w-1 h-1 rounded-full bg-[#0a66c2]" />
-                                     <span className="text-[10.5px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
+                                     <div className="w-1 h-1 rounded-full bg-[#3749bb]" />
+                                     <span className="text-[11px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
                                 </div>
                             ))}
                         </div>
@@ -612,17 +617,17 @@ function CarCard({ car, toggleFavorite }) {
                 )}
 
                 <div className="mt-auto border-t border-gray-100 pt-3 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="text-[17px] font-bold text-[#0a66c2]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
-                        <span className="text-[13px] text-gray-400 line-through font-medium leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                        <span className="text-[16px] font-black text-[#3749bb]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                        <span className="text-[12px] text-gray-400 line-through font-bold leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
                     </div>
                 </div>
             </div>
             
-            <div className="px-4 pb-4 mt-auto">
+            <div className="px-4 pb-4">
                 <Link 
-                    href={`${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}`}
-                    className="w-full py-[5px] inline-block text-center rounded-full border border-[#0a66c2] text-[#0a66c2] text-[14px] font-semibold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]"
+                    href={car.slug ? `${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}` : '#'}
+                    className={`w-full py-1.5 inline-block text-center rounded-[4px] border border-[#3749bb] text-[#3749bb] text-[13px] font-bold hover:bg-[#3749bb] hover:text-white transition-all duration-200 active:scale-[0.98] ${!car.slug ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
                 >
                     {t.listing.view_details}
                 </Link>

@@ -28,13 +28,23 @@ Route::middleware('auth')->group(function () {
 
     // --- User Specific Routes ---
     Route::prefix('user')->name('user.')->group(function () {
-        Route::get('/bookings', [\App\Http\Controllers\User\BookingController::class, 'index'])->name('bookings.index');
-        Route::get('/bookings/{id}', [\App\Http\Controllers\User\BookingController::class, 'show'])->name('bookings.show');
+        Route::get('/bookings', [\App\Http\Controllers\User\Booking\BookingController::class, 'index'])->name('bookings.index');
+        Route::get('/bookings/{id}', [\App\Http\Controllers\User\Booking\BookingController::class, 'show'])->name('bookings.show');
         
         Route::get('/favorites', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('favorites.index');
         Route::post('/favorites/toggle/{carId}', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('favorites.toggle');
         
-        Route::get('/payments', [\App\Http\Controllers\User\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments', [\App\Http\Controllers\User\Booking\PaymentController::class, 'index'])->name('payments.index');
+
+        // Review Routes
+        Route::post('/reviews', [\App\Http\Controllers\CarReviewController::class, 'store'])->name('reviews.store');
+        Route::post('/reviews/{reviewId}/like', [\App\Http\Controllers\CarReviewController::class, 'toggleLike'])->name('reviews.like');
+
+        // Payment/Stripe Routes
+        Route::post('/stripe/intent', [\App\Http\Controllers\User\Booking\PaymentController::class, 'createPaymentIntent'])->name('stripe.intent');
+        Route::post('/stripe/success', [\App\Http\Controllers\User\Booking\PaymentController::class, 'success'])->name('stripe.success');
+        Route::post('/bkash/payment', [\App\Http\Controllers\User\Booking\PaymentController::class, 'bkashPayment'])->name('bkash.payment');
+        Route::post('/nagad/payment', [\App\Http\Controllers\User\Booking\PaymentController::class, 'nagadPayment'])->name('nagad.payment');
     });
 });
 

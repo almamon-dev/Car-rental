@@ -4,17 +4,22 @@ import {
     CheckCircle2,
     ShieldCheck,
     Clock as ClockIcon,
-    Calendar,
+    Calendar as CalendarIcon,
     ArrowRight,
     Settings2,
     Activity,
     AlertCircle,
-    CheckCircle
+    CheckCircle,
+    ChevronRight,
+    ArrowDown
 } from "lucide-react";
 import ExtraServices from "./ExtraServices";
 import { useState } from "react";
+import { format } from "date-fns";
 import axios from "axios";
 import { useLanguage } from "@/Contexts/LanguageContext";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function BookingWidget({
     car,
@@ -27,10 +32,13 @@ export default function BookingWidget({
     selectedExtras,
     handleExtraServiceToggle,
     handleBookNow,
+    availability,
+    setAvailability,
+    rateMode,
+    onRateModeChange
 }) {
     const { t } = useLanguage();
     const currency = car.price_details?.currency || '৳';
-    const [availability, setAvailability] = useState(null); // null, 'checking', 'available', 'busy'
     const [error, setError] = useState(null);
 
     const checkAvailability = async () => {
@@ -58,30 +66,31 @@ export default function BookingWidget({
     
     return (
         <motion.div
+            id="booking-console"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-[12px] border border-gray-200 shadow-sm sticky top-24 overflow-hidden font-sans"
+            className="bg-white rounded-[4px] border border-gray-200 sticky top-24 shadow-sm font-sans"
         >
-            {/* Header / Console Status */}
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-slate-50/30">
-                <div className="flex items-center gap-2">
-                    <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                    <h3 className="text-[13px] font-bold text-gray-900 uppercase tracking-wider">
-                        {t.details.booking_manifest}
-                    </h3>
+            {/* Header / Institutional Branding */}
+            <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between bg-white rounded-t-[4px]">
+                <div className="flex flex-col leading-none">
+                    <div className="text-[10px] font-bold text-gray-400 mb-0.5 uppercase tracking-tighter">Daily Rate</div>
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-[18px] font-bold text-[#3749bb]">{currency}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                        <span className="text-[12px] text-gray-400 line-through font-medium">{currency}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-white border border-gray-100 text-[10px] font-black text-green-600 uppercase tracking-widest shadow-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    {t.details.secure}
+                <div className="px-2 py-0.5 bg-blue-50 border border-blue-100 rounded-[2px] text-[9px] font-bold text-blue-600">
+                    Live
                 </div>
             </div>
 
-            <div className="p-5 space-y-6">
+            <div className="p-3 space-y-3">
                 
                 {/* DEPLOYMENT MODE (Rental Type Sync) */}
-                <div>
-                    <label className="block text-[10px] font-black text-gray-400 mb-3 uppercase tracking-widest">
-                         {t.details.deployment_config}
+                <div className="px-1">
+                    <label className="block text-[11px] font-bold text-gray-500 mb-1.5 ml-1">
+                         Booking Type
                     </label>
                     <div className="grid grid-cols-3 gap-2 text-center">
                         {[
@@ -91,146 +100,158 @@ export default function BookingWidget({
                         ].map((type) => (
                             <button
                                 key={type.id}
-                                className={`py-3 px-1 rounded-[8px] border transition-all ${
-                                    type.id === "Daily"
-                                        ? "bg-[#f3f7fb] border-[#0a66c2]/30 text-[#0a66c2] shadow-[0_4px_12px_rgba(10,102,194,0.08)]"
-                                        : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                                onClick={() => onRateModeChange(type.id)}
+                                className={`py-1.5 px-1 rounded-[4px] border transition-all flex flex-col items-center gap-0 ${
+                                    rateMode === type.id
+                                        ? "bg-blue-50 border-[#3749bb] text-[#3749bb] shadow-sm"
+                                        : "bg-white border-gray-200 text-gray-700 hover:border-gray-200"
                                 }`}
                             >
-                                <div className="text-[12px] font-black uppercase tracking-tight">{type.period}</div>
-                                <div className="text-[10px] font-bold mt-1.5 opacity-70">{type.price}</div>
+                                <span className="text-[9px] font-semibold opacity-70 uppercase">{type.period}</span>
+                                <span className="text-[12px] font-bold">{type.price}</span>
                             </button>
                         ))}
                     </div>
                 </div>
 
-                {/* LOGISTICS (Locations) */}
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4">
-                         <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                <Activity size={12} className="text-[#0a66c2]" />
-                                {t.details.origin_terminal}
+                {/* LOGISTICS SECTION */}
+                <div className="space-y-2">
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                         <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-gray-500 ml-1">
+                                Pickup
                             </label>
-                            <select
-                                value={selectedLocation.pickup}
-                                onChange={(e) => {
-                                    setSelectedLocation((prev) => ({
-                                        ...prev,
-                                        pickup: e.target.value,
-                                    }));
-                                    setAvailability(null);
-                                }}
-                                className="w-full h-11 px-4 bg-[#f3f7fb]/50 border border-gray-200 rounded-[8px] text-[13px] font-bold text-gray-900 focus:border-[#0a66c2] focus:ring-4 focus:ring-[#0a66c2]/5 outline-none transition-all cursor-pointer appearance-none"
-                            >
-                                {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}, {loc.city}</option>)}
-                            </select>
-                            {selectedLocation.pickup !== (car.location?.name) && car.location && (
-                                <p className="text-[9px] text-amber-600 font-bold mt-2 uppercase tracking-tight flex items-center gap-1">
-                                    <AlertCircle size={10} /> {t.details.repositioning_fee}
-                                </p>
-                            )}
+                            <div className="relative group/select">
+                                <select
+                                    value={selectedLocation.pickup}
+                                    onChange={(e) => {
+                                        setSelectedLocation((prev) => ({
+                                            ...prev,
+                                            pickup: e.target.value,
+                                        }));
+                                        setAvailability(null);
+                                    }}
+                                    className="w-full h-9 pl-2 pr-6 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer appearance-none shadow-sm"
+                                >
+                                    {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
+                                </select>
+                                <ChevronRight size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 rotate-90 pointer-events-none" />
+                            </div>
                          </div>
                          
-                         <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                <MapPin size={12} className="text-blue-400" />
-                                {t.details.destination}
+                         <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-gray-500 ml-1">
+                                Drop-off
                             </label>
-                            <select
-                                value={selectedLocation.dropoff}
-                                onChange={(e) =>
-                                    setSelectedLocation((prev) => ({
-                                        ...prev,
-                                        dropoff: e.target.value,
-                                    }))
-                                }
-                                className="w-full h-11 px-4 bg-[#f3f7fb]/50 border border-gray-200 rounded-[8px] text-[13px] font-bold text-gray-900 focus:border-[#0a66c2] focus:ring-4 focus:ring-[#0a66c2]/5 outline-none transition-all cursor-pointer appearance-none"
-                            >
-                                {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}, {loc.city}</option>)}
-                                <option value="Custom Drop-off">{t.details.custom_dropoff}</option>
-                            </select>
+                            <div className="relative group/select">
+                                <select
+                                    value={selectedLocation.dropoff}
+                                    onChange={(e) =>
+                                        setSelectedLocation((prev) => ({
+                                            ...prev,
+                                            dropoff: e.target.value,
+                                        }))
+                                    }
+                                    className="w-full h-9 pl-2 pr-6 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer appearance-none shadow-sm"
+                                >
+                                    {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
+                                    <option value="Custom Drop-off">Custom</option>
+                                </select>
+                                <ChevronRight size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 rotate-90 pointer-events-none" />
+                            </div>
                          </div>
                     </div>
                 </div>
 
-                {/* TEMPORAL WINDOW (Dates & Times) */}
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold text-gray-700">{t.details.deployment_start}</label>
-                        <input
-                            type="date"
-                            value={bookingDates.pickup}
-                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none"
-                            onChange={(e) => {
-                                setBookingDates(prev => ({...prev, pickup: e.target.value}));
-                                setAvailability(null);
-                            }}
-                        />
-                         <input
-                            type="time"
-                            value={bookingDates.pickupTime}
-                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none mt-1"
-                            onChange={(e) => {
-                                setBookingDates(prev => ({...prev, pickupTime: e.target.value}));
-                                setAvailability(null);
-                            }}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <label className="block text-[10px] font-bold text-gray-700">{t.details.deployment_end}</label>
-                        <input
-                            type="date"
-                            value={bookingDates.dropoff}
-                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none"
-                            onChange={(e) => {
-                                setBookingDates(prev => ({...prev, dropoff: e.target.value}));
-                                setAvailability(null);
-                            }}
-                        />
-                         <input
-                            type="time"
-                            value={bookingDates.dropoffTime}
-                            className="w-full h-9 px-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-bold text-gray-900 outline-none mt-1"
-                            onChange={(e) => {
-                                setBookingDates(prev => ({...prev, dropoffTime: e.target.value}));
-                                setAvailability(null);
-                            }}
-                        />
+                {/* TEMPORAL WINDOW SECTION */}
+                <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="flex flex-col space-y-1">
+                            <label className="text-[11px] font-bold text-gray-500 ml-1">Start</label>
+                            <div className="relative">
+                                <DatePicker
+                                    selected={bookingDates.pickup && bookingDates.pickupTime ? new Date(`${bookingDates.pickup}T${bookingDates.pickupTime}`) : null}
+                                    onChange={(date) => {
+                                        if (!date) return;
+                                        const dateStr = format(date, "yyyy-MM-dd");
+                                        const timeStr = format(date, "HH:mm");
+                                        setBookingDates(prev => ({...prev, pickup: dateStr, pickupTime: timeStr}));
+                                        setAvailability(null);
+                                    }}
+                                    showTimeSelect
+                                    dateFormat="MMM d, HH:mm"
+                                    minDate={new Date()}
+                                    placeholderText="Pick-up"
+                                    className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer shadow-sm"
+                                    wrapperClassName="w-full"
+                                    popperClassName="!z-[9999]"
+                                />
+                                <CalendarIcon size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col space-y-1">
+                            <label className="text-[11px] font-bold text-gray-500 ml-1">End</label>
+                            <div className="relative">
+                                <DatePicker
+                                    selected={bookingDates.dropoff && bookingDates.dropoffTime ? new Date(`${bookingDates.dropoff}T${bookingDates.dropoffTime}`) : null}
+                                    onChange={(date) => {
+                                        if (!date) return;
+                                        const dateStr = format(date, "yyyy-MM-dd");
+                                        const timeStr = format(date, "HH:mm");
+                                        setBookingDates(prev => ({...prev, dropoff: dateStr, dropoffTime: timeStr}));
+                                        setAvailability(null);
+                                    }}
+                                    showTimeSelect
+                                    dateFormat="MMM d, HH:mm"
+                                    minDate={new Date()}
+                                    placeholderText="Return"
+                                    className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer shadow-sm"
+                                    wrapperClassName="w-full"
+                                    popperClassName="!z-[9999]"
+                                />
+                                <CalendarIcon size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* ENHANCEMENTS (Extra Services) */}
-                <div className="pt-2">
+                {/* ENHANCEMENTS & PRICING SECTION */}
+                <div className="space-y-3">
+
                     <ExtraServices
                         selectedExtras={selectedExtras}
                         handleExtraServiceToggle={handleExtraServiceToggle}
                     />
-                </div>
 
-                {/* FINANCIAL MANIFEST (Price Breakdown) */}
-                <div className="bg-[#f3f7fb]/50 border border-gray-100 rounded-[12px] p-4 space-y-2.5">
-                    <ManifestItem label={t.details.base_allocation} val={`${currency}${priceSummary.baseRate}`} />
-                    <ManifestItem label={t.details.institutional_insurance} val={`${currency}${priceSummary.insurance}`} />
-                    <ManifestItem label={t.details.operational_fee} val={`${currency}${priceSummary.serviceFee}`} />
-                    {priceSummary.extras > 0 && <ManifestItem label={t.details.asset_enhancements} val={`${currency}${priceSummary.extras}`} />}
-                    
-                    <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
-                         <span className="text-[14px] font-bold text-gray-900">{t.details.total_liability}</span>
-                         <span className="text-[20px] font-bold text-[#0a66c2]">{currency}{priceSummary.total}</span>
+                    {/* FINANCIAL MANIFEST */}
+                    <div className="bg-white border border-gray-100 rounded-[4px] p-3 space-y-2">
+                        <ManifestItem 
+                            label={`${t.details.base_allocation} (${priceSummary.multiplier})`} 
+                            val={`${currency}${(priceSummary.baseRate * priceSummary.multiplier).toLocaleString()}`} 
+                        />
+                        <ManifestItem label="Insurance" val={`${currency}${priceSummary.insurance.toLocaleString()}`} />
+                        <ManifestItem label="System Fee" val={`${currency}${priceSummary.serviceFee.toLocaleString()}`} />
+                        {priceSummary.extras > 0 && <ManifestItem label="Upgrades" val={`${currency}${priceSummary.extras}`} />}
+                        
+                        <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
+                            <span className="text-[15px] font-bold text-gray-900">Total Price</span>
+                            <span className="text-[22px] font-bold text-[#3749bb]">{currency}{priceSummary.total.toLocaleString()}</span>
+                        </div>
                     </div>
                 </div>
 
-                {/* AVAILABILITY FEEDBACK */}
-                <div className="space-y-3">
+                {/* AVAILABILITY FEEDBACK & ACTION */}
+                <div className="space-y-3 pt-2">
                     {availability === 'available' && (
-                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-[12px] font-bold">
-                            <CheckCircle size={14} />
+                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-[4px] text-green-700 text-[12px] font-bold animate-in fade-in slide-in-from-bottom-2">
+                            <CheckCircle size={14} className="animate-bounce" />
                             {t.details.asset_active}
                         </div>
                     )}
                     {availability === 'busy' && (
-                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-[12px] font-bold">
+                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-[4px] text-red-700 text-[12px] font-bold animate-in fade-in slide-in-from-bottom-2">
                             <AlertCircle size={14} />
                             {t.details.conflict_detected}
                         </div>
@@ -239,46 +260,299 @@ export default function BookingWidget({
                         <div className="text-red-500 text-[10px] font-bold text-center italic">{error}</div>
                     )}
 
-                    {!availability && (
+                    {!availability || availability === 'busy' ? (
                         <button
                             onClick={checkAvailability}
-                            className="w-full py-2.5 border border-[#0a66c2] text-[#0a66c2] text-[14px] font-bold rounded-full hover:bg-[#f0f7ff] transition-all shadow-sm flex items-center justify-center gap-2"
+                            disabled={availability === 'checking'}
+                            className={`w-full py-2.5 rounded-[4px] text-[14px] font-bold transition-all flex items-center justify-center gap-2 ${
+                                availability === 'checking'
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "bg-white border border-[#3749bb] text-[#3749bb] hover:bg-[#3749bb] hover:text-white transition-all active:scale-[0.98]"
+                            }`}
                         >
-                            <Activity size={16} /> {t.details.check_availability}
+                            {availability === 'checking' ? (
+                                <>
+                                    <div className="w-3 h-3 border-2 border-[#3749bb]/30 border-t-[#3749bb] rounded-full animate-spin" />
+                                    Analyzing...
+                                </>
+                            ) : (
+                                <>
+                                    <Activity size={14} /> Check Availability
+                                </>
+                            )}
                         </button>
-                    )}
-
-                    {availability === 'checking' && (
-                        <button
-                            disabled
-                            className="w-full py-2.5 bg-gray-50 text-gray-400 text-[14px] font-bold rounded-full shadow-sm flex items-center justify-center gap-2"
-                        >
-                            <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" /> {t.details.analyzing}
-                        </button>
-                    )}
+                    ) : null}
 
                     <button
                         onClick={handleBookNow}
                         disabled={availability !== 'available'}
-                        className={`w-full py-2.5 text-white text-[14px] font-bold rounded-full transition-all flex items-center justify-center gap-2 ${
+                        className={`w-full py-3 text-white text-[15px] font-bold rounded-[4px] transition-all flex items-center justify-center gap-2 ${
                             availability === 'available' 
-                            ? "bg-[#0a66c2] hover:bg-[#004182] active:scale-[0.98] shadow-sm" 
-                            : "bg-gray-100 cursor-not-allowed text-gray-400 border border-gray-100"
+                            ? "bg-[#3749bb] hover:bg-[#2b3a95] shadow-md hover:shadow-lg" 
+                            : "bg-gray-200 cursor-not-allowed text-gray-400"
                         }`}
                     >
-                        {t.details.confirm_acquisition} <ArrowRight size={16} />
+                        Booking Confirm <ArrowRight size={16} />
                     </button>
                     
-                    <button className="w-full py-2 rounded-full border border-gray-200 text-gray-500 text-[12px] font-bold hover:bg-gray-50 transition-all">
-                        {t.details.sync_calendar}
+                    <button className="w-full py-2 bg-gray-50 rounded-[4px] border border-gray-100 text-gray-500 text-[12px] font-semibold hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
+                         <MapPin size={12} /> Sync with Maps
                     </button>
-                </div>
+                    <style>
+                    {`
+                        .react-datepicker-wrapper { width: 100%; }
+                        
+                        /* Main Container Defaults */
+                        .react-datepicker {
+                            font-family: 'Inter', sans-serif !important;
+                            border: 1px solid #e2e8f0 !important;
+                            border-radius: 6px !important;
+                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+                            display: flex !important; /* Important for side-by-side time */
+                            overflow: hidden !important;
+                            background-color: white !important;
+                        }
 
-                {/* TRUST METRICS */}
-                <div className="flex items-center justify-center gap-5 pt-4 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
-                    <MetricItem Icon={ShieldCheck} label="T-1 Secure" />
-                    <MetricItem Icon={Activity} label="24/7 Ops" />
-                    <MetricItem Icon={CheckCircle2} label="Verified" />
+                        /* Header */
+                        .react-datepicker__header {
+                            background-color: #ffffff !important;
+                            border-bottom: 1px solid #f1f5f9 !important;
+                            padding-top: 12px !important;
+                            padding-bottom: 12px !important;
+                        }
+
+                        .react-datepicker__current-month {
+                            font-size: 14px !important;
+                            font-weight: 700 !important;
+                            color: #0f172a !important;
+                            text-transform: uppercase !important;
+                            letter-spacing: 0.5px !important;
+                            margin-bottom: 4px !important;
+                        }
+
+                        .react-datepicker__day-name {
+                            color: #94a3b8 !important;
+                            font-size: 11px !important;
+                            font-weight: 700 !important;
+                            text-transform: uppercase !important;
+                            margin: 6px !important;
+                            width: 32px !important; 
+                        }
+
+                        /* Days Grid */
+                        .react-datepicker__day {
+                            font-size: 13px !important;
+                            font-weight: 500 !important;
+                            color: #334155 !important;
+                            margin: 4px !important;
+                            width: 32px !important;
+                            height: 32px !important;
+                            line-height: 32px !important;
+                            border-radius: 6px !important;
+                            transition: all 0.2s ease !important;
+                        }
+
+                        .react-datepicker__day:hover {
+                            background-color: #f1f5f9 !important;
+                            color: #0f172a !important;
+                        }
+
+                        .react-datepicker__day--selected, 
+                        .react-datepicker__day--keyboard-selected {
+                            background-color: #3749bb !important;
+                            color: white !important;
+                            font-weight: 700 !important;
+                        }
+
+                        /* Fix: Keep selected state blue on hover */
+                        .react-datepicker__day--selected:hover,
+                        .react-datepicker__day--keyboard-selected:hover {
+                            background-color: #2b3a95 !important;
+                            color: white !important;
+                        }
+                        
+                        .react-datepicker__day--today {
+                            font-weight: 900 !important;
+                            color: #3749bb !important;
+                            position: relative;
+                        }
+                        .react-datepicker__day--today::after {
+                            content: '';
+                            position: absolute;
+                            bottom: 4px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 4px;
+                            height: 4px;
+                            border-radius: 50%;
+                            background-color: currentColor;
+                        }
+                        
+                        /* Fix: Ensure selected today text is white (not blue on blue) */
+                        .react-datepicker__day--selected.react-datepicker__day--today,
+                        .react-datepicker__day--keyboard-selected.react-datepicker__day--today {
+                            color: white !important;
+                        }
+                        .react-datepicker__day--selected::after {
+                            display: none;
+                        }
+
+                        /* Disabled Date Styling */
+                        .react-datepicker__day--disabled {
+                            color: #cbd5e1 !important;
+                            cursor: not-allowed !important;
+                            pointer-events: none !important; 
+                            background-color: transparent !important;
+                        }
+                        .react-datepicker__day--disabled:hover {
+                            background-color: transparent !important;
+                             color: #cbd5e1 !important;
+                        }
+                        
+                        /* Time Container */
+                        .react-datepicker__time-container {
+                            border-left: 1px solid #f1f5f9 !important;
+                            width: 100px !important;
+                            background: white !important;
+                        }
+                        
+                        .react-datepicker__time-container .react-datepicker__time {
+                            background: white !important;
+                            border-radius: 0 !important; 
+                        }
+
+                        .react-datepicker__header--time { 
+                            padding-bottom: 8px !important;
+                            padding-left: 0 !important;
+                            padding-right: 0 !important;
+                        }
+
+                        .react-datepicker-time__header {
+                            font-size: 11px !important;
+                            font-weight: 800 !important;
+                            text-transform: uppercase !important;
+                            color: #64748b !important;
+                            margin-bottom: 25px !important;
+                        }
+
+                        .react-datepicker__time-list-item {
+                            font-size: 12px !important;
+                            height: auto !important;
+                            padding: 8px 0 !important;
+                            font-weight: 500 !important;
+                            color: #475569 !important;
+                            transition: all 0.2s !important;
+                        }
+
+                        .react-datepicker__time-list-item:hover {
+                            background-color: #f8fafc !important;
+                            color: #0f172a !important;
+                        }
+
+                        .react-datepicker__time-list-item--selected {
+                            background-color: #3749bb !important;
+                            color: white !important;
+                            font-weight: 700 !important;
+                        }
+                        
+                        /* Scrollbar for Time & Fixed Height */
+                        .react-datepicker__time-list {
+                            height: 240px !important; /* Matches approx height of calendar */
+                            overflow-y: scroll !important;
+                            padding-right: 0 !important;
+                        }
+                        
+                        .react-datepicker__time-list::-webkit-scrollbar {
+                            width: 4px;
+                        }
+                        .react-datepicker__time-list::-webkit-scrollbar-thumb {
+                            background: #cbd5e1; 
+                            border-radius: 4px;
+                        }
+                        .react-datepicker__time-list::-webkit-scrollbar-track {
+                            background: transparent;
+                        }
+
+                        .react-datepicker-popper {
+                            z-index: 9999 !important;
+                            padding-top: 8px !important;
+                        }
+                        .react-datepicker__triangle {
+                            display: none !important;
+                        }
+
+                        /* Navigation Buttons */
+                        .react-datepicker__navigation {
+                            top: 10px !important;
+                            width: 26px !important;
+                            height: 26px !important;
+                            border-radius: 50% !important;
+                            background: white !important;
+                            border: 1px solid #e2e8f0 !important;
+                            /* Flexbox Centering */
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            transition: all 0.2s !important;
+                            padding: 0 !important; /* Clear padding */
+                        }
+                        .react-datepicker__navigation:hover {
+                            background: #f8fafc !important;
+                            border-color: #e2e8f0 !important;
+                            transform: scale(1.05);
+                        }
+                        
+                        .react-datepicker__navigation--previous {
+                            left: 10px !important;
+                        }
+                        .react-datepicker__navigation--next {
+                            right: 110px !important;
+                        }
+
+                        /* Navigation Icon Span (Wrapper) */
+                        .react-datepicker__navigation-icon {
+                            top: auto !important;
+                            left: auto !important;
+                            right: auto !important;
+                            bottom: auto !important;
+                            position: relative !important;
+                            display: flex !important; /* Flex to center the ::before */
+                            align-items: center !important;
+                            justify-content: center !important;
+                            width: 100% !important;
+                            height: 100% !important;
+                            text-indent: -9999px; /* Hide text */
+                            margin: 0 !important;
+                        }
+
+                        /* Arrow Shape (The ::before) */
+                        .react-datepicker__navigation-icon::before {
+                            display: block !important;
+                            content: "" !important;
+                            border-color: #64748b !important;
+                            border-style: solid !important;
+                            border-width: 1.5px 1.5px 0 0 !important; /* Slightly thinner for elegance */
+                            width: 6px !important;
+                            height: 6px !important;
+                            position: static !important; /* Reset absolute */
+                            top: auto !important;
+                            left: auto !important;
+                            transform: none !important; /* Reset default transforms */
+                        }
+                        
+                        /* Previous Arrow (Left) - Optical Correction */
+                        .react-datepicker__navigation-icon--previous::before {
+                            transform: rotate(225deg) !important;
+                            margin-left: 3px !important; /* Nudge right to visually center < */
+                        }
+                        
+                        /* Next Arrow (Right) - Optical Correction */
+                        .react-datepicker__navigation-icon--next::before {
+                            transform: rotate(45deg) !important;
+                            margin-right: 3px !important; /* Nudge left to visually center > */
+                        }
+                    `}
+                    </style>
                 </div>
             </div>
         </motion.div>

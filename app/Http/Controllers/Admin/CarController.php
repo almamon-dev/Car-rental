@@ -252,13 +252,15 @@ class CarController extends Controller
                 ]));
 
                 // 4. Update Documents
-                $car->policeDocuments()->updateOrCreate([], $request->only([
-                    'registration_number',
-                    'chassis_number',
-                    'engine_number',
-                    'tax_token_expiry',
-                    'fitness_expiry',
-                ]));
+                if ($request->filled('registration_number')) {
+                    $car->policeDocuments()->updateOrCreate([], $request->only([
+                        'registration_number',
+                        'chassis_number',
+                        'engine_number',
+                        'tax_token_expiry',
+                        'fitness_expiry',
+                    ]));
+                }
 
                 // 5. Update Features - delete and recreate
                 $car->features()->delete();

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -26,8 +27,8 @@ class HomeController extends Controller
             ->take(8)
             ->get(['*']);
 
-        if (auth()->check()) {
-            $userId = auth()->id();
+        if (Auth::check()) {
+            $userId = Auth::id();
             $cars->each(function($car) use ($userId) {
                 $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
             });
@@ -147,8 +148,8 @@ class HomeController extends Controller
 
         $cars = $query->paginate($request->get('per_page', 24))->withQueryString();
 
-        if (auth()->check()) {
-            $userId = auth()->id();
+        if (Auth::check()) {
+            $userId = Auth::id();
             $cars->getCollection()->each(function($car) use ($userId) {
                 $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
             });
@@ -179,14 +180,25 @@ class HomeController extends Controller
      */
     public function show($slug)
     {
-        $car = Car::with(['brand', 'category', 'specifications', 'priceDetails', 'features', 'faqs', 'images', 'location'])
+        $car = Car::with(['brand', 'category', 'specifications', 'priceDetails', 'features', 'faqs', 'images', 'location', 'reviews.user', 'reviews.likes'])
             ->where('slug', $slug)
             ->firstOrFail();
         
-        if (auth()->check()) {
-            $car->is_favorited = $car->favorites()->where('user_id', auth()->id())->exists();
+        if (Auth::check()) {
+            $userId = Auth::id();
+            $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
+            
+            // Check if current user liked each review
+            $car->reviews->each(function($review) use ($userId) {
+                $review->is_liked = $review->likes->where('user_id', $userId)->isNotEmpty();
+                $review->likes_count = $review->likes->count();
+            });
         } else {
             $car->is_favorited = false;
+            $car->reviews->each(function($review) {
+                $review->is_liked = false;
+                $review->likes_count = $review->likes->count();
+            });
         }
         
         $locations = \App\Models\Location::where('status', 1)->get();

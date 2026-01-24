@@ -15,20 +15,20 @@ import { Link, router, usePage } from "@inertiajs/react";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
 const CarSkeleton = () => (
-    <div className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full">
+    <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden flex flex-col h-full">
         <Skeleton className="aspect-[16/10] rounded-none" />
         <div className="p-4 flex flex-col flex-1">
-            <Skeleton className="h-4 rounded w-3/4 mb-4" />
+            <Skeleton className="h-4 rounded-[2px] w-3/4 mb-4" />
             <div className="space-y-3 mb-6">
-                <Skeleton className="h-3 rounded w-1/2" />
-                <Skeleton className="h-3 rounded w-2/3" />
+                <Skeleton className="h-3 rounded-[2px] w-1/2" />
+                <Skeleton className="h-3 rounded-[2px] w-2/3" />
             </div>
             <div className="mt-auto pt-3 border-t border-gray-100 flex justify-center">
-                <Skeleton className="h-5 rounded w-1/4" />
+                <Skeleton className="h-5 rounded-[2px] w-1/4" />
             </div>
         </div>
         <div className="px-4 pb-4 mt-auto">
-            <Skeleton className="h-8 rounded-full w-full" />
+            <Skeleton className="h-8 rounded-[4px] w-full" />
         </div>
     </div>
 );
@@ -62,26 +62,25 @@ export default function CarListing({ cars = [] }) {
             <div className="max-w-7xl mx-auto px-6">
                 
                 {/* --- HEADER --- */}
-                <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-5">
+                <div className="flex items-center justify-between mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                            <span className="text-[10px] font-bold text-[#0a66c2]">{t.home.cars.recommended}</span>
+                            <span className="text-[11px] font-black text-[#3749bb] uppercase tracking-widest leading-none">Recommended</span>
                         </div>
-                        <h2 className="text-[22px] font-bold text-[#081621]">
-                            {t.home.cars.recommended} <span className="text-[#0a66c2]">{t.nav.cars}</span>
+                        <h2 className="text-[24px] font-bold text-gray-900 leading-none">
+                            Available <span className="text-[#3749bb]">Fleet</span>
                         </h2>
                     </div>
 
                     <div className="flex items-center gap-6">
                          <div className="hidden md:flex flex-col items-end leading-none">
                               <span className="text-[12px] font-bold text-green-600 flex items-center gap-1.5">
-                                  <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                                  {cars.length} {t.home.cars.cars_available}
+                                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                  {cars.length} Active Units
                               </span>
                          </div>
-                         <Link href={route('car.list')} className="flex items-center gap-1.5 text-[13px] font-bold text-[#0a66c2] hover:underline">
-                            {t.home.cars.explore_all} <ChevronRight size={14} />
+                         <Link href={route('car.list')} className="flex items-center gap-1.5 text-[13px] font-bold text-[#3749bb] hover:underline">
+                            Explore All <ChevronRight size={14} />
                         </Link>
                     </div>
                 </div>
@@ -97,11 +96,11 @@ export default function CarListing({ cars = [] }) {
                         : (cars.length > 0 ? cars : []).map((car) => (
                               <div
                                   key={car.id}
-                                  className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full group hover:shadow-md transition-all duration-300 hover:-translate-y-1 relative"
+                                  className="bg-white rounded-[4px] border border-gray-200 overflow-hidden flex flex-col h-full group transition-all duration-300 relative"
                               >
-                                  {/* --- SAVE BADGE (RIBBON STYLE) --- */}
-                                  <div className="absolute top-3 left-0 z-10">
-                                      <div className="bg-[#0a66c2] text-white px-4 py-1 text-[12px] font-bold rounded-r-full shadow-md tracking-wide">
+                                  {/* --- SAVE BADGE (STAR TECH CHIP STYLE) --- */}
+                                  <div className="absolute top-2 left-2 z-10">
+                                      <div className="bg-[#3749bb] text-white px-2 py-0.5 text-[10px] font-black rounded-[2px] shadow-sm uppercase tracking-tighter">
                                           {t.listing.save}: {car.price_details?.currency || '৳'}{Math.floor(Number(car.price_details?.daily_rate || 0) * 0.2).toLocaleString()}
                                       </div>
                                   </div>
@@ -127,13 +126,13 @@ export default function CarListing({ cars = [] }) {
                                   {/* --- CONTENT SECTION --- */}
                                   <div className="p-4 flex flex-col flex-1 border-gray-50 text-left">
                                       <div className="mb-4">
-                                          <h4 className="text-[14px] font-bold text-gray-800 hover:text-[#0a66c2] transition-colors leading-tight line-clamp-2">
+                                          <h4 className="text-[14px] font-bold text-gray-900 group-hover:text-[#3749bb] transition-colors leading-tight line-clamp-2">
                                               {car.brand?.name || car.make} {car.model} {car.year}
                                           </h4>
                                       </div>
 
                                       {/* Specs List */}
-                                      <div className="space-y-1.5 mb-5 border-t border-gray-50 pt-3">
+                                      <div className="space-y-1.5 mb-5 border-t border-gray-100 pt-3">
                                           <ListSpec Icon={Activity} label={t.listing.ops_range} val={car.specifications?.mileage || 'N/A'} />
                                           <ListSpec Icon={Settings} label={t.listing.transmission} val={car.specifications?.transmission || 'Auto'} />
                                           <ListSpec Icon={Fuel} label={t.listing.fuel_type} val={car.specifications?.fuel_type || 'N/A'} />
@@ -142,11 +141,11 @@ export default function CarListing({ cars = [] }) {
                                       {/* Key Highlights (Bullet style) */}
                                       {car.features && car.features.length > 0 && (
                                           <div className="mb-5">
-                                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t.listing.key_highlights}</span>
+                                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter block mb-2 leading-none">Key Highlights</span>
                                               <div className="grid grid-cols-1 gap-1">
                                                   {car.features.slice(0, 3).map((feat, idx) => (
                                                       <div key={idx} className="flex items-center gap-1.5">
-                                                           <div className="w-1 h-1 rounded-full bg-[#0a66c2]" />
+                                                           <div className="w-1 h-1 rounded-full bg-[#3749bb]" />
                                                            <span className="text-[11px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
                                                       </div>
                                                   ))}
@@ -156,13 +155,13 @@ export default function CarListing({ cars = [] }) {
 
                                       <div className="mt-auto border-t border-gray-100 pt-3 text-center">
                                           <div className="flex items-center justify-center gap-2 mb-3">
-                                              <span className="text-[17px] font-bold text-[#0a66c2]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
-                                              <span className="text-[13px] text-gray-400 line-through font-medium leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
+                                              <span className="text-[16px] font-black text-[#3749bb]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                                              <span className="text-[12px] text-gray-400 line-through font-bold leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
                                           </div>
                                           
                                           <Link 
-                                              href={`${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}`}
-                                              className="w-full py-[5px] inline-block px-4 rounded-full border border-[#0a66c2] text-[#0a66c2] text-[14px] font-semibold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]"
+                                              href={car.slug ? `${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}` : '#'}
+                                              className={`w-full py-1.5 inline-block px-4 rounded-[4px] border border-[#3749bb] text-[#3749bb] text-[13px] font-bold hover:bg-[#3749bb] hover:text-white transition-all duration-200 active:scale-[0.98] ${!car.slug ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
                                           >
                                               {t.listing.view_details}
                                           </Link>
@@ -179,10 +178,10 @@ export default function CarListing({ cars = [] }) {
 const ListSpec = ({ Icon, label, val }) => (
     <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-            <Icon size={12} className="text-gray-400" />
+            <Icon size={12} className="text-[#3749bb]" />
             <span className="text-[12px] font-medium text-gray-500">{label}</span>
         </div>
-        <span className="text-[12px] font-bold text-gray-800">{val}</span>
+        <span className="text-[12px] font-bold text-gray-900">{val}</span>
     </div>
 );
 
