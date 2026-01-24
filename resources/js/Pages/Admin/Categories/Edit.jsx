@@ -3,14 +3,27 @@ import { useForm, Head, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Input } from "@/Components/ui/Input";
 import FileUpload from "@/Components/forms/FileUpload";
-import { Save, ChevronLeft, XCircle, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { 
+    Save, 
+    ChevronLeft, 
+    Loader2, 
+    Info, 
+    CheckCircle2, 
+    Calendar, 
+    History,
+    ExternalLink,
+    Plus,
+    Layers,
+    Pencil,
+    Trash2
+} from "lucide-react";
 
-export default function CategoryEdit({ auth, category }) {
+export default function CategoryEdit({ auth, category, parentCategories = [], subCategories = [] }) {
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         _method: "PUT",
         name: category.name || "",
         description: category.description || "",
+        parent_id: category.parent_id || "",
         image: null,
     });
 
@@ -25,128 +38,166 @@ export default function CategoryEdit({ auth, category }) {
         <AdminLayout user={auth.user}>
             <Head title={`Edit Category | ${category.name}`} />
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {/* Header Section */}
-                <div className="px-8 py-5 border-b border-gray-100 bg-white flex justify-between items-center">
+            <div className="max-w-9xl mx-auto space-y-5">
+                {/* LinkedIn-Style Header */}
+                <div className="bg-white rounded-lg border border-gray-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
                     <div className="flex items-center gap-4">
                         <Link
                             href={route("admin.category.index")}
-                            className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                            className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-all active:scale-95"
                         >
                             <ChevronLeft size={20} />
                         </Link>
                         <div>
-                            <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">
-                                Update Category listing
+                            <h1 className="text-[20px] font-bold text-[#081621]">
+                                Category Identity Hub
                             </h1>
-                            <p className="text-[13px] text-gray-500 font-medium mt-0.5 tracking-widest">
-                                Editing {category.name} • Internal ID #{category.id}
-                            </p>
+                            <nav className="flex items-center gap-1.5 mt-0.5 text-[12px] text-[#00000099]">
+                                <Link href={route('dashboard')} className="hover:text-[#0a66c2] hover:underline">Admin</Link>
+                                <span>/</span>
+                                <Link href={route('admin.category.index')} className="hover:text-[#0a66c2] hover:underline">Category Hierarchy</Link>
+                                <span>/</span>
+                                <span className="font-bold text-[#081621]">{category.name}</span>
+                            </nav>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route("admin.category.index")}
-                            className="px-5 py-2 text-[13px] font-semibold text-gray-600 hover:bg-gray-100 rounded-full transition-all"
-                        >
-                            Discard
-                        </Link>
-                        <button
+                    <div className="flex items-center gap-2">
+                         <button
                             onClick={handleSubmit}
                             disabled={processing}
-                            className="px-6 py-2 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all shadow-sm flex items-center gap-2"
+                            className="h-10 px-8 text-[14px] font-bold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 active:scale-95"
                         >
                             {processing ? (
                                 <Loader2 size={16} className="animate-spin" />
                             ) : (
                                 <Save size={16} />
                             )}
-                            {processing ? "Updating..." : "Update Category"}
+                            Save Changes
                         </button>
                     </div>
                 </div>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
-                >
-                    {/* Left Column: Form Details */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm relative animate-in fade-in slide-in-from-bottom-4 duration-500">
-                             <div className="flex items-center gap-2 mb-8">
-                                <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
-                                <h3 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
-                                    General Information
-                                </h3>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Left Side: Form Details */}
+                    <div className="lg:col-span-9 space-y-5">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-5 bg-[#0a66c2] rounded-full" />
+                                    <h3 className="text-[14px] font-bold text-[#081621] uppercase tracking-wider">
+                                        Core Specifications
+                                    </h3>
+                                </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 items-start">
-                                <div className="space-y-8">
-                                    <Input
-                                        label="Category Name *"
-                                        placeholder="e.g. Luxury, SUV, Economy"
-                                        value={data.name}
-                                        onChange={(e) =>
-                                            setData("name", e.target.value)
-                                        }
-                                        error={errors.name}
-                                    />
-                                    <Input
-                                        label="Description"
-                                        placeholder="Brief description of this vehicle segment..."
-                                        isTextArea={true}
-                                        value={data.description}
-                                        onChange={(e) =>
-                                            setData(
-                                                "description",
-                                                e.target.value
-                                            )
-                                        }
-                                        error={errors.description}
-                                        className="min-h-[140px]"
-                                    />
-                                </div>
-                                <div className="space-y-6">
+                            <div className="p-8 space-y-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[13px] font-bold text-[#666666] uppercase tracking-tight">Parent Segment</label>
+                                            <select
+                                                value={data.parent_id || ""}
+                                                onChange={(e) => setData("parent_id", e.target.value)}
+                                                className="w-full h-10 px-3 bg-[#f8f9fa] border border-gray-200 rounded-lg text-[14px] focus:ring-1 focus:ring-[#0a66c2] transition-all outline-none font-bold text-[#081621]"
+                                            >
+                                                <option value="">None (Top Level Root)</option>
+                                                {parentCategories.map((parent) => (
+                                                    <option key={parent.id} value={parent.id}>
+                                                        {parent.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <Input
+                                            label="Descriptor Name"
+                                            placeholder="e.g. Luxury, SUV, Economy"
+                                            value={data.name}
+                                            onChange={(e) => setData("name", e.target.value)}
+                                            error={errors.name}
+                                            className="h-10 text-[14px]"
+                                        />
+                                    </div>
                                     <FileUpload
                                         data={data}
                                         setData={setData}
                                         errors={errors}
                                         clearErrors={clearErrors}
                                         field="image"
-                                        label="Category Image"
+                                        label="Visual Asset"
                                         initialData={category.icon}
+                                        multiple={false}
                                     />
                                 </div>
+
+                                <Input
+                                    label="Narrative Brief"
+                                    placeholder="Briefly describe what makes this segment unique..."
+                                    isTextArea={true}
+                                    value={data.description}
+                                    onChange={(e) => setData("description", e.target.value)}
+                                    error={errors.description}
+                                    className="min-h-[120px] text-[14px] leading-relaxed"
+                                />
                             </div>
                         </div>
+
+
                     </div>
 
-                    {/* Right Column (Info Card) */}
-                    <div className="lg:col-span-4 sticky top-8">
-                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-                            <h3 className="text-[13px] font-bold text-gray-900 tracking-tight mb-6">SUMMARY</h3>
-                            <div className="space-y-5">
-                                <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-lg">
-                                    <p className="text-[12px] text-emerald-700 leading-relaxed font-medium">
-                                        Properly categorized vehicles receive 40% higher engagement. Updating the description helps users understand the segment better.
+                    {/* Right Side: Data Feed/Sidebar */}
+                    <div className="lg:col-span-3 space-y-5 h-fit sticky top-20">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div className="p-5 border-b border-gray-50 flex items-center justify-between">
+                                <h3 className="text-[15px] font-bold text-[#081621]">Administrative Overview</h3>
+                                <div className="px-2 py-0.5 bg-emerald-100 text-[#057642] text-[10px] font-bold rounded-full">Active</div>
+                            </div>
+                            <div className="p-6 space-y-6">
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between text-[13px] text-[#666666]">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar size={14} />
+                                            <span>Created At</span>
+                                        </div>
+                                        <span className="text-[#081621] font-bold">{new Date(category.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="h-px bg-gray-50" />
+                                    <div className="flex items-center justify-between text-[13px] text-[#666666]">
+                                        <div className="flex items-center gap-2">
+                                            <History size={14} />
+                                            <span>Last Updated</span>
+                                        </div>
+                                        <span className="text-[#081621] font-bold">{new Date(category.updated_at).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+
+                                <div className="p-4 bg-[#f8f9fa] rounded-lg border border-gray-100">
+                                    <p className="text-[12px] text-[#666666] leading-relaxed font-medium">
+                                        This record tracking ensures that all asset modifications are logged and displayed correctly across the website.
                                     </p>
                                 </div>
-                                <div className="space-y-3 pt-2">
-                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Created On</span>
-                                        <span className="text-gray-900">{new Date(category.created_at).toLocaleDateString()}</span>
-                                    </div>
-                                    <div className="h-[1px] bg-gray-100" />
-                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Last Updated</span>
-                                        <span className="text-gray-900">{new Date(category.updated_at).toLocaleDateString()}</span>
-                                    </div>
-                                </div>
+
+                                <button className="w-full h-10 border border-[#0a66c2] text-[#0a66c2] text-[13px] font-bold rounded-full hover:bg-blue-50 transition-all flex items-center justify-center gap-2 active:scale-95">
+                                    View Live Details
+                                    <ExternalLink size={14} />
+                                </button>
                             </div>
                         </div>
+
+                        {/* Status Guard */}
+                         <div className="bg-[#004182] text-white rounded-lg p-6 shadow-md relative group overflow-hidden">
+                             <div className="absolute top-0 right-0 p-4 opacity-10 rotate-12 transition-transform group-hover:scale-110">
+                                <Info size={100} />
+                             </div>
+                             <div className="relative z-10">
+                                <h4 className="text-[12px] font-black uppercase tracking-widest opacity-80 mb-2">Visibility Guard</h4>
+                                <p className="text-[13px] font-medium leading-relaxed opacity-95">
+                                    Modifying this identity will reflect across all linked vehicle dashboards and search results immediately.
+                                </p>
+                             </div>
+                        </div>
                     </div>
-                </form>
+                </div>
             </div>
         </AdminLayout>
     );

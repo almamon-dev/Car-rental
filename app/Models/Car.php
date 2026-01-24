@@ -9,9 +9,37 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Car extends Model
 {
     protected $fillable = [
-        'make', 'model', 'year', 'rental_type', 'description', 'brand_id', 'category_id',
+        'make', 'model', 'slug', 'year', 'rental_type', 'description', 'brand_id', 'category_id', 'location_id',
         'status',
     ];
+
+    protected $appends = ['image_url', 'name'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->images->first() ? asset($this->images->first()->file_path) : null;
+    }
+
+    public function getNameAttribute()
+    {
+        return "{$this->make} {$this->model}";
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($car) {
+            if (empty($car->slug)) {
+                $car->slug = \Illuminate\Support\Str::slug($car->make.' '.$car->model.' '.\Illuminate\Support\Str::random(5));
+            }
+        });
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
 
     public function images(): HasMany
     {
@@ -52,5 +80,10 @@ class Car extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
     }
 }

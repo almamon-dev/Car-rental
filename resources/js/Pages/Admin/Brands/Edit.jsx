@@ -4,7 +4,6 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import { Input } from "@/Components/ui/Input";
 import FileUpload from "@/Components/forms/FileUpload";
 import { Save, ChevronLeft, XCircle, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
 
 export default function BrandEdit({ auth, brand }) {
     // 1. Initialize form with brand data
@@ -28,85 +27,91 @@ export default function BrandEdit({ auth, brand }) {
         <AdminLayout user={auth.user}>
             <Head title={`Edit Brand | ${brand?.name}`} />
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {/* Header Section */}
-                <div className="px-8 py-5 border-b border-gray-100 bg-white flex justify-between items-center">
+            <div className="max-w-full mx-auto space-y-4 font-sans antialiased text-[#191919]">
+                {/* LinkedIn-Inspired Header */}
+                <div className="bg-white rounded-t-lg border border-gray-200 border-b-0 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="flex items-center gap-4">
                         <Link
                             href={route("admin.brands.index")}
-                            className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                            className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-all active:scale-95"
                         >
                             <ChevronLeft size={20} />
                         </Link>
                         <div>
-                            <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">
-                                Update Brand Listing
+                            <h1 className="text-[18px] font-semibold text-[#000000e6]">
+                                Edit Brand Identity
                             </h1>
-                            <p className="text-[13px] text-gray-500 font-medium mt-0.5 tracking-widest">
-                                Editing {brand.name} • Internal ID #{brand.id}
-                            </p>
+                            <nav className="flex items-center gap-1.5 mt-0.5 text-[12px] text-[#00000099]">
+                                <Link href={route('dashboard')} className="hover:text-[#0a66c2] hover:underline">Admin</Link>
+                                <span>/</span>
+                                <Link href={route('admin.brands.index')} className="hover:text-[#0a66c2] hover:underline">Brands</Link>
+                                <span>/</span>
+                                <span className="font-semibold text-gray-900">{brand.name}</span>
+                            </nav>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <Link
                             href={route("admin.brands.index")}
-                            className="px-5 py-2 text-[13px] font-semibold text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+                            className="px-4 py-1.5 text-[13px] font-semibold text-gray-600 hover:bg-gray-50 border border-transparent hover:border-gray-200 rounded-full transition-all"
                         >
-                            Discard
+                            Discard Changes
                         </Link>
                         <button
                             onClick={handleSubmit}
                             disabled={processing}
-                            className="px-6 py-2 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all shadow-sm flex items-center gap-2"
+                            className="h-8 px-5 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                         >
                             {processing ? (
-                                <Loader2 size={16} className="animate-spin" />
+                                <Loader2 size={14} className="animate-spin" />
                             ) : (
-                                <Save size={16} />
+                                <Save size={14} />
                             )}
-                            {processing ? "Updating..." : "Update Brand"}
+                            Save Changes
                         </button>
                     </div>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
                 >
                     {/* Left Column: Form Details */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm relative animate-in fade-in slide-in-from-bottom-4 duration-500">
-                             <div className="flex items-center gap-2 mb-8">
-                                <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
-                                <h3 className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
+                    <div className="lg:col-span-9 space-y-4">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                             <div className="px-6 py-3 border-b border-gray-100 bg-[#f8f9fa]/50 flex items-center gap-2">
+                                <div className="w-1 h-4 bg-[#0a66c2] rounded-full" />
+                                <h3 className="text-[13px] font-bold text-gray-700 uppercase tracking-wider">
                                     General Information
                                 </h3>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 items-start">
-                                <div className="space-y-8">
+                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                <div className="space-y-6">
                                     <Input
                                         label="Brand Name *"
-                                        placeholder="e.g. BMW, Mercedes, Toyota"
+                                        placeholder="e.g. BMW"
                                         value={data.name}
                                         onChange={(e) => setData("name", e.target.value)}
                                         error={errors.name}
+                                        className="h-10 text-[13px]"
+                                        labelClassName="text-[12px]"
                                     />
 
                                     {/* Status Selection */}
-                                    <div className="space-y-4">
-                                        <label className="text-[12px] font-bold text-gray-900 tracking-tight block">
+                                    <div className="space-y-2">
+                                        <label className="text-[12px] font-semibold text-gray-700 block">
                                             Status & Visibility
                                         </label>
-                                        <div className="flex items-center gap-3 p-1.5 bg-gray-50 rounded-xl border border-gray-100">
+                                        <div className="flex items-center p-1 bg-gray-100 rounded-lg max-w-sm">
                                             <button
                                                 type="button"
                                                 onClick={() => setData("is_active", true)}
-                                                className={`flex-1 py-2.5 px-4 rounded-lg text-[13px] font-semibold transition-all ${
+                                                className={`flex-1 py-1.5 px-3 rounded-md text-[12px] font-bold transition-all shadow-sm ${
                                                     data.is_active
-                                                    ? "bg-white text-[#0a66c2] shadow-sm border border-gray-200"
-                                                    : "text-gray-500 hover:text-gray-700"
+                                                    ? "bg-white text-[#0a66c2]"
+                                                    : "text-gray-500 hover:text-gray-700 shadow-none bg-transparent"
                                                 }`}
                                             >
                                                 Active
@@ -114,10 +119,10 @@ export default function BrandEdit({ auth, brand }) {
                                             <button
                                                 type="button"
                                                 onClick={() => setData("is_active", false)}
-                                                className={`flex-1 py-2.5 px-4 rounded-lg text-[13px] font-semibold transition-all ${
+                                                className={`flex-1 py-1.5 px-3 rounded-md text-[12px] font-bold transition-all shadow-sm ${
                                                     !data.is_active
-                                                    ? "bg-white text-red-600 shadow-sm border border-gray-200"
-                                                    : "text-gray-500 hover:text-gray-700"
+                                                    ? "bg-white text-gray-700"
+                                                    : "text-gray-500 hover:text-gray-700 shadow-none bg-transparent"
                                                 }`}
                                             >
                                                 Inactive
@@ -142,23 +147,23 @@ export default function BrandEdit({ auth, brand }) {
                     </div>
 
                     {/* Right Column: Info Card */}
-                    <div className="lg:col-span-4 sticky top-8">
-                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-                            <h3 className="text-[13px] font-bold text-gray-900 tracking-tight mb-6">SUMMARY</h3>
-                            <div className="space-y-5">
-                                <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-lg">
-                                    <p className="text-[12px] text-emerald-700 leading-relaxed font-medium">
-                                        This brand is currently <strong>{brand.is_active ? 'Visible' : 'Hidden'}</strong> on the public website. Changing the status will immediately affect all associated vehicles.
+                    <div className="lg:col-span-3 space-y-4 h-fit sticky top-20">
+                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
+                            <h3 className="text-[13px] font-semibold text-[#000000e6] mb-3">System Status</h3>
+                            <div className="space-y-4">
+                                <div className={`p-3 border rounded-lg ${brand.is_active ? 'bg-emerald-50/50 border-emerald-100' : 'bg-gray-50 border-gray-100'}`}>
+                                    <p className={`text-[11px] leading-relaxed font-medium ${brand.is_active ? 'text-emerald-700' : 'text-gray-500'}`}>
+                                        This brand is currently <strong>{Boolean(brand.is_active) ? 'Visible' : 'Hidden'}</strong> on the public website.
                                     </p>
                                 </div>
                                 <div className="space-y-3 pt-2">
                                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Created On</span>
+                                        <span>Created</span>
                                         <span className="text-gray-900">{new Date(brand.created_at).toLocaleDateString()}</span>
                                     </div>
                                     <div className="h-[1px] bg-gray-100" />
                                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Last Updated</span>
+                                        <span>Updated</span>
                                         <span className="text-gray-900">{new Date(brand.updated_at).toLocaleDateString()}</span>
                                     </div>
                                 </div>

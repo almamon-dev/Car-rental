@@ -6,19 +6,20 @@ import FileUpload from "@/Components/forms/FileUpload";
 import {
     Save,
     ChevronLeft,
-    XCircle,
     Loader2,
     Plus,
     Trash2,
     Layers,
+    Info,
+    CheckCircle2
 } from "lucide-react";
 
-export default function CategoryCreate({ auth }) {
+export default function CategoryCreate({ auth, parentCategories = [] }) {
     const [isMultiMode, setIsMultiMode] = useState(false);
 
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         categories: [
-            { name: "", description: "", image: null, status: "available" },
+            { name: "", description: "", image: null, parent_id: "", status: "available" },
         ],
     });
 
@@ -26,6 +27,10 @@ export default function CategoryCreate({ auth }) {
         const updated = [...data.categories];
         updated[index][field] = value;
         setData("categories", updated);
+        
+        // Clear errors if they exist for this specific field
+        const errorKey = `categories.${index}.${field}`;
+        if (errors[errorKey]) clearErrors(errorKey);
     };
 
     const addCategoryRow = () => {
@@ -49,144 +54,142 @@ export default function CategoryCreate({ auth }) {
 
     return (
         <AdminLayout user={auth.user}>
-            <Head title="Create Category | Admin Dashboard" />
+            <Head title="Create Category | Admin" />
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {/* Header Section */}
-                <div className="px-8 py-5 border-b border-gray-100 bg-white flex justify-between items-center">
+            <div className="max-w-9xl mx-auto space-y-4">
+                {/* LinkedIn-Inspired Header */}
+                <div className="bg-white rounded-t-lg border border-gray-200 border-b-0 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="flex items-center gap-4">
                         <Link
                             href={route("admin.category.index")}
-                            className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                            className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-all active:scale-95"
                         >
                             <ChevronLeft size={20} />
                         </Link>
                         <div>
-                            <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">
-                                Create Category Listing
+                            <h1 className="text-[20px] font-semibold text-[#000000e6]">
+                                {isMultiMode ? "Bulk Add Categories" : "Create New Category"}
                             </h1>
-                            <p className="text-[13px] text-gray-500 font-medium mt-0.5 tracking-widest">
-                                {isMultiMode ? "Bulk Creation Mode" : "Vehicle Segmentation Management"}
-                            </p>
+                            <nav className="flex items-center gap-1.5 mt-0.5 text-[12px] text-[#00000099]">
+                                <Link href={route('dashboard')} className="hover:text-[#0a66c2] hover:underline">Admin</Link>
+                                <span>/</span>
+                                <Link href={route('admin.category.index')} className="hover:text-[#0a66c2] hover:underline">Category Hierarchy</Link>
+                                <span>/</span>
+                                <span className="font-semibold text-gray-900">Create</span>
+                            </nav>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <button
+                    <div className="flex items-center gap-2">
+                         <button
                             type="button"
                             onClick={() => {
                                 setIsMultiMode(!isMultiMode);
-                                if (isMultiMode) setData("categories", [data.categories[0]]);
+                                if (!isMultiMode) {
+                                     // When enabling multi-mode, keep current data but wrap it
+                                     // (Logic already handled by structure, but we might want to reset)
+                                } else {
+                                     setData("categories", [data.categories[0]]);
+                                }
                             }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-[13px] font-semibold ${
+                            className={`h-8 flex items-center gap-2 px-4 rounded-full border text-[14px] font-semibold transition-all active:scale-95 ${
                                 isMultiMode
-                                    ? "bg-slate-900 text-white border-slate-900"
-                                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                                    ? "bg-[#0a66c2] text-white border-[#0a66c2] hover:bg-[#004182]"
+                                    : "bg-white text-[#00000099] border-[#00000099] hover:bg-gray-50 hover:text-gray-900"
                             }`}
                         >
-                            <Layers size={16} />
-                            {isMultiMode ? "Multi Mode" : "Single Mode"}
+                            <Layers size={14} />
+                            {isMultiMode ? "Multiple Mode" : "Single Mode"}
                         </button>
 
-                        <div className="h-6 w-[1px] bg-gray-200 mx-1" />
+                        <div className="w-[1px] h-6 bg-gray-200 mx-1 hidden sm:block" />
 
-                        <Link
-                            href={route("admin.category.index")}
-                            className="px-5 py-2 text-[13px] font-semibold text-gray-600 hover:bg-gray-100 rounded-full transition-all"
-                        >
-                            Discard
-                        </Link>
                         <button
                             onClick={handleSubmit}
                             disabled={processing}
-                            className="px-6 py-2 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all shadow-sm flex items-center gap-2"
+                            className="h-8 px-5 text-[14px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                         >
                             {processing ? (
-                                <Loader2 size={16} className="animate-spin" />
+                                <Loader2 size={14} className="animate-spin" />
                             ) : (
-                                <Save size={16} />
+                                <Save size={14} />
                             )}
-                            {processing ? "Saving..." : "Create Category"}
+                            Save Category
                         </button>
                     </div>
                 </div>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
-                >
-                    {/* Left Column: Form Cards */}
-                    <div className="lg:col-span-8 space-y-8">
+                {/* Main Content Area */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Form Section */}
+                    <div className="lg:col-span-9 space-y-4">
                         {data.categories.map((category, index) => (
                             <div
                                 key={index}
-                                className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm relative animate-in fade-in slide-in-from-bottom-4 duration-500"
+                                className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-400"
                             >
-                                {isMultiMode && (
-                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-100">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
-                                            <span className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
-                                                Category Entry #{index + 1}
-                                            </span>
-                                        </div>
-                                        {data.categories.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeCategoryRow(index)}
-                                                className="text-gray-400 hover:text-red-500 transition-colors bg-gray-50 hover:bg-red-50 p-2 rounded-full"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        )}
+                                <div className="px-6 py-3 border-b border-gray-100 bg-[#f8f9fa]/50 flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1 h-4 bg-[#0a66c2] rounded-full" />
+                                        <h3 className="text-[14px] font-bold text-gray-700 uppercase tracking-wider">
+                                            {isMultiMode ? `Category Item #${index + 1}` : "Primary Information"}
+                                        </h3>
                                     </div>
-                                )}
+                                    {isMultiMode && data.categories.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeCategoryRow(index)}
+                                            className="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-full hover:bg-red-50"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 items-start">
-                                    <div className="space-y-8">
+                                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-6">
+                                        <div className="space-y-2 text-left">
+                                            <label className="text-[13px] font-bold text-gray-700 uppercase tracking-tight">Parent Category</label>
+                                            <select
+                                                value={category.parent_id || ""}
+                                                onChange={(e) => handleInputChange(index, "parent_id", e.target.value)}
+                                                className="w-full h-10 px-3 bg-[#f8f9fa] border border-gray-200 rounded-lg text-[14px] focus:ring-1 focus:ring-[#0a66c2] transition-all outline-none"
+                                            >
+                                                <option value="">None (Top Level)</option>
+                                                {parentCategories.map((parent) => (
+                                                    <option key={parent.id} value={parent.id}>
+                                                        {parent.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                         <Input
-                                            label="Category Name *"
+                                            label="Name"
                                             placeholder="e.g. Luxury, SUV, Economy"
                                             value={category.name}
-                                            onChange={(e) =>
-                                                handleInputChange(
-                                                    index,
-                                                    "name",
-                                                    e.target.value
-                                                )
-                                            }
+                                            onChange={(e) => handleInputChange(index, "name", e.target.value)}
                                             error={errors[`categories.${index}.name`]}
+                                            className="h-10 text-[14px]"
                                         />
                                         <Input
-                                            label="Description"
-                                            placeholder="Brief description of this vehicle segment..."
+                                            label="Brief Description"
+                                            placeholder="Enter context for this category..."
                                             isTextArea={true}
                                             value={category.description}
-                                            onChange={(e) =>
-                                                handleInputChange(
-                                                    index,
-                                                    "description",
-                                                    e.target.value
-                                                )
-                                            }
+                                            onChange={(e) => handleInputChange(index, "description", e.target.value)}
                                             error={errors[`categories.${index}.description`]}
-                                            className="min-h-[140px]"
+                                            className="min-h-[120px] text-[14px] leading-relaxed"
                                         />
                                     </div>
-                                    <div className="space-y-6">
+                                    <div className="space-y-4">
                                         <FileUpload
                                             data={category}
-                                            setData={(field, value) =>
-                                                handleInputChange(
-                                                    index,
-                                                    "image",
-                                                    value
-                                                )
-                                            }
+                                            setData={(_, value) => handleInputChange(index, "image", value)}
                                             errors={errors}
                                             clearErrors={clearErrors}
                                             field={`categories.${index}.image`}
-                                            label="Category Image"
+                                            label="Identity Asset"
+                                            multiple={false}
                                         />
                                     </div>
                                 </div>
@@ -197,43 +200,45 @@ export default function CategoryCreate({ auth }) {
                             <button
                                 type="button"
                                 onClick={addCategoryRow}
-                                className="w-full py-8 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 font-bold text-[12px] hover:border-[#0a66c2] hover:text-[#0a66c2] hover:bg-blue-50/30 transition-all uppercase tracking-widest bg-white"
+                                className="w-full py-6 border-2 border-dashed border-gray-200 bg-white rounded-lg flex flex-col items-center justify-center gap-2 text-[#00000099] hover:border-[#0a66c2] hover:text-[#0a66c2] hover:bg-blue-50/20 transition-all group shadow-sm active:scale-[0.99]"
                             >
-                                <div className="p-2 bg-gray-50 rounded-full group-hover:bg-[#0a66c2]/10">
-                                    <Plus size={24} />
+                                <div className="p-2 bg-gray-50 rounded-full group-hover:bg-[#0a66c2]/10 transition-colors">
+                                    <Plus size={20} />
                                 </div>
-                                Add Another Entry
+                                <span className="text-[12px] font-bold uppercase tracking-widest">Append Another Category</span>
                             </button>
                         )}
                     </div>
 
-                    {/* Right Column: Info Card */}
-                    <div className="lg:col-span-4 sticky top-8">
-                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-                            <h3 className="text-[13px] font-bold text-gray-900 tracking-tight mb-6">INFORMATION</h3>
-                            <div className="space-y-4">
-                                <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-lg">
-                                    <p className="text-[12px] text-blue-700 leading-relaxed font-medium">
-                                        {isMultiMode 
-                                            ? "Bulk creation allows you to add multiple vehicle categories at once. Ensure each category has a distinctive name and representative image."
-                                            : "Define a new category to group your vehicles. Categories help customers filter and find the right vehicle for their needs."}
-                                    </p>
+                    {/* Right Sidebar */}
+                    <div className="lg:col-span-3 space-y-4 h-fit sticky top-20">
+                        {/* Status/Overview Card */}
+                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
+                            <h3 className="text-[14px] font-semibold text-[#000000e6] mb-4">Inventory Manifest</h3>
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3 p-3 bg-[#f8f9fa] rounded-lg border border-gray-100">
+                                    <div className="w-10 h-10 rounded bg-[#0a66c2]/10 flex items-center justify-center text-[#0a66c2]">
+                                        <Info size={18} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[12px] font-semibold text-gray-900 leading-none">Category Policy</p>
+                                        <p className="text-[11px] text-gray-500 mt-1 uppercase tracking-tight font-black">Segmenting Logic</p>
+                                    </div>
                                 </div>
-                                <div className="space-y-3 pt-4">
-                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Total Entries</span>
-                                        <span className="text-gray-900">{data.categories.length}</span>
-                                    </div>
-                                    <div className="h-[1px] bg-gray-100" />
-                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Mode</span>
-                                        <span className="text-[#0a66c2]">{isMultiMode ? "BULK" : "SINGLE"}</span>
-                                    </div>
+                                <div className="p-3 text-[12px] text-[#00000099] leading-relaxed">
+                                    Categorizing your elite fleet helps users navigate through your inventory with surgical precision. Each category acts as a landing experience.
+                                </div>
+                                <div className="border-t border-gray-50 pt-3 flex justify-between items-center text-[12px]">
+                                    <span className="font-semibold text-gray-400">STATUS</span>
+                                    <span className="flex items-center gap-1.5 font-bold text-[#057642]">
+                                        <CheckCircle2 size={12} strokeWidth={3} />
+                                        READ TO SYNC
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </AdminLayout>
     );

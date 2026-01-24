@@ -32,6 +32,8 @@ function FlashMessages({ children }) {
     );
 }
 
+import { LanguageProvider } from "./Contexts/LanguageContext";
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: async (name) => {
@@ -42,15 +44,27 @@ createInertiaApp({
 
         page.default.layout =
             page.default.layout ||
-            ((page) => <FlashMessages>{page}</FlashMessages>);
+            ((page) => (
+                <LanguageProvider>
+                    <FlashMessages>{page}</FlashMessages>
+                </LanguageProvider>
+            ));
 
         return page;
     },
    setup({ el, App, props }) {
         if (import.meta.env.SSR) {
-            hydrateRoot(el, <App {...props} />);
+            hydrateRoot(el, (
+                <LanguageProvider>
+                    <App {...props} />
+                </LanguageProvider>
+            ));
         } else {
-            createRoot(el).render(<App {...props} />);
+            createRoot(el).render((
+                <LanguageProvider>
+                    <App {...props} />
+                </LanguageProvider>
+            ));
         }
 
         // Remove the server-side preloader

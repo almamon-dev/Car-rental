@@ -16,36 +16,62 @@ import {
     Info,
     Fuel,
     Clock,
-    Users
+    Users,
+    Settings,
+    MapPin,
+    Eye
 } from "lucide-react";
-import { features, specifications, reviews, faqs } from "./data";
 
 /**
  * INSTITUTIONAL DATA MANIFEST (STAR TECH INSPIRED)
- * 
- * Philosophy:
- * - High Density: Tighter navigation and compact module presentation.
- * - Technical: Sharp tables and clear structured data.
- * - Interaction: Integrated search-style breadcrumbs or clean tab indicators.
  */
 
+import { useLanguage } from "@/Contexts/LanguageContext";
+
 export default function TabsContent({
+    car,
     activeTab,
     setActiveTab,
     activeFaqIndex,
     setActiveFaqIndex,
 }) {
+    const { t } = useLanguage();
     const tabs = [
-        { id: "overview", label: "Overview" },
-        { id: "specs", label: "Specification" },
-        { id: "features", label: "Features" },
-        { id: "reviews", label: "Reviews" },
-        { id: "policies", label: "Policies" }
+        { id: "overview", label: t.details.tabs.overview },
+        { id: "specs", label: t.details.tabs.specs },
+        { id: "features", label: t.details.tabs.features },
+        { id: "faq", label: t.details.tabs.faq },
+        { id: "reviews", label: t.details.tabs.reviews },
+        { id: "policies", label: t.details.tabs.policies }
+    ];
+
+    // Format specifications into sections for Star Tech style view
+    const specSections = [
+        {
+            category: t.details.gen_info,
+            items: [
+                { label: t.details.manufacturer, value: car.brand?.name || car.make },
+                { label: t.details.model_ref, value: car.model },
+                { label: t.details.production_year, value: car.year },
+                { label: t.details.asset_class, value: car.specifications?.vehicle_type || car.category?.name },
+                { label: t.details.exterior_finish, value: car.specifications?.color },
+            ]
+        },
+        {
+            category: t.details.tech_perf,
+            items: [
+                { label: t.details.transmission_config, value: car.specifications?.transmission },
+                { label: t.details.energy_arch_tech, value: car.specifications?.fuel_type },
+                { label: t.details.ops_range_tech, value: car.specifications?.mileage },
+                { label: t.details.power_unit_tech, value: car.specifications?.engine_capacity },
+                { label: t.details.control_dynamics, value: car.specifications?.steering },
+            ]
+        }
     ];
 
     return (
         <div className="bg-white rounded-[12px] overflow-hidden font-sans border border-gray-100 shadow-sm">
-            {/* Modular Navigation (Star Tech Style) */}
+            {/* Modular Navigation */}
             <div className="border-b border-gray-100 bg-[#f9f9f9]">
                 <nav className="flex overflow-x-auto scrollbar-hide">
                     {tabs.map((tab) => (
@@ -82,30 +108,29 @@ export default function TabsContent({
                             <div>
                                 <h3 className="text-[18px] font-bold text-gray-900 mb-4 flex items-center gap-2">
                                     <div className="w-1.5 h-6 bg-[#0a66c2] rounded-full" />
-                                    Executive Asset Summary
+                                    {t.details.overview.summary_title}
                                 </h3>
                                 <p className="text-[14px] text-gray-600 leading-relaxed font-medium">
-                                    The BMW M8 Competition defines the strategic intersection of track-oriented performance and executive grand touring. 
-                                    Equipped with a 4.4L V8 M TwinPower Turbo engine, this unit delivers precision-engineered dynamics for Tier-1 mobility requirements.
+                                    {car.description || `The ${car.make} ${car.model} defines the strategic intersection of track-oriented performance and executive grand touring. Equipped with precision-engineered dynamics for Tier-1 mobility requirements.`}
                                 </p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <OverviewModule Icon={Award} title="Verified Tier-1 Asset" sub="Audited Quality Standard" badge="Verified" />
-                                <OverviewModule Icon={TrendingUp} title="High Demand" sub="Preferred by 85% of members" badge="Trending" />
+                                <OverviewModule Icon={Award} title={t.details.overview.verified_title} sub={t.details.overview.verified_sub} badge="Verified" />
+                                <OverviewModule Icon={TrendingUp} title={t.details.overview.demand_title} sub={`${car.faqs?.length || 0} ${t.details.overview.demand_sub}`} badge="Hot" />
                             </div>
 
                             <div className="bg-blue-50/30 p-6 rounded-[12px] border border-blue-100/50">
-                                <h4 className="text-[12px] font-bold text-[#0a66c2] uppercase tracking-wide mb-4">Highlights</h4>
+                                <h4 className="text-[12px] font-bold text-[#0a66c2] uppercase tracking-wide mb-4">{t.details.overview.highlights}</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <HighlightItem Icon={Zap} label="Power" value="617 BHP / 750 Nm" />
-                                    <HighlightItem Icon={Clock} label="Acceleration" value="0-100 in 3.2s" />
+                                    <HighlightItem Icon={Settings} label={t.details.transmission} value={car.specifications?.transmission || 'N/A'} />
+                                    <HighlightItem Icon={Fuel} label={t.details.energy_arch} value={car.specifications?.mileage || 'N/A'} />
                                 </div>
                             </div>
                         </motion.div>
                     )}
 
-                    {/* --- SPECIFICATION (Star Tech Style Table) --- */}
+                    {/* --- SPECIFICATION --- */}
                     {activeTab === "specs" && (
                         <motion.div
                             key="specs"
@@ -113,7 +138,7 @@ export default function TabsContent({
                             animate={{ opacity: 1 }}
                             className="space-y-8"
                         >
-                            {specifications.map((section, index) => (
+                            {specSections.map((section, index) => (
                                 <div key={index} className="overflow-hidden border border-gray-100 rounded-[8px]">
                                     <div className="bg-[#f9f9f9] px-4 py-3 border-b border-gray-100">
                                         <h4 className="text-[12px] font-bold text-[#0a66c2] uppercase tracking-wide flex items-center gap-2">
@@ -127,7 +152,7 @@ export default function TabsContent({
                                                     <span className="text-[12px] font-bold text-gray-500 uppercase tracking-tight">{item.label}</span>
                                                 </div>
                                                 <div className="col-span-8 px-4 py-3">
-                                                    <span className="text-[13px] font-bold text-gray-900">{item.value}</span>
+                                                    <span className="text-[13px] font-bold text-gray-900">{item.value || 'N/A'}</span>
                                                 </div>
                                             </div>
                                         ))}
@@ -145,19 +170,57 @@ export default function TabsContent({
                             animate={{ opacity: 1 }}
                             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
                         >
-                            {features.map((feature, index) => (
+                            {car.features && car.features.length > 0 ? car.features.map((feature, index) => (
                                 <div key={index} className="flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-[8px] hover:border-[#0a66c2]/30 transition-all group">
                                     <div className="p-2 bg-blue-50 text-[#0a66c2] rounded-[4px] group-hover:bg-[#0a66c2] group-hover:text-white transition-all">
-                                        {feature.icon}
+                                        <CheckCircle2 size={16} />
                                     </div>
                                     <div>
-                                        <div className="text-[13px] font-bold text-gray-900">{feature.label}</div>
-                                        <div className="text-[10px] font-medium text-gray-400">{feature.category}</div>
+                                        <div className="text-[13px] font-bold text-gray-900">{feature.feature_name}</div>
+                                        <div className="text-[10px] font-medium text-gray-400 capitalize">{car.category?.name} Core</div>
                                     </div>
                                 </div>
-                            ))}
+                            )) : (
+                                <div className="col-span-full py-12 text-center text-gray-400 font-medium">{t.details.no_features}</div>
+                            )}
                         </motion.div>
                     )}
+                    {/* --- FAQ --- */}
+                    {activeTab === "faq" && (
+                        <motion.div
+                            key="faq"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="space-y-6"
+                        >
+                            <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wide mb-6">{t.details.faq_title}</h3>
+                            <div className="space-y-3">
+                                {car.faqs && car.faqs.length > 0 ? car.faqs.map((faq, index) => (
+                                    <div key={index} className="rounded-[8px] border border-gray-100 overflow-hidden shadow-sm">
+                                        <button
+                                            onClick={() => setActiveFaqIndex(activeFaqIndex === index ? null : index)}
+                                            className="w-full flex items-center justify-between p-4 text-left bg-white hover:bg-[#f9f9f9] transition-colors"
+                                        >
+                                            <span className="text-[13px] font-bold text-gray-800">{faq.question}</span>
+                                            <ChevronRight size={14} className={`text-gray-400 transition-transform ${activeFaqIndex === index ? "rotate-90" : ""}`} />
+                                        </button>
+                                        <AnimatePresence>
+                                            {activeFaqIndex === index && (
+                                                <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
+                                                    <div className="px-5 pb-5 pt-0 text-[13px] text-gray-500 font-medium leading-relaxed bg-[#f9f9f9]/50">
+                                                        {faq.answer}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                )) : (
+                                    <div className="text-gray-400 text-[13px] font-medium italic py-10 text-center border-2 border-dashed border-gray-100 rounded-xl">{t.details.no_faq}</div>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+
 
                     {/* --- REVIEWS --- */}
                     {activeTab === "reviews" && (
@@ -168,31 +231,13 @@ export default function TabsContent({
                             className="space-y-6"
                         >
                             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-                                <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wide">Client Audits</h3>
-                                <button className="bg-[#0a66c2] text-white px-4 py-1.5 rounded-[4px] text-[11px] font-bold uppercase tracking-wide hover:bg-[#004182] transition-all">Submit Audit</button>
+                                <h3 className="text-[15px] font-bold text-gray-900 uppercase tracking-wide">{t.details.reviews_title}</h3>
+                                <button className="bg-[#0a66c2] text-white px-4 py-1.5 rounded-[4px] text-[11px] font-bold uppercase tracking-wide hover:bg-[#004182] transition-all">{t.details.submit_audit}</button>
                             </div>
                             <div className="grid grid-cols-1 gap-4">
-                                {reviews.map((review) => (
-                                    <div key={review.id} className="bg-[#f9f9f9] border border-gray-100 rounded-[8px] p-6 hover:bg-white hover:shadow-sm transition-all">
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className="flex items-center gap-3">
-                                                <img src={review.avatar} alt={review.name} className="w-10 h-10 rounded-full border border-white shadow-sm" />
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <h4 className="text-[14px] font-bold text-gray-900">{review.name}</h4>
-                                                        {review.verified && <BadgeCheck size={14} className="text-[#0a66c2]" />}
-                                                    </div>
-                                                    <div className="text-[11px] font-medium text-gray-400 uppercase tracking-wide">{review.date}</div>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-gray-200">
-                                                <Star size={10} fill="#0a66c2" className="text-[#0a66c2]" />
-                                                <span className="text-[11px] font-black text-gray-900">{review.rating}</span>
-                                            </div>
-                                        </div>
-                                        <p className="text-[13px] text-gray-600 font-medium leading-relaxed italic border-l-3 border-gray-200 pl-4">{review.comment}</p>
-                                    </div>
-                                ))}
+                                <div className="py-12 text-center text-gray-400 font-medium border-2 border-dashed border-gray-100 rounded-xl">
+                                    {t.details.no_reviews}
+                                </div>
                             </div>
                         </motion.div>
                     )}
@@ -208,42 +253,16 @@ export default function TabsContent({
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <ProtocolBox 
                                     Icon={ShieldCheck} 
-                                    title="Deployment Policies" 
-                                    items={["Minimum operative age: 25", "V-Grade Security License", "Tier-1 Asset Escrow REQUIRED"]} 
+                                    title={t.details.policies_title} 
+                                    items={t.details.policies.requirements} 
                                     variant="blue"
                                 />
                                 <ProtocolBox 
                                     Icon={FileText} 
-                                    title="Administrative Documentation" 
-                                    items={["Executive Rental Agreement", "Protocol-B Manifest", "Audit Access Log"]} 
+                                    title={t.details.admin_doc} 
+                                    items={t.details.policies.admin} 
                                     variant="gray"
                                 />
-                            </div>
-
-                            <div className="pt-6 border-t border-gray-100">
-                                <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-wide mb-4">Frequently Asked Questions</h4>
-                                <div className="space-y-2">
-                                    {faqs.map((faq, index) => (
-                                        <div key={index} className="rounded-[8px] border border-gray-100 overflow-hidden shadow-sm">
-                                            <button
-                                                onClick={() => setActiveFaqIndex(activeFaqIndex === index ? null : index)}
-                                                className="w-full flex items-center justify-between p-4 text-left bg-white hover:bg-[#f9f9f9] transition-colors"
-                                            >
-                                                <span className="text-[13px] font-bold text-gray-800">{faq.q}</span>
-                                                <ChevronRight size={14} className={`text-gray-400 transition-transform ${activeFaqIndex === index ? "rotate-90" : ""}`} />
-                                            </button>
-                                            <AnimatePresence>
-                                                {activeFaqIndex === index && (
-                                                    <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
-                                                        <div className="px-5 pb-5 pt-0 text-[13px] text-gray-500 font-medium leading-relaxed bg-[#f9f9f9]/50">
-                                                            {faq.a}
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
                         </motion.div>
                     )}
@@ -293,3 +312,4 @@ const ProtocolBox = ({ Icon, title, items, variant }) => (
         </ul>
     </div>
 );
+

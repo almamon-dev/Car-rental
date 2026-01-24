@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
+        'profile_photo_path',
     ];
 
     /**
@@ -43,11 +45,38 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    protected $appends = [
+        'profile_photo_url',
+    ];
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo_path
+                    ? asset('/'.$this->profile_photo_path)
+                    : null;
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->is_admin;
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Booking::class);
     }
 }

@@ -27,12 +27,6 @@ export default function TableSkeleton({ rowCount = 5 }) {
                         <div className="h-3 w-16 bg-gray-50 rounded" />
                     </td>
 
-                    {/* Registration Column */}
-                    <td className="py-4 px-4">
-                        <div className="h-4 w-24 bg-gray-100 rounded mb-2" />
-                        <div className="h-3 w-32 bg-gray-50 rounded" />
-                    </td>
-
                     {/* Specifications Column */}
                     <td className="py-4 px-4">
                         <div className="h-4 w-28 bg-gray-100 rounded mb-2" />
@@ -51,12 +45,6 @@ export default function TableSkeleton({ rowCount = 5 }) {
                             <div className="h-2 w-2 rounded-full bg-gray-100" />
                             <div className="h-4 w-16 bg-gray-100 rounded" />
                         </div>
-                    </td>
-
-                    {/* Added Date Column */}
-                    <td className="py-4 px-4">
-                        <div className="h-4 w-24 bg-gray-100 rounded mb-2" />
-                        <div className="h-3 w-16 bg-gray-50 rounded" />
                     </td>
 
                     {/* Actions Column */}

@@ -16,7 +16,11 @@ class Helper
     public static function uploadFile($file, $folder = 'cars', $withThumb = true): ?array
     {
         try {
-            if (! $file || ! $file->isValid()) {
+            if (is_array($file)) {
+                $file = array_shift($file);
+            }
+
+            if (! $file || ! is_object($file) || ! method_exists($file, 'isValid') || ! $file->isValid()) {
                 throw new \Exception('Invalid file');
             }
 

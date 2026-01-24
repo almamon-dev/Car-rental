@@ -7,11 +7,18 @@ import {
     ChevronUp,
     ChevronDown,
     Grid3X3,
-    Heart
+    Heart,
+    Activity,
+    Settings,
+    Fuel,
+    Shield
 } from "lucide-react";
 import { Skeleton } from "@/Components/ui/Skeleton";
 
-export default function CarListingPage({ cars, categories = [], brands = [], maxPrice = 2500000 }) {
+import { useLanguage } from "@/Contexts/LanguageContext";
+
+export default function CarListingPage({ cars, categories = [], brands = [], locations = [], maxPrice = 2500000 }) {
+    const { t } = useLanguage();
     const queryParams = new URLSearchParams(window.location.search);
     const isFirstRender = useRef(true);
 
@@ -22,6 +29,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
         availability: true,
         categories: true,
         brands: true,
+        locations: true,
         transmission: false,
         fuel: false
     });
@@ -31,6 +39,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
         search: queryParams.get('search') || '',
         categories: queryParams.get('category')?.split(',').filter(Boolean) || [],
         brands: queryParams.get('brand')?.split(',').filter(Boolean) || [],
+        locations: queryParams.get('location')?.split(',').filter(Boolean) || [],
         availability: queryParams.get('status')?.split(',').filter(Boolean) || [],
         transmission: queryParams.get('transmission')?.split(',').filter(Boolean) || [],
         fuel_type: queryParams.get('fuel_type')?.split(',').filter(Boolean) || [],
@@ -54,10 +63,10 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
     const handleFilterChange = (type, value) => {
         setFilters(prev => {
             const currentItems = [...prev[type]];
-            if (currentItems.includes(value)) {
-                return { ...prev, [type]: currentItems.filter(i => i !== value) };
+            if (currentItems.includes(String(value))) {
+                return { ...prev, [type]: currentItems.filter(i => i !== String(value)) };
             } else {
-                return { ...prev, [type]: [...currentItems, value] };
+                return { ...prev, [type]: [...currentItems, String(value)] };
             }
         });
     };
@@ -69,6 +78,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
         if (filters.search) data.search = filters.search;
         if (filters.categories.length) data.category = filters.categories.join(',');
         if (filters.brands.length) data.brand = filters.brands.join(',');
+        if (filters.locations.length) data.location = filters.locations.join(',');
         if (filters.availability.length) data.status = filters.availability.join(',');
         if (filters.transmission.length) data.transmission = filters.transmission.join(',');
         if (filters.fuel_type.length) data.fuel_type = filters.fuel_type.join(',');
@@ -107,6 +117,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
         filters.search,
         filters.categories, 
         filters.brands, 
+        filters.locations,
         filters.availability, 
         filters.transmission,
         filters.fuel_type,
@@ -119,6 +130,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
     const hasActiveFilters = 
         filters.categories.length > 0 || 
         filters.brands.length > 0 || 
+        filters.locations.length > 0 || 
         filters.availability.length > 0 || 
         filters.transmission.length > 0 || 
         filters.fuel_type.length > 0 || 
@@ -132,6 +144,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
             search: '',
             categories: [],
             brands: [],
+            locations: [],
             availability: [],
             transmission: [],
             fuel_type: [],
@@ -144,6 +157,21 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
 
     // Pagination data
     const { data, links, total, last_page, from, to } = cars;
+    const { auth } = usePage().props;
+
+    const toggleFavorite = (e, carId) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!auth.user) {
+            router.get(route('login'));
+            return;
+        }
+
+        router.post(route('user.favorites.toggle', carId), {}, {
+            preserveScroll: true
+        });
+    };
 
     return (
         <GuestLayout>
@@ -159,13 +187,13 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {/* Filter Header with Clear Link */}
                             <div className="bg-white rounded border border-gray-200 p-4 transition-all duration-300">
                                 <div className="flex items-center justify-between">
-                                    <h4 className="text-[15px] font-bold text-[#000000e6]">Filters</h4>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.filters}</h4>
                                     {hasActiveFilters && (
                                         <button 
                                             onClick={clearAllFilters}
                                             className="text-[12px] font-bold text-[#0a66c2] hover:text-[#004182] hover:underline flex items-center gap-1 transition-all"
                                         >
-                                            <span className="text-[14px]">×</span> Clear All
+                                            <span className="text-[14px]">×</span> {t.listing.clear_all}
                                         </button>
                                     )}
                                 </div>
@@ -174,7 +202,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {/* Price Filter - Exact Match to Reference Image */}
                             <div className="bg-white rounded border border-gray-200 overflow-hidden">
                                 <div className="p-4 border-b border-gray-100">
-                                    <h4 className="text-[15px] font-bold text-[#000000e6]">Price Range</h4>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.price_range}</h4>
                                 </div>
                                 <div className="px-5 py-6">
                                     {/* Slider Track with Handles */}
@@ -221,9 +249,38 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                                 </div>
                             </div>
 
+                            {/* Location Filter */}
+                            <div className="bg-white border border-gray-200 rounded overflow-hidden">
+                                <button onClick={() => toggleMenu('locations')} className={`w-full p-4 flex items-center justify-between ${openMenus.locations ? 'border-b border-gray-100' : ''}`}>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.pickup_location}</h4>
+                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.locations ? 'rotate-180 text-[#0a66c2]' : ''}`} />
+                                </button>
+                                {openMenus.locations && (
+                                    <div className="px-5 py-5 space-y-3 max-h-[270px] overflow-y-auto custom-scrollbar">
+                                        {locations && locations.length > 0 ? (
+                                            locations.map((loc) => (
+                                                <label key={loc.id} className="flex items-center justify-between cursor-pointer group">
+                                                    <div className="flex items-center gap-3">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={filters.locations.includes(String(loc.id))} 
+                                                            onChange={() => handleFilterChange('locations', loc.id)} 
+                                                            className="custom-checkbox" 
+                                                        />
+                                                        <span className="text-[13px] font-medium text-gray-700 group-hover:text-[#0a66c2] transition-colors">{loc.name}</span>
+                                                    </div>
+                                                </label>
+                                            ))
+                                        ) : (
+                                            <p className="text-[12px] text-gray-400 italic">{t.listing.no_locations}</p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('availability')} className={`w-full p-4 flex items-center justify-between ${openMenus.availability ? 'border-b border-gray-100' : ''}`}>
-                                    <h4 className="text-[15px] font-bold text-[#000000e6]">Availability</h4>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.availability}</h4>
                                     <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.availability ? 'rotate-180 text-[#0a66c2]' : ''}`} />
                                 </button>
                                 {openMenus.availability && (
@@ -231,7 +288,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                                         {['available', 'booked', 'maintenance'].map((status) => (
                                             <label key={status} className="flex items-center gap-3 cursor-pointer">
                                                 <input type="checkbox" checked={filters.availability.includes(status)} onChange={() => handleFilterChange('availability', status)} className="custom-checkbox" />
-                                                <span className="text-[13px] font-medium capitalize">{status === 'available' ? 'Certified' : status}</span>
+                                                <span className="text-[13px] font-medium capitalize">{status === 'available' ? t.listing.certified : t.listing[status]}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -241,7 +298,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {/* Category Filter */}
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('categories')} className={`w-full p-4 flex items-center justify-between ${openMenus.categories ? 'border-b border-gray-100' : ''}`}>
-                                    <h4 className="text-[15px] font-bold text-[#000000e6]">Categories</h4>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.categories}</h4>
                                     <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.categories ? 'rotate-180 text-[#0a66c2]' : ''}`} />
                                 </button>
                                 {openMenus.categories && (
@@ -262,7 +319,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {/* Brand Filter */}
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('brands')} className={`w-full p-4 flex items-center justify-between ${openMenus.brands ? 'border-b border-gray-100' : ''}`}>
-                                    <h4 className="text-[15px] font-bold text-[#000000e6]">Brands</h4>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.brands}</h4>
                                     <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.brands ? 'rotate-180 text-[#0a66c2]' : ''}`} />
                                 </button>
                                 {openMenus.brands && (
@@ -283,15 +340,15 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {/* Transmission Filter */}
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('transmission')} className={`w-full p-4 flex items-center justify-between ${openMenus.transmission ? 'border-b border-gray-100' : ''}`}>
-                                    <h4 className="text-[15px] font-bold text-[#000000e6]">Transmission</h4>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.transmission}</h4>
                                     <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.transmission ? 'rotate-180 text-[#0a66c2]' : ''}`} />
                                 </button>
                                 {openMenus.transmission && (     
                                     <div className="px-5 py-5 space-y-3 max-h-[270px] overflow-y-auto custom-scrollbar">
-                                        {['Automatic', 'Manual', 'CVT'].map((t) => (
-                                            <label key={t} className="flex items-center gap-3 cursor-pointer">
-                                                <input type="checkbox" checked={filters.transmission.includes(t)} onChange={() => handleFilterChange('transmission', t)} className="custom-checkbox" />
-                                                <span className="text-[13px] font-medium">{t}</span>
+                                        {['Automatic', 'Manual', 'CVT'].map((t_item) => (
+                                            <label key={t_item} className="flex items-center gap-3 cursor-pointer">
+                                                <input type="checkbox" checked={filters.transmission.includes(t_item)} onChange={() => handleFilterChange('transmission', t_item)} className="custom-checkbox" />
+                                                <span className="text-[13px] font-medium">{t_item}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -301,7 +358,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {/* Fuel Type Filter */}
                             <div className="bg-white border border-gray-200 rounded">
                                 <button onClick={() => toggleMenu('fuel')} className={`w-full p-4 flex items-center justify-between ${openMenus.fuel ? 'border-b border-gray-100' : ''}`}>
-                                    <h4 className="text-[15px] font-bold text-[#000000e6]">Fuel Type</h4>
+                                    <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.fuel_type}</h4>
                                     <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${openMenus.fuel ? 'rotate-180 text-[#0a66c2]' : ''}`} />
                                 </button>
                                 {openMenus.fuel && (
@@ -323,16 +380,16 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             <div className="flex flex-row justify-between items-center mb-4 bg-white p-3 rounded shadow-sm border border-gray-100">
                                 <div className="px-1 flex flex-col">
                                     <h2 className="text-[15px] font-bold text-gray-800">
-                                        {filters.categories.length > 0 ? filters.categories[0].replace(/-/g, ' ') : 'Car Listing'}
+                                        {filters.categories.length > 0 ? filters.categories[0].replace(/-/g, ' ') : t.listing.title}
                                     </h2>
                                     <span className="text-[11px] font-bold text-gray-400 mt-0.5">
-                                        Showing {from || 0} – {to || 0} of {total} Assets
+                                        {t.listing.showing} {from || 0} – {to || 0} {t.listing.of} {total} {t.listing.assets}
                                     </span>
                                 </div>
                                 
                                 <div className="flex items-center gap-4 sm:gap-6">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[13px] text-gray-400 font-bold">Show:</span>
+                                        <span className="text-[13px] text-gray-400 font-bold">{t.listing.show}:</span>
                                         <div className="relative group/sel">
                                             <select 
                                                 value={filters.per_page}
@@ -348,16 +405,16 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[13px] text-gray-400 font-bold whitespace-nowrap hidden sm:inline">Sort By:</span>
+                                        <span className="text-[13px] text-gray-400 font-bold whitespace-nowrap hidden sm:inline">{t.listing.sort_by}:</span>
                                         <div className="relative group/sel">
                                             <select 
                                                 value={filters.sort}
                                                 onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value }))}
                                                 className="appearance-none bg-[#f0f2f5] border border-transparent text-gray-700 text-[13px] rounded pl-3 pr-8 py-1 outline-none font-bold hover:bg-gray-200 transition-all cursor-pointer"
                                             >
-                                                <option value="latest">Default</option>
-                                                <option value="price_low">Price (Low &gt; High)</option>
-                                                <option value="price_high">Price (High &gt; Low)</option>
+                                                <option value="latest">{t.listing.default}</option>
+                                                <option value="price_low">{t.listing.price_low_high}</option>
+                                                <option value="price_high">{t.listing.price_high_low}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -369,9 +426,9 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {data.length === 0 ? (
                                 <div className="bg-white rounded-lg border border-gray-200 p-12 text-center shadow-sm">
                                     <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300"><Search size={24} /></div>
-                                    <h3 className="text-[18px] font-bold text-gray-700 mb-2">No Assets Found</h3>
-                                    <p className="text-[14px] text-gray-500 mb-6">Try adjusting your filters or clearing them to see all results.</p>
-                                    <button onClick={clearAllFilters} className="px-6 py-2 bg-[#0a66c2] text-white text-[13px] font-bold rounded hover:bg-[#004182] transition-colors">Clear All Filters</button>
+                                    <h3 className="text-[18px] font-bold text-gray-700 mb-2">{t.listing.no_assets}</h3>
+                                    <p className="text-[14px] text-gray-500 mb-6">{t.listing.adjust_filters}</p>
+                                    <button onClick={clearAllFilters} className="px-6 py-2 bg-[#0a66c2] text-white text-[13px] font-bold rounded hover:bg-[#004182] transition-colors">{t.listing.reset_filters}</button>
                                 </div>
                             ) : (
                                 <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ${isLoading ? 'opacity-70 grayscale-[50%]' : 'opacity-100'}`}>
@@ -380,7 +437,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                                             <CarCardSkeleton key={`skel-${i}`} />
                                           ))
                                         : data.map((car) => (
-                                            <CarCard key={car.id} car={car} />
+                                            <CarCard key={car.id} car={car} toggleFavorite={toggleFavorite} />
                                           ))
                                     }
                                 </div>
@@ -389,7 +446,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], max
                             {/* Pagination & Results Summary Footer */}
                             <div className="mt-8 flex flex-col items-center gap-4">
                                 <p className="text-[14px] text-gray-500 font-medium">
-                                    Showing <span className="text-gray-800 font-bold">{cars.from || 0}</span> to <span className="text-gray-800 font-bold">{cars.to || 0}</span> of <span className="text-gray-800 font-bold">{total}</span> ({last_page} Pages)
+                                    {t.listing.showing} <span className="text-gray-800 font-bold">{cars.from || 0}</span> {t.listing.to} <span className="text-gray-800 font-bold">{cars.to || 0}</span> {t.listing.of} <span className="text-gray-800 font-bold">{total}</span> ({last_page} {t.listing.pages})
                                 </p>
                                 
                                 {last_page > 1 && (
@@ -503,21 +560,27 @@ function CarCardSkeleton() {
     );
 }
 
-function CarCard({ car }) {
+function CarCard({ car, toggleFavorite }) {
+    const { t } = useLanguage();
     return (
         <div className="bg-white rounded overflow-hidden shadow-sm border border-gray-200 group transition-all hover:shadow-md flex flex-col h-full relative">
-            <div className="absolute top-2 left-0 z-10">
-                <div className="bg-[#6e2594] text-white px-3 py-0.5 text-[11px] font-bold rounded-r-full shadow-sm">
-                    Save: ${Math.floor(Math.random() * 500) + 100}
+            {/* --- SAVE BADGE (RIBBON STYLE) --- */}
+            <div className="absolute top-3 left-0 z-10">
+                <div className="bg-[#0a66c2] text-white px-4 py-1 text-[12px] font-black rounded-r-full shadow-md tracking-wide">
+                    {t.listing.save}: {car.price_details?.currency || '৳'}{Math.floor(Number(car.price_details?.daily_rate || 0) * 0.2).toLocaleString()}
                 </div>
             </div>
 
             <div className="relative overflow-hidden aspect-[16/10] bg-gray-50/30">
                 <img src={car.images?.[0] ? `/${car.images[0].file_path}` : "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                 
-                {/* Unified Favorite Icon */}
-                <button className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-y-[-5px] group-hover:translate-y-0 duration-300">
-                    <Heart size={15} />
+                <button 
+                    onClick={(e) => toggleFavorite(e, car.id)}
+                    className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-y-[-5px] group-hover:translate-y-0 duration-300 ${
+                        car.is_favorited ? "text-red-500" : "text-gray-400 hover:text-red-500"
+                    }`}
+                >
+                    <Heart size={15} fill={car.is_favorited ? "currentColor" : "none"} />
                 </button>
             </div>
 
@@ -526,37 +589,54 @@ function CarCard({ car }) {
                     {car.brand?.name || car.make} {car.model} {car.year}
                 </h3>
                 
-                <ul className="space-y-1 text-[12.5px] text-gray-500 mb-4 list-none p-0">
-                    <li className="flex items-start gap-2">
-                        <span className="text-gray-300 transform translate-y-[2px]">•</span>
-                        <span>Category: <span className="text-gray-700 font-medium">{car.category?.name || 'Asset'}</span></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="text-gray-300 transform translate-y-[2px]">•</span>
-                        <span>Transmission: <span className="text-gray-700 font-medium">{car.specifications?.transmission || 'Auto'}</span></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="text-gray-300 transform translate-y-[2px]">•</span>
-                        <span>Fuel Type: <span className="text-gray-700 font-medium">{car.specifications?.fuel_type || 'N/A'}</span></span>
-                    </li>
-                </ul>
+                {/* Startech Style Vertical List */}
+                <div className="space-y-1.5 mb-5 border-t border-gray-100 pt-3">
+                    <ListSpec Icon={Activity} label={t.listing.ops_range} val={car.specifications?.mileage || 'N/A'} />
+                    <ListSpec Icon={Settings} label={t.listing.transmission} val={car.specifications?.transmission || 'Auto'} />
+                    <ListSpec Icon={Fuel} label={t.listing.energy_arch} val={car.specifications?.fuel_type || 'N/A'} />
+                </div>
+
+                {/* Key Highlights */}
+                {car.features && car.features.length > 0 && (
+                    <div className="mb-5">
+                        <span className="text-[9.5px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t.listing.key_highlights}</span>
+                        <div className="grid grid-cols-1 gap-1">
+                            {car.features.slice(0, 3).map((feat, idx) => (
+                                <div key={idx} className="flex items-center gap-1.5">
+                                     <div className="w-1 h-1 rounded-full bg-[#0a66c2]" />
+                                     <span className="text-[10.5px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="mt-auto border-t border-gray-100 pt-3 text-center">
                     <div className="flex items-center justify-center gap-2">
-                        <span className="text-[17px] font-bold text-[#0a66c2]">${Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
-                        <span className="text-[13px] text-gray-400 line-through font-medium leading-none">${(Number(car.price_details?.daily_rate || 0) + 500).toLocaleString()}</span>
+                        <span className="text-[17px] font-bold text-[#0a66c2]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                        <span className="text-[13px] text-gray-400 line-through font-medium leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
                     </div>
                 </div>
             </div>
             
             <div className="px-4 pb-4 mt-auto">
                 <Link 
-                    href={route('car.details', car.id)} 
+                    href={`${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}`}
                     className="w-full py-[5px] inline-block text-center rounded-full border border-[#0a66c2] text-[#0a66c2] text-[14px] font-semibold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]"
                 >
-                    View Details
+                    {t.listing.view_details}
                 </Link>
             </div>
         </div>
     );
 }
+
+const ListSpec = ({ Icon, label, val }) => (
+    <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+            <Icon size={10} className="text-gray-400" />
+            <span className="text-[11px] font-medium text-gray-500">{label}</span>
+        </div>
+        <span className="text-[11px] font-bold text-gray-800">{val}</span>
+    </div>
+);

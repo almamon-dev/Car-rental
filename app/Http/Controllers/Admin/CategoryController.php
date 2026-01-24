@@ -20,33 +20,45 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
+        $view = $request->routeIs('admin.category.sub.index') ? 'sub' : $request->query('view', 'root');
         $query = Category::query();
 
-        // 1. Filter by Search (Name or Description)
+        // 1. Filter by Search
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
-                    ->orWhere('description', 'like', "%{$request->search}%")
-                    ->orWhere('slug', 'like', "%{$request->search}%");
+                    ->orWhere('description', 'like', "%{$request->search}%");
             });
         }
+
         // 2. Filter by Status
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
-        // 3. Get Paginated Results
+        // 3. Hierarchy Filter
+        if ($view === 'sub') {
+            $query->whereNotNull('parent_id')
+                ->with('parent')
+                ->withCount('cars');
+        } else {
+            $query->whereNull('parent_id')
+                ->withCount(['children', 'cars'])
+                ->with(['children' => function ($q) {
+                    $q->latest()->limit(5);
+                }]);
+        }
+
         $categories = $query->latest()
             ->paginate($request->per_page ?? 10)
             ->withQueryString();
 
-        // 4. Generate Counts for Status Tabs
-
         $counts = Cache::remember('category_counts', 10, function () {
             return [
-                'all' => Category::count(),
-                'active' => Category::where('status', 'active')->count(),
-                'inactive' => Category::where('status', 'inactive')->count(),
+                'all' => Category::whereNull('parent_id')->count(),
+                'active' => Category::whereNull('parent_id')->where('status', 'active')->count(),
+                'inactive' => Category::whereNull('parent_id')->where('status', 'inactive')->count(),
+                'sub_total' => Category::whereNotNull('parent_id')->count(),
             ];
         });
 
@@ -54,6 +66,7 @@ class CategoryController extends Controller
             'categories' => $categories,
             'filters' => $request->all(),
             'counts' => $counts,
+            'view' => $view,
         ]);
     }
 
@@ -62,7 +75,13 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Categories/Create');
+        $parentCategories = Category::whereNull('parent_id')
+            ->select('id', 'name')
+            ->get();
+
+        return Inertia::render('Admin/Categories/Create', [
+            'parentCategories' => $parentCategories,
+        ]);
     }
 
     /**
@@ -73,6 +92,7 @@ class CategoryController extends Controller
         // -- validate
         foreach ($request->categories as $categoryData) {
             $data = [
+                'parent_id' => $categoryData['parent_id'] ?? null,
                 'name' => $categoryData['name'],
                 'description' => $categoryData['description'] ?? null,
                 'slug' => Str::slug($categoryData['name']),
@@ -98,8 +118,17 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
+        $parentCategories = Category::whereNull('parent_id')
+            ->where('id', '!=', $category->id)
+            ->select('id', 'name')
+            ->get();
+
+        $subCategories = Category::where('parent_id', $category->id)->get();
+
         return Inertia::render('Admin/Categories/Edit', [
             'category' => $category,
+            'parentCategories' => $parentCategories,
+            'subCategories' => $subCategories,
         ]);
     }
 
@@ -109,7 +138,7 @@ class CategoryController extends Controller
     public function update(CategoryUpdateRequest $request, Category $category)
     {
         // validate the request data
-        $data = $request->only(['name', 'description']);
+        $data = $request->only(['name', 'description', 'parent_id']);
         $data['slug'] = Str::slug($request->name);
 
         if ($request->hasFile('image')) {
@@ -152,7 +181,22 @@ class CategoryController extends Controller
             DB::beginTransaction();
 
             if ($selectAllGlobal) {
-                $categories = Category::all();
+                $query = Category::query();
+                if ($request->input('view') === 'sub') {
+                    $query->whereNotNull('parent_id');
+                } else {
+                    $query->whereNull('parent_id');
+                }
+
+                // Also apply search filter if present
+                if ($request->search) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('name', 'like', "%{$request->search}%")
+                            ->orWhere('description', 'like', "%{$request->search}%");
+                    });
+                }
+
+                $categories = $query->get();
             } elseif (! empty($ids) && is_array($ids)) {
                 $categories = Category::whereIn('id', $ids)->get();
             } else {

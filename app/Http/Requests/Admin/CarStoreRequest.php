@@ -17,6 +17,7 @@ class CarStoreRequest extends FormRequest
             // Basic Info
             'brand_id' => ['required', 'exists:brands,id'],
             'category_id' => ['required', 'exists:categories,id'],
+            'location_id' => ['required', 'exists:locations,id'],
             'make' => ['required', 'string', 'max:255'],
             'model' => ['required', 'string', 'max:255'],
             'year' => ['required', 'integer', 'min:1950', 'max:'.(date('Y') + 5)],

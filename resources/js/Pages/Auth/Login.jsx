@@ -1,11 +1,12 @@
-import Checkbox from "@/Components/ui/Checkbox";
-import PrimaryButton from "@/Components/PrimaryButton";
-import { Input } from "@/Components/ui/Input";
-import GuestLayout from "@/Layouts/GuestLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
+import { useLanguage } from "@/Contexts/LanguageContext";
+import { Car } from "lucide-react";
+
+
 
 export default function Login({ status, canResetPassword }) {
+    const { t, locale } = useLanguage();
     const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
         password: "",
@@ -22,336 +23,176 @@ export default function Login({ status, canResetPassword }) {
     };
 
     return (
-        <GuestLayout>
-            <Head title="Log in" />
+        <div className="min-h-screen bg-white md:bg-[#f3f2ef] flex flex-col font-sans antialiased text-[#000000e6]">
+            <Head title={t.nav.login} />
 
-            <div className="min-h-screen mt-8 bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-                <div className="max-w-md w-full">
-                    {/* Card Container */}
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-                        {/* Header Section */}
-                        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white p-8 text-center">
-                            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg
-                                    className="w-8 h-8 text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </div>
-                            <h1 className="text-3xl font-bold text-white mb-2">
-                                Welcome Back
-                            </h1>
-                            <p className="text-white/90 text-sm">
-                                Sign in to your account to continue
-                            </p>
-                        </div>
-
-                        {/* Form Section */}
-                        <div className="p-8">
-                            {status && (
-                                <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm text-center">
-                                    {status}
-                                </div>
-                            )}
-
-                            <form onSubmit={submit} className="space-y-6">
-                                {/* Email Input */}
-                                <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-slate-700">
-                                        Email Address
-                                    </label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg
-                                                className="h-5 w-5 text-slate-400"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <Input
-                                            id="email"
-                                            type="email"
-                                            name="email"
-                                            value={data.email}
-                                            autoComplete="username"
-                                            placeholder="you@example.com"
-                                            error={errors.email}
-                                            onChange={(e) =>
-                                                setData("email", e.target.value)
-                                            }
-                                            className="pl-10"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Password Input */}
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700">
-                                        Password
-                                    </label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg
-                                                className="h-5 w-5 text-slate-400"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <Input
-                                            id="password"
-                                            type={
-                                                showPassword
-                                                    ? "text"
-                                                    : "password"
-                                            }
-                                            name="password"
-                                            value={data.password}
-                                            autoComplete="current-password"
-                                            placeholder="••••••••"
-                                            error={errors.password}
-                                            onChange={(e) =>
-                                                setData(
-                                                    "password",
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="pl-10 pr-10"
-                                            required
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setShowPassword(!showPassword)
-                                            }
-                                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                        >
-                                            {showPassword ? (
-                                                <svg
-                                                    className="h-5 w-5 text-slate-400"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    className="h-5 w-5 text-slate-400"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                    />
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </button>
-                                    </div>
-                                    {errors.password && (
-                                        <p className="text-sm text-red-600 mt-1">
-                                            {errors.password}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Remember & Forgot Password */}
-                                <div className="flex items-center justify-between">
-                                    <label className="flex items-center cursor-pointer group">
-                                        <div className="relative">
-                                            <Checkbox
-                                                name="remember"
-                                                checked={data.remember}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "remember",
-                                                        e.target.checked
-                                                    )
-                                                }
-                                                className="border-slate-300 group-hover:border-[#FF9F43]"
-                                            />
-                                        </div>
-                                        <span className="ms-3 text-sm text-slate-600 group-hover:text-slate-900">
-                                            Remember me
-                                        </span>
-                                    </label>
-
-                                    {canResetPassword && (
-                                        <Link
-                                            href={route("password.request")}
-                                            className="text-sm font-medium text-blue-600  transition-colors"
-                                        >
-                                            Forgot password?
-                                        </Link>
-                                    )}
-                                </div>
-
-                                {/* Login Button */}
-                                <div className="pt-2">
-                                    <PrimaryButton
-                                        className="w-full justify-center bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold h-12 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-                                        disabled={processing}
-                                    >
-                                        {processing ? (
-                                            <div className="flex items-center justify-center">
-                                                <svg
-                                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                Signing in...
-                                            </div>
-                                        ) : (
-                                            "Sign in to your account"
-                                        )}
-                                    </PrimaryButton>
-                                </div>
-
-                                {/* Divider */}
-                                <div className="relative">
-                                    <div className="absolute inset-0 flex items-center">
-                                        <div className="w-full border-t border-slate-200"></div>
-                                    </div>
-                                    <div className="relative flex justify-center text-sm">
-                                        <span className="px-4 bg-white text-slate-500">
-                                            Or continue with
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Social Login */}
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        type="button"
-                                        className="w-full inline-flex justify-center items-center py-3 px-4 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition-colors"
-                                    >
-                                        <svg
-                                            className="w-5 h-5 mr-2"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                fill="#4285F4"
-                                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                            />
-                                            <path
-                                                fill="#34A853"
-                                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                            />
-                                            <path
-                                                fill="#FBBC05"
-                                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                                            />
-                                            <path
-                                                fill="#EA4335"
-                                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                            />
-                                        </svg>
-                                        Google
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="w-full inline-flex justify-center items-center py-3 px-4 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition-colors"
-                                    >
-                                        <svg
-                                            className="w-5 h-5 mr-2 text-[#1877F2]"
-                                            fill="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                                        </svg>
-                                        Facebook
-                                    </button>
-                                </div>
-
-                                {/* Sign up link */}
-                                <div className="text-center pt-4">
-                                    <p className="text-sm text-slate-600">
-                                        Don't have an account?{" "}
-                                        <Link
-                                            href={route("register")}
-                                            className="font-semibold text-blue-600  transition-colors"
-                                        >
-                                            Sign up now
-                                        </Link>
-                                    </p>
-                                </div>
-                            </form>
-                        </div>
+            {/* --- LINKEDIN STYLE HEADER --- */}
+            <header className="max-w-[1128px] mx-auto w-full px-4 pt-4 md:pt-8 mb-4 md:mb-8">
+                <Link href="/" className="flex items-center gap-1.5 group w-fit">
+                    <div className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-[4px] bg-[#0a66c2] text-white transition-transform group-hover:scale-105 active:scale-95">
+                        <Car size={18} strokeWidth={2.5} className="md:w-5 md:h-5" />
                     </div>
+                    <span className="text-[18px] md:text-[22px] font-bold text-[#0a66c2] tracking-tighter">LuxDrive</span>
+                </Link>
+            </header>
 
-                    {/* Footer Note */}
-                    <div className="text-center mt-6">
-                        <p className="text-xs text-slate-500">
-                            By signing in, you agree to our{" "}
-                            <a
-                                href="#"
-                                className="text-slate-600 hover:text-slate-900"
-                            >
-                                Terms
-                            </a>{" "}
-                            and{" "}
-                            <a
-                                href="#"
-                                className="text-slate-600 hover:text-slate-900"
-                            >
-                                Privacy Policy
-                            </a>
+            <main className="flex-1 flex flex-col items-center px-4">
+                {/* --- LOGIN CARD --- */}
+                <div className="w-full max-w-[400px] bg-white md:rounded-lg md:shadow-[0_4px_12px_rgba(0,0,0,0.15)] p-0 md:p-6 lg:p-8">
+                    <div className="mb-6">
+                        <h1 className="text-[32px] font-semibold text-[#000000e6] leading-tight text-left">
+                            {t.nav.login}
+                        </h1>
+                        <p className="text-[14px] text-[#00000099] mt-1 font-normal">
+                            {t.auth.welcome_subtitle}
                         </p>
                     </div>
+
+                    {status && (
+                        <div className="mb-4 text-sm font-medium text-green-600 bg-green-50 p-3 rounded border border-green-100">
+                            {status}
+                        </div>
+                    )}
+
+                    <form onSubmit={submit} className="flex flex-col gap-5">
+                        {/* Email Input */}
+                        <div className="relative group">
+                            <input
+                                id="email"
+                                type="email"
+                                value={data.email}
+                                placeholder=" "
+                                onChange={(e) => setData("email", e.target.value)}
+                                className={`peer w-full h-[56px] px-3 pt-4 pb-1 text-[16px] border rounded-[4px] outline-none transition-all duration-200
+                                    ${errors.email ? 'border-red-600 ring-1 ring-red-600' : 'border-gray-800 hover:border-gray-950 focus:border-[#0a66c2] focus:ring-1 focus:ring-[#0a66c2]'}
+                                `}
+                                
+                            />
+                            <label 
+                                htmlFor="email"
+                                className="absolute left-3 top-4 text-[16px] text-[#00000099] transition-all duration-200 pointer-events-none
+                                    peer-focus:top-1 peer-focus:text-[12px] peer-focus:text-[#0a66c2]
+                                    peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-[12px]
+                                "
+                            >
+                                {t.auth.email}
+                            </label>
+                            {errors.email && <p className="text-[12px] text-red-600 mt-1 font-medium">{errors.email}</p>}
+                        </div>
+
+                        {/* Password Input */}
+                        <div className="relative group">
+                            <input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                value={data.password}
+                                placeholder=" "
+                                onChange={(e) => setData("password", e.target.value)}
+                                className={`peer w-full h-[56px] px-3 pt-4 pr-16 pb-1 text-[16px] border rounded-[4px] outline-none transition-all duration-200
+                                    ${errors.password ? 'border-red-600 ring-1 ring-red-600' : 'border-gray-800 hover:border-gray-900 focus:border-[#0a66c2] focus:ring-1 focus:ring-[#0a66c2]'}
+                                `}
+                                
+                            />
+                            <label 
+                                htmlFor="password"
+                                className="absolute left-3 top-4 text-[16px] text-[#00000099] transition-all duration-200 pointer-events-none
+                                    peer-focus:top-1 peer-focus:text-[12px] peer-focus:text-[#0a66c2]
+                                    peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-[12px]
+                                "
+                            >
+                                {t.auth.password}
+                            </label>
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-[14px] h-[28px] px-2 text-[14px] font-semibold text-[#0a66c2] hover:bg-blue-50 rounded transition-colors"
+                            >
+                                {showPassword ? t.auth.hide : t.auth.show}
+                            </button>
+                            {errors.password && <p className="text-[12px] text-red-600 mt-1 font-medium">{errors.password}</p>}
+                        </div>
+
+                        {/* Reset Password */}
+                        {canResetPassword && (
+                            <Link
+                                href={route("password.request")}
+                                className="text-[16px] font-semibold text-[#0a66c2] hover:underline w-fit"
+                            >
+                                {t.auth.forgot_password}
+                            </Link>
+                        )}
+
+                        {/* Sign In Button */}
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="w-full h-[48px] md:h-[52px] bg-[#0a66c2] hover:bg-[#004182] text-white text-[16px] font-semibold rounded-full shadow-sm transition-all active:scale-[0.98] disabled:opacity-50 mt-2"
+                        >
+                            {processing ? t.auth.signing_in : t.nav.login}
+                        </button>
+                    </form>
+
+                    {/* Divider */}
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div className="relative flex justify-center text-[14px]">
+                            <span className="px-4 bg-white text-[#00000099]">
+                                {t.auth.or}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Social Login Buttons */}
+                    <div className="flex flex-col gap-3">
+                        <button className="w-full flex items-center justify-center gap-2 h-[40px] md:h-[48px] rounded-full border border-gray-500 font-semibold text-[#000000bf] hover:bg-gray-50 hover:border-gray-900 transition-all text-[16px]">
+                            <svg className="w-[18px] md:w-[20px] h-[18px] md:h-[20px]" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                            </svg>
+                            {t.auth.sign_in_google}
+                        </button>
+                        <button className="w-full flex items-center justify-center gap-2 h-[40px] md:h-[48px] rounded-full border border-gray-500 font-semibold text-[#000000bf] hover:bg-gray-50 hover:border-gray-900 transition-all text-[16px]">
+                            <svg className="w-[18px] md:w-[20px] h-[18px] md:h-[20px] text-black" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.702z" />
+                            </svg>
+                            {t.auth.sign_in_apple}
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </GuestLayout>
+
+                {/* --- REGISTER LINK (Separate Section as per LinkedIn) --- */}
+                <div className="mt-8 text-center pb-8">
+                    <p className="text-[16px] text-[#000000e6]">
+                        {t.auth.new_to_luxdrive} 
+                        <Link
+                            href={route("register")}
+                            className="font-semibold text-[#0a66c2] hover:underline ml-1"
+                        >
+                            {t.auth.join_now}
+                        </Link>
+                    </p>
+                </div>
+            </main>
+
+            {/* --- COMPLIANCE FOOTER --- */}
+            <footer className="w-full bg-white md:bg-transparent pb-6 px-4">
+                 <div className="max-w-[1128px] mx-auto flex flex-wrap justify-center gap-x-4 gap-y-2 text-[12px] font-semibold text-[#00000099]">
+                     <Link href="/" className="flex items-center gap-1 text-[#0a66c2]">
+                        <span className="font-bold">LuxDrive</span> © 2026
+                     </Link>
+                     <a href="#" className="hover:underline">User Agreement</a>
+                     <a href="#" className="hover:underline">Privacy Policy</a>
+                     <a href="#" className="hover:underline">Community Guidelines</a>
+                     <a href="#" className="hover:underline">Cookie Policy</a>
+                     <a href="#" className="hover:underline">Copyright Policy</a>
+                     <a href="#" className="hover:underline">Send Feedback</a>
+                     <button className="hover:underline">Language</button>
+                 </div>
+            </footer>
+        </div>
     );
 }

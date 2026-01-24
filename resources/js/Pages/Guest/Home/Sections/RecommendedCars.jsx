@@ -8,6 +8,9 @@ import {
     MapPin,
     Star,
     ArrowRight,
+    Activity,
+    Settings,
+    Fuel
 } from "lucide-react";
 import { Skeleton } from "@/Components/ui/Skeleton";
 
@@ -16,7 +19,10 @@ import "swiper/css/navigation";
 
 import { Link } from "@inertiajs/react";
 
+import { useLanguage } from "@/Contexts/LanguageContext";
+
 export default function RecommendedCars({ cars = [] }) {
+    const { t } = useLanguage();
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -38,12 +44,12 @@ export default function RecommendedCars({ cars = [] }) {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                            <span className="text-[10px] font-bold text-[#0a66c2]">Institutional Matrix</span>
+                            <span className="text-[10px] font-bold text-[#0a66c2]">{t.home.recommended.matrix}</span>
                         </div>
                         <h2 className="text-[22px] font-bold text-[#000000e6] tracking-tight">
-                            Personalized Asset <span className="text-[#0a66c2]">Suggestions</span>
+                            {t.home.recommended.title}
                         </h2>
-                        <p className="text-[12.5px] text-gray-500 mt-1 font-medium italic">High-fidelity recommendations based on your professional deployment history.</p>
+                        <p className="text-[12.5px] text-gray-500 mt-1 font-medium italic">{t.home.recommended.subtitle}</p>
                     </div>
 
                     {/* Minimalist Controls */}
@@ -69,7 +75,7 @@ export default function RecommendedCars({ cars = [] }) {
                         modules={[Navigation, Autoplay]}
                         spaceBetween={14}
                         slidesPerView={1.2}
-                        loop={cars.length > 6}
+                        loop={false}
                         speed={600}
                         autoplay={{ delay: 5000, disableOnInteraction: false }}
                         navigation={{
@@ -102,12 +108,13 @@ export default function RecommendedCars({ cars = [] }) {
                                 <div
                                     className="bg-white rounded-[12px] border border-gray-200 overflow-hidden shadow-sm flex flex-col h-full group transition-all duration-300 hover:-translate-y-1 hover:shadow-md relative"
                                 >
-                                    {/* Save Badge Sync */}
-                                    <div className="absolute top-2 left-0 z-10">
-                                        <div className="bg-[#6e2594] text-white px-2.5 py-0.5 text-[10px] font-bold rounded-r-full shadow-sm">
-                                            Save: ${Math.floor(Math.random() * 500) + 100}
+                                    {/* --- SAVE BADGE (RIBBON STYLE) --- */}
+                                    <div className="absolute top-3 left-0 z-10">
+                                        <div className="bg-[#0a66c2] text-white px-4 py-1 text-[12px] font-black rounded-r-full shadow-md tracking-wide">
+                                            {t.home.recommended.save}: ৳{Math.floor(Number(car.price_details?.daily_rate || 0) * 0.2).toLocaleString()}
                                         </div>
                                     </div>
+
                                     {/* --- MEDIA (EXACT SYNC - 16:10) --- */}
                                     <div className="relative aspect-[16/10] bg-gray-900 overflow-hidden">
                                         <img
@@ -116,25 +123,11 @@ export default function RecommendedCars({ cars = [] }) {
                                             className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
                                         />
                                         
-                                        {/* Status Badge Sync */}
-                                        <div className="absolute top-2 left-2 flex flex-col gap-1.5">
-                                             <div className="bg-white/95 px-2 py-0.5 rounded-md text-[9px] font-bold text-gray-900 border border-gray-100 shadow-sm flex items-center gap-1.5">
-                                                 <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                                                 {car.status === 'available' ? 'Certified' : car.status}
-                                             </div>
-                                        </div>
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#0a66c2]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                                         <button className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-y-[-5px] group-hover:translate-y-0 duration-300">
                                             <Heart size={15} />
                                         </button>
-
-                                        {/* Light Overlay & Center Action */}
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#0a66c2]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 bg-black/10 backdrop-blur-[2px]">
-                                            <div className="w-10 h-10 rounded-full bg-white/95 flex items-center justify-center scale-50 group-hover:scale-100 transition-transform duration-500 shadow-lg">
-                                                <ArrowRight size={18} className="text-[#0a66c2]" />
-                                            </div>
-                                        </div>
                                     </div>
 
                                     {/* --- CONTENT SECTION --- */}
@@ -145,32 +138,39 @@ export default function RecommendedCars({ cars = [] }) {
                                             </h4>
                                         </div>
 
-                                        <ul className="space-y-1 text-[12.5px] text-gray-500 mb-4 list-none p-0">
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-gray-300 transform translate-y-[2px]">•</span>
-                                                <span>Category: <span className="text-gray-700 font-medium">{car.category?.name || 'Asset'}</span></span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-gray-300 transform translate-y-[2px]">•</span>
-                                                <span>Transmission: <span className="text-gray-700 font-medium">{car.specifications?.transmission || 'Auto'}</span></span>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-gray-300 transform translate-y-[1px]">•</span>
-                                                <span>Fuel Type: <span className="text-gray-700 font-medium">{car.specifications?.fuel_type || 'N/A'}</span></span>
-                                            </li>
-                                        </ul>
+                                        {/* Startech Style Vertical List */}
+                                        <div className="space-y-1.5 mb-5 border-t border-gray-50 pt-3">
+                                            <ListSpec Icon={Activity} label={t.home.recommended.ops_range} val={car.specifications?.mileage || 'N/A'} />
+                                            <ListSpec Icon={Settings} label={t.home.recommended.transmission} val={car.specifications?.transmission || 'Auto'} />
+                                            <ListSpec Icon={Fuel} label={t.home.recommended.energy_arch} val={car.specifications?.fuel_type || 'N/A'} />
+                                        </div>
+
+                                        {/* Key Highlights */}
+                                        {car.features && car.features.length > 0 && (
+                                            <div className="mb-5">
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">{t.home.recommended.highlights}</span>
+                                                <div className="grid grid-cols-1 gap-1">
+                                                    {car.features.slice(0, 3).map((feat, idx) => (
+                                                        <div key={idx} className="flex items-center gap-1.5">
+                                                             <div className="w-1 h-1 rounded-full bg-[#0a66c2]" />
+                                                             <span className="text-[11px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <div className="mt-auto border-t border-gray-100 pt-3 text-center">
                                             <div className="flex items-center justify-center gap-2 mb-3">
-                                                <span className="text-[17px] font-bold text-[#0a66c2]">${Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
-                                                <span className="text-[13px] text-gray-400 line-through font-medium leading-none">${(Number(car.price_details?.daily_rate || 0) + 500).toLocaleString()}</span>
+                                                <span className="text-[17px] font-bold text-[#0a66c2]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                                                <span className="text-[13px] text-gray-400 line-through font-medium leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
                                             </div>
                                             
                                             <Link 
-                                                href={route('car.details', car.id)}
+                                                href={`${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}`}
                                                 className="w-full py-[5px] inline-block px-4 rounded-full border border-[#0a66c2] text-[#0a66c2] text-[14px] font-semibold hover:bg-[#f0f7ff] hover:shadow-[inset_0_0_0_1px_#0a66c2] transition-all duration-200 active:scale-[0.98]"
                                             >
-                                                View Details
+                                                {t.listing.view_details}
                                             </Link>
                                         </div>
                                     </div>
@@ -209,9 +209,12 @@ const CarSkeleton = () => (
     </div>
 );
 
-const SpecItem = ({ val, label }) => (
-    <div className="flex flex-col items-start leading-none">
-        <span className="text-[11px] font-bold text-gray-900 truncate mb-0.5">{val}</span>
-        <span className="text-[8px] font-bold text-gray-400">{label}</span>
+const ListSpec = ({ Icon, label, val }) => (
+    <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+            <Icon size={12} className="text-gray-400" />
+            <span className="text-[12px] font-medium text-gray-500">{label}</span>
+        </div>
+        <span className="text-[12px] font-bold text-gray-800">{val}</span>
     </div>
 );

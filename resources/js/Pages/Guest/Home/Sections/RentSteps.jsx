@@ -12,38 +12,41 @@ import { motion } from "framer-motion";
  * - Palette: #f3f2ef background, White modules, #0a66c2 accents.
  */
 
-const steps = [
-    {
-        id: "01",
-        title: "Protocol Initiation",
-        label: "Schedule",
-        description: "Coordinate temporal and spatial coordinates for deployment.",
-        icon: <Calendar size={18} />,
-    },
-    {
-        id: "02",
-        title: "Asset Selection",
-        label: "Inventory",
-        description: "Verify vehicle availability within your operational sector.",
-        icon: <MapPin size={18} />,
-    },
-    {
-        id: "03",
-        title: "Security Finalization",
-        label: "Secure",
-        description: "Finalize asset acquisition with secure executive protocols.",
-        icon: <ShieldCheck size={18} />,
-    },
-];
-
-const stats = [
-    { label: "Elite Members", value: "3.4K+" },
-    { label: "Asset Units", value: "612" },
-    { label: "Global Hubs", value: "145" },
-    { label: "Reliability", value: "100%" },
-];
+import { useLanguage } from "@/Contexts/LanguageContext";
 
 export default function RentStepsSection() {
+    const { t } = useLanguage();
+
+    const steps = [
+        {
+            id: "01",
+            title: t.home.rent_steps.step1_title,
+            label: t.home.rent_steps.step1_label,
+            description: t.home.rent_steps.step1_desc,
+            icon: <Calendar size={18} />,
+        },
+        {
+            id: "02",
+            title: t.home.rent_steps.step2_title,
+            label: t.home.rent_steps.step2_label,
+            description: t.home.rent_steps.step2_desc,
+            icon: <MapPin size={18} />,
+        },
+        {
+            id: "03",
+            title: t.home.rent_steps.step3_title,
+            label: t.home.rent_steps.step3_label,
+            description: t.home.rent_steps.step3_desc,
+            icon: <ShieldCheck size={18} />,
+        },
+    ];
+
+    const stats = [
+        { label: t.home.stats.members, value: "3.4K+" },
+        { label: t.home.stats.assets, value: "612" },
+        { label: t.home.stats.hubs, value: "145" },
+        { label: t.home.stats.reliability, value: "100%" },
+    ];
     return (
         <section className="py-4 bg-transparent overflow-hidden font-sans">
             <div className="max-w-7xl mx-auto px-6">
@@ -53,16 +56,16 @@ export default function RentStepsSection() {
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">Operational Protocol</span>
+                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">{t.home.rent_steps.protocol}</span>
                         </div>
                         <h2 className="text-[22px] font-bold text-[#000000e6] tracking-tight">
-                            Acquire Asset <span className="text-[#0a66c2]">Framework</span>
+                            {t.home.rent_steps.title}
                         </h2>
-                        <p className="text-[12.5px] text-gray-500 mt-1 font-medium italic">Follow standardized executive workflows for secure asset acquisition.</p>
+                        <p className="text-[12.5px] text-gray-500 mt-1 font-medium italic">{t.home.rent_steps.subtitle}</p>
                     </div>
                     <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-gray-100 shadow-sm text-[10px] font-bold text-[#0a66c2] uppercase tracking-widest leading-none">
                          <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                         Protocol Active
+                         {t.home.rent_steps.active}
                     </div>
                 </div>
 
@@ -83,7 +86,7 @@ export default function RentStepsSection() {
                             />
                             {/* Floating Tag */}
                             <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white/95 px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm whitespace-nowrap">
-                                 <span className="text-[10px] font-black text-gray-800 uppercase tracking-widest">Digital Asset Sync</span>
+                                 <span className="text-[10px] font-black text-gray-800 uppercase tracking-widest">{t.home.rent_steps.digital_sync}</span>
                             </div>
                         </div>
                     </motion.div>

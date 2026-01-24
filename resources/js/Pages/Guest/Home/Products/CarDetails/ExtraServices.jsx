@@ -1,13 +1,24 @@
 import { useState } from "react";
 import { Check, Settings2, ShieldCheck, Zap } from "lucide-react";
 import { extraServices } from "./data";
+import { useLanguage } from "@/Contexts/LanguageContext";
 
 
 export default function ExtraServices({
     selectedExtras,
     handleExtraServiceToggle,
 }) {
+    const { t } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
+
+    const serviceNameMap = {
+        1: t.details.extra_services.gps,
+        2: t.details.extra_services.child_seat,
+        3: t.details.extra_services.wifi,
+        4: t.details.extra_services.additional_driver,
+        5: t.details.extra_services.roadside_plus,
+        6: t.details.extra_services.express_return,
+    };
 
     return (
         <div className="w-full bg-white rounded-[8px] border border-gray-100 overflow-hidden">
@@ -19,7 +30,7 @@ export default function ExtraServices({
                 <div className="flex items-center gap-2">
                     <Settings2 size={14} className="text-[#0a66c2]" />
                     <h3 className="text-[11px] font-bold text-gray-900">
-                        Asset Enhancements
+                        {t.details.asset_enhancements}
                     </h3>
                 </div>
                 
@@ -61,14 +72,14 @@ export default function ExtraServices({
                                 </div>
                                 <div className="leading-tight">
                                     <div className={`text-[12px] font-bold transition-colors ${selectedExtras.includes(service.id) ? "text-[#0a66c2]" : "text-gray-700"}`}>
-                                        {service.name}
+                                        {serviceNameMap[service.id] || service.name}
                                     </div>
-                                    <div className="text-[9px] font-medium text-gray-400">Operational Upgrade</div>
+                                    <div className="text-[9px] font-medium text-gray-400">{t.details.operational_upgrade}</div>
                                 </div>
                             </div>
                             
                             <div className="flex items-center gap-3">
-                                <span className="text-[11px] font-black text-gray-900">+${service.price}</span>
+                                <span className="text-[11px] font-black text-gray-900">+৳{service.price}</span>
                                 <div
                                     className={`w-4 h-4 rounded-full border transition-all flex items-center justify-center ${
                                         selectedExtras.includes(service.id)

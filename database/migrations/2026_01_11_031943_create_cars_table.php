@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('rental_type', ['daily', 'weekly', 'monthly'])->default('daily');
             $table->text('description')->nullable();
 
+            $table->foreignId('location_id')->nullable()->constrained()->onDelete('set null');
             $table->enum('status', ['available', 'sold', 'reserved'])->default('available');
             $table->timestamps();
         });

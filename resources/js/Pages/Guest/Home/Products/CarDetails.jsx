@@ -8,6 +8,7 @@ import SimilarCars from "./CarDetails/SimilarCars";
 import BookingModal from "./CarDetails/BookingModal";
 import ContactSupport from "./CarDetails/ContactSupport";
 import { Skeleton } from "@/Components/ui/Skeleton";
+import { router, usePage } from "@inertiajs/react";
 
 /**
  * EXECUTIVE ASSET DETAILS (STAR TECH INSPIRED / LINKEDIN SYNC)
@@ -91,33 +92,52 @@ const CarDetailsSkeleton = () => (
     </div>
 );
 
-export default function CarDetails({ car }) {
+export default function CarDetails({ car, locations }) {
+    const { auth } = usePage().props;
     const [isLoading, setIsLoading] = useState(true);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [activeFaqIndex, setActiveFaqIndex] = useState(null);
     const [hoveredButton, setHoveredButton] = useState(null);
-    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(car.is_favorited || false);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
+    const toggleFavorite = () => {
+        if (!auth.user) {
+            router.get(route('login'));
+            return;
+        }
+
+        setIsBookmarked(!isBookmarked);
+        router.post(route('user.favorites.toggle', car.id), {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                // success
+            },
+            onError: () => {
+                setIsBookmarked(!isBookmarked); // revert
+            }
+        });
+    };
+
     const [selectedLocation, setSelectedLocation] = useState({
-        pickup: "Executive Terminal",
-        dropoff: "Corporate Plaza",
+        pickup: car.location?.name || locations?.[0]?.name || "Central Business District",
+        dropoff: car.location?.name || locations?.[0]?.name || "Central Business District",
     });
 
     const [bookingDates, setBookingDates] = useState({
-        pickup: "2026-02-01",
-        dropoff: "2026-02-05",
-        pickupTime: "09:00",
-        dropoffTime: "17:00",
+        pickup: "2026-02-10",
+        dropoff: "2026-02-15",
+        pickupTime: "10:00",
+        dropoffTime: "18:00",
     });
 
     const [priceSummary, setPriceSummary] = useState({
         baseRate: Number(car.price_details?.daily_rate || 0),
-        insurance: 75,
-        serviceFee: 25,
+        insurance: 750,
+        serviceFee: 250,
         extras: 0,
-        total: Number(car.price_details?.daily_rate || 0) + 75 + 25,
+        total: Number(car.price_details?.daily_rate || 0) + 750 + 250,
     });
 
     const [selectedExtras, setSelectedExtras] = useState([]);
@@ -156,7 +176,7 @@ export default function CarDetails({ car }) {
                 <HeroSection
                     car={car}
                     isBookmarked={isBookmarked}
-                    setIsBookmarked={setIsBookmarked}
+                    setIsBookmarked={toggleFavorite}
                     hoveredButton={hoveredButton}
                     setHoveredButton={setHoveredButton}
                     handleBookNow={handleBookNow}
@@ -189,6 +209,7 @@ export default function CarDetails({ car }) {
                         <div className="lg:w-4/12 space-y-6">
                             <BookingWidget
                                 car={car}
+                                locations={locations}
                                 selectedLocation={selectedLocation}
                                 setSelectedLocation={setSelectedLocation}
                                 bookingDates={bookingDates}

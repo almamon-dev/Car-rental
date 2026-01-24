@@ -6,6 +6,8 @@ import {
     ShoppingBag,
     RotateCcw,
     Info,
+    Car,
+    ClipboardList,
 } from "lucide-react";
 import {
     BarChart,
@@ -16,6 +18,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from "recharts";
+import { useLanguage } from "@/Contexts/LanguageContext";
 
 // Separate Components Import
 import StatCard from "@/Components/admin/dashboard/StatCard";
@@ -37,23 +40,24 @@ const chartData = [
     { time: "24 pm", purchase: 30, sales: 20 },
 ];
 
-export default function Dashboard({ auth }) {
+export default function Dashboard({ auth, stats }) {
+    const { t } = useLanguage();
     return (
         <AdminLayout user={auth.user}>
-            <Head title="Dashboard" />
+            <Head title={t.nav.dashboard} />
             <div className="p-4 md:p-4 bg-[#F8F9FB] min-h-screen font-sans">
                 {/* Low Stock Alert */}
                 <div className="bg-secondary/10 border border-secondary/20 p-3 rounded-lg flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2 text-sm text-secondary">
                         <Info size={16} />
                         <span>
-                            Your Product{" "}
+                            {t.admin_dashboard.low_stock_p1}
                             <strong className="text-red-500">
-                                Apple iPhone 15 is running Low
+                                Apple iPhone 15 {t.admin_dashboard.low_stock_p2}
                             </strong>
-                            , already below 5 Pcs.{" "}
+                            {t.admin_dashboard.low_stock_p3}
                             <button className="underline font-bold">
-                                Add Stock
+                                {t.admin_dashboard.add_stock}
                             </button>
                         </span>
                     </div>
@@ -63,55 +67,54 @@ export default function Dashboard({ auth }) {
                 {/* Top Stat Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <StatCard
-                        title="Total Sales"
-                        value="$48,988,078"
-                        change="+22%"
+                        title={t.admin_dashboard.fleet_size}
+                        value={stats.total_cars}
+                        change="+5"
                         color="bg-secondary"
-                        icon={<ShoppingCart className="text-white" />}
+                        icon={<Car className="text-white" />}
                     />
                     <StatCard
-                        title="Total Sales Return"
-                        value="$16,478,145"
-                        change="-22%"
-                        color="bg-slate-800"
-                        icon={<RotateCcw className="text-white" />}
-                        isNegative
-                    />
-                    <StatCard
-                        title="Total Purchase"
-                        value="$24,145,789"
-                        change="+22%"
+                        title={t.admin_dashboard.active_bookings}
+                        value={stats.active_bookings}
+                        change="+2"
                         color="bg-emerald-500"
-                        icon={<ShoppingBag className="text-white" />}
+                        icon={<ClipboardList className="text-white" />}
                     />
                     <StatCard
-                        title="Total Purchase Return"
-                        value="$18,458,747"
-                        change="+22%"
+                        title={t.admin_dashboard.registered_users}
+                        value={stats.total_users}
+                        change="+12"
+                        color="bg-slate-800"
+                        icon={<Users className="text-white" />}
+                    />
+                    <StatCard
+                        title={t.admin_dashboard.total_revenue}
+                        value={`৳${stats.total_revenue.toLocaleString()}`}
+                        change="+18%"
                         color="bg-primary"
-                        icon={<RotateCcw className="text-white" />}
+                        icon={<ShoppingCart className="text-white" />}
                     />
                 </div>
 
                 {/* Small Info Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <SmallInfoCard
-                        title="Profit"
+                        title={t.admin_dashboard.profit}
                         value="$8,458,798"
                         change="+35%"
                     />
                     <SmallInfoCard
-                        title="Invoice Due"
+                        title={t.admin_dashboard.invoice_due}
                         value="$48,988,78"
                         change="+35%"
                     />
                     <SmallInfoCard
-                        title="Total Expenses"
+                        title={t.admin_dashboard.total_expenses}
                         value="$8,980,097"
                         change="+41%"
                     />
                     <SmallInfoCard
-                        title="Total Payment Returns"
+                        title={t.admin_dashboard.payment_returns}
                         value="$78,458,798"
                         change="-20%"
                         isNegative
@@ -122,7 +125,7 @@ export default function Dashboard({ auth }) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                         <h3 className="font-bold text-slate-800 mb-6">
-                            Sales & Purchase
+                            {t.admin_dashboard.sales_purchase}
                         </h3>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
@@ -163,18 +166,18 @@ export default function Dashboard({ auth }) {
 
                     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                         <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
-                            Overall Information
+                            {t.admin_dashboard.overall_info}
                         </h3>
                         <div className="space-y-4">
                             <InfoRow
                                 icon={<Users className="text-primary" />}
-                                label="Suppliers"
+                                label={t.admin_dashboard.suppliers}
                                 value="6987"
                                 bgColor="bg-primary/10"
                             />
                             <InfoRow
                                 icon={<Users className="text-secondary" />}
-                                label="Customer"
+                                label={t.admin_dashboard.customers}
                                 value="4896"
                                 bgColor="bg-secondary/10"
                             />
@@ -182,7 +185,7 @@ export default function Dashboard({ auth }) {
                                 icon={
                                     <ShoppingCart className="text-emerald-500" />
                                 }
-                                label="Orders"
+                                label={t.admin_dashboard.orders}
                                 value="487"
                                 bgColor="bg-emerald-50"
                             />

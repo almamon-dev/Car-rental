@@ -87,6 +87,7 @@ class CarController extends Controller
         return Inertia::render('Admin/Car/Create', [
             'brands' => Brand::all(['id', 'name']),
             'categories' => Category::all(['id', 'name']),
+            'locations' => \App\Models\Location::all(['id', 'name']),
         ]);
     }
 
@@ -98,6 +99,7 @@ class CarController extends Controller
                 $car = Car::create($request->only([
                     'brand_id',
                     'category_id',
+                    'location_id',
                     'make',
                     'model',
                     'year',
@@ -200,12 +202,13 @@ class CarController extends Controller
     public function edit(Car $car)
     {
         // Load all relationships needed for the form
-        $car->load(['specifications', 'priceDetails', 'policeDocuments', 'features', 'faqs', 'images']);
+        $car->load(['specifications', 'priceDetails', 'policeDocuments', 'features', 'faqs', 'images', 'location']);
 
         return Inertia::render('Admin/Car/Edit', [
             'car' => $car,
             'brands' => Brand::all(['id', 'name']),
             'categories' => Category::all(['id', 'name']),
+            'locations' => \App\Models\Location::all(['id', 'name']),
         ]);
     }
 
@@ -217,6 +220,7 @@ class CarController extends Controller
                 $car->update($request->only([
                     'brand_id',
                     'category_id',
+                    'location_id',
                     'make',
                     'model',
                     'year',
@@ -293,9 +297,12 @@ class CarController extends Controller
                 if ($request->hasFile('images')) {
                     foreach ($request->file('images') as $image) {
                         if ($image->isValid()) {
-                            $path = Helper::uploadFile($image, 'cars/gallery');
-                            if ($path) {
-                                $car->images()->create(['file_path' => $path]);
+                            $uploadData = Helper::uploadFile($image, 'cars/gallery');
+                            if ($uploadData) {
+                                $car->images()->create([
+                                    'file_path' => $uploadData['original'],
+                                    'thumbnail_path' => $uploadData['thumbnail'] ?? $uploadData['original'],
+                                ]);
                             }
                         }
                     }

@@ -65,17 +65,26 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
                         { label: "Add Brand", path: "/admin/brands/create" },
                     ]
                 },
-                  {
-                    label: "Categories",
+                   {
+                    label: "Category Hierarchy",
                     key: "categories",
-                    icon: <List size={20} strokeWidth={1.5} />,
+                    icon: <Layers size={20} strokeWidth={1.5} />,
                     children: [
-                        { label: "Category List", path: "/admin/category" },
-                        { label: "Add Category", path: "/admin/category/create" },
-                        { label: "Sub Categories", path: "/admin/sub-categories" },
+                        { label: "Root Categories", path: "/admin/category", routeName: "admin.category.index" },
+                        { label: "Sub-Categories", path: "/admin/categories/sub-categories", routeName: "admin.category.sub.index" },
+                        { label: "Add Category", path: "/admin/category/create", routeName: "admin.category.create" },
                     ]
                 },
-                 {
+                  {
+                    label: "Branches",
+                    key: "locations",
+                    icon: <Globe size={20} strokeWidth={1.5} />,
+                    children: [
+                        { label: "Branch List", path: "/admin/locations" },
+                        { label: "Add Branch", path: "/admin/locations/create" },
+                    ]
+                },
+                {
                     label: "Cars",
                     key: "cars",
                     icon: <Package size={20} strokeWidth={1.5} />,
@@ -86,6 +95,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
                         { label: "Low Stocks", path: "/admin/products/low-stock" },
                     ]
                 },
+              
                 { label: "Units", path: "/admin/units", icon: <Boxes size={20} strokeWidth={1.5} /> },
                 { label: "Variant Attributes", path: "/admin/variants", icon: <FileText size={20} strokeWidth={1.5} /> },
                 { label: "Warranties", path: "/admin/warranties", icon: <ShieldCheck size={20} strokeWidth={1.5} /> },
@@ -235,8 +245,11 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
 
 const SidebarLink = ({ item, currentPath, isOpen, onToggle, isCollapsed }) => {
     const isActive = item.children 
-        ? item.children.some(child => currentPath === child.path)
-        : currentPath === item.path;
+        ? item.children.some(child => 
+            currentPath === child.path || 
+            (child.routeName && route().current(child.routeName))
+          )
+        : (currentPath === item.path || (item.routeName && route().current(item.routeName)));
 
     return (
         <div>
@@ -290,9 +303,9 @@ const SidebarLink = ({ item, currentPath, isOpen, onToggle, isCollapsed }) => {
                                 key={child.label}
                                 href={child.path}
                                 className={`flex items-center gap-3 py-2 pl-10 pr-4 rounded-md text-[13px] transition-all group relative whitespace-nowrap
-                                    ${currentPath === child.path ? 'text-[#0a66c2] font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
+                                    ${currentPath === child.path || (child.routeName && route().current(child.routeName)) ? 'text-[#0a66c2] font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
                             >
-                                <span className={`w-1.5 h-1.5 rounded-full transition-colors shrink-0 ${currentPath === child.path ? 'bg-[#0a66c2]' : 'bg-slate-300 group-hover:bg-slate-400'}`}></span>
+                                <span className={`w-1.5 h-1.5 rounded-full transition-colors shrink-0 ${currentPath === child.path || (child.routeName && route().current(child.routeName)) ? 'bg-[#0a66c2]' : 'bg-slate-300 group-hover:bg-slate-400'}`}></span>
                                 <span className="truncate">{child.label}</span>
                             </Link>
                         ))}

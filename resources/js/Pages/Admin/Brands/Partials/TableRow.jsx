@@ -99,12 +99,12 @@ const BrandTableRow = React.memo(function BrandTableRow({
             </td>
 
             <td className="py-4 px-4">
-                <div className="h-12 w-16 bg-white rounded-xl border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm p-2 group-hover:border-gray-300 transition-colors">
+                <div className="h-12 w-16 bg-white rounded-xl border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm group-hover:border-gray-300 transition-colors">
                     {item.logo ? (
                         <img
                             src={`/${item.logo}`}
                             alt={item.name}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                         />
                     ) : (
                         <div className="text-[10px] font-black text-gray-300 uppercase letter-tracking-widest">No Logo</div>

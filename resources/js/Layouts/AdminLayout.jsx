@@ -43,8 +43,8 @@ export default function AdminLayout({ children }) {
                 <Header onMenuClick={() => setIsMobileOpen(true)} />
 
                 {/* Main Scrollable Content */}
-                <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-                    <div className="max-w-[1600px] mx-auto">{children}</div>
+                <main className="flex-1 overflow-y-auto p-4 md:p-5">
+                    <div className="max-w-full mx-auto">{children}</div>
                 </main>
             </div>
         </div>

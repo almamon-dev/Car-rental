@@ -143,13 +143,13 @@ const CarTableRow = React.memo(function CarTableRow({
                         
                         <Link
                             href={route("admin.cars.show", item.id)}
-                            className="text-[15px] font-black text-[#0a66c2] hover:text-[#004182] transition-colors line-clamp-1 mb-1"
+                            className="text-[14px] font-semibold text-[#0a66c2] hover:text-[#004182] transition-colors line-clamp-1 mb-0.5"
                         >
                             {item.make} {item.model}
                         </Link>
 
                         {item.description && (
-                            <p className="text-[11px] text-slate-400 line-clamp-2 max-w-[220px] font-medium leading-tight">
+                            <p className="text-[12px] text-[#666666] line-clamp-2 max-w-[220px] leading-snug">
                                 {item.description}
                             </p>
                         )}
@@ -157,24 +157,14 @@ const CarTableRow = React.memo(function CarTableRow({
                 </div>
             </td>
 
-            <td className="py-3 px-4">
-                <div className="flex flex-col">
-                    <span className="text-[14px] text-gray-800 font-semibold truncate max-w-[120px]">
-                        {item.category?.name || "Uncategorized"}
-                    </span>
-                    <span className="text-[11px] text-gray-400 font-medium uppercase tracking-tighter">
-                        {item.rental_type || "Daily"} Rental
-                    </span>
-                </div>
-            </td>
 
             <td className="py-3 px-4">
                 <div className="flex flex-col">
-                    <span className="text-[13px] font-bold text-gray-700 uppercase tracking-tight">
-                        {item.police_documents?.registration_number || "NO-PLATE"}
+                    <span className="text-[14px] text-[#191919] font-medium truncate max-w-[120px]">
+                        {item.category?.name || "Uncategorized"}
                     </span>
-                    <span className="text-[11px] text-gray-400 font-medium font-mono text-[10px]">
-                        {item.police_documents?.chassis_number || "NO-VIN"}
+                    <span className="text-[12px] text-[#666666] uppercase tracking-normal">
+                        {item.rental_type || "Daily"} Rental
                     </span>
                 </div>
             </td>
@@ -196,12 +186,12 @@ const CarTableRow = React.memo(function CarTableRow({
                         return (
                             <>
                                 {displaySpecs.map((spec, idx) => (
-                                    <span key={idx} className="px-2 py-0.5 bg-gray-50 text-gray-700 text-[10px] font-black rounded border border-gray-200 uppercase tracking-tight whitespace-nowrap">
+                                    <span key={idx} className="px-2 py-0.5 bg-gray-50 text-gray-700 text-[11px] font-medium rounded border border-gray-200">
                                         {spec}
                                     </span>
                                 ))}
                                 {moreCount > 0 && (
-                                    <span className="px-2 py-0.5 bg-blue-50 text-[#0a66c2] text-[10px] font-black rounded border border-blue-100 uppercase tracking-tight whitespace-nowrap">
+                                    <span className="px-2 py-0.5 bg-blue-50 text-[#0a66c2] text-[11px] font-medium rounded border border-blue-100">
                                         +{moreCount} more
                                     </span>
                                 )}
@@ -211,41 +201,15 @@ const CarTableRow = React.memo(function CarTableRow({
                 </div>
             </td>
 
-            <td className="py-3 px-4">
-                <div className="flex flex-wrap gap-1.5 max-w-[240px]">
-                    {(() => {
-                        const features = (item.features || []).map(f => f.feature_name).filter(Boolean);
-                        const displayFeatures = features.slice(0, 2);
-                        const moreCount = features.length - 2;
-                        
-                        return (
-                            <>
-                                {displayFeatures.map((feat, idx) => (
-                                    <span key={idx} className="px-2 py-0.5 bg-slate-50 text-slate-700 text-[10px] font-black rounded border border-slate-200 uppercase tracking-tight whitespace-nowrap">
-                                        {feat}
-                                    </span>
-                                ))}
-                                {moreCount > 0 && (
-                                    <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded border border-indigo-100 uppercase tracking-tight whitespace-nowrap">
-                                        +{moreCount} more
-                                    </span>
-                                )}
-                                {features.length === 0 && (
-                                    <span className="text-[10px] font-bold text-gray-300 uppercase italic">No Features</span>
-                                )}
-                            </>
-                        );
-                    })()}
-                </div>
-            </td>
+
 
             <td className="py-3 px-4">
                 <div className="flex flex-col">
-                    <span className="text-[14px] font-bold text-gray-900">
+                    <span className="text-[14px] font-semibold text-[#191919]">
                         {item.price_details?.currency || '$'}
                         {Number(item.price_details?.daily_rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
-                    <span className="text-[11px] text-gray-500 font-medium">per day</span>
+                    <span className="text-[12px] text-[#666666]">per day</span>
                 </div>
             </td>
 
@@ -266,19 +230,6 @@ const CarTableRow = React.memo(function CarTableRow({
                         {item.status || "Draft"}
                     </div>
                 )}
-            </td>
-
-            <td className="py-3 px-4">
-                <div className="flex items-center">
-                    <span className="px-3 py-1 bg-gray-50 text-gray-700 text-[12px] font-bold rounded-md border border-gray-200/60 whitespace-nowrap inline-flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                        {new Date(item.created_at).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric' 
-                        })}
-                    </span>
-                </div>
             </td>
 
             <td className="py-3 px-4 text-right pr-6">

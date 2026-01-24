@@ -11,6 +11,7 @@ import {
     CheckCircle2,
     Activity
 } from "lucide-react";
+import { useLanguage } from "@/Contexts/LanguageContext";
 
 /**
  * EXECUTIVE SERVICE MANIFEST (ELITE EDITION)
@@ -22,46 +23,47 @@ import {
  * - LinkedIn Elite: #000000e6 text, #0a66c2 accents, and high information density.
  */
 
-const FeatureItem = ({ icon: Icon, title, description, index }) => (
-    <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: index * 0.05 }}
-        className="group relative py-4 border-b border-gray-50 last:border-0 hover:bg-slate-50/50 px-4 -mx-4 transition-all duration-300 rounded-lg cursor-default"
-    >
-        <div className="flex items-start justify-between">
-            <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-gray-400 group-hover:bg-[#0a66c2]/10 group-hover:text-[#0a66c2] transition-colors flex-shrink-0 mt-0.5">
-                    <Icon size={20} strokeWidth={1.5} />
+const FeatureItem = ({ icon: Icon, title, description, index }) => {
+    const { t } = useLanguage();
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.05 }}
+            className="group relative py-4 border-b border-gray-50 last:border-0 hover:bg-slate-50/50 px-4 -mx-4 transition-all duration-300 rounded-lg cursor-default"
+        >
+            <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-gray-400 group-hover:bg-[#0a66c2]/10 group-hover:text-[#0a66c2] transition-colors flex-shrink-0 mt-0.5">
+                        <Icon size={20} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                        <h4 className="text-[15px] font-bold text-gray-900 leading-none mb-1.5 group-hover:text-[#0a66c2] transition-colors">{title}</h4>
+                        <p className="text-[12px] text-gray-400 font-medium leading-relaxed max-w-[200px]">
+                            {description}
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h4 className="text-[15px] font-bold text-gray-900 leading-none mb-1.5 group-hover:text-[#0a66c2] transition-colors">{title}</h4>
-                    <p className="text-[12px] text-gray-400 font-medium leading-relaxed max-w-[200px]">
-                        {description}
-                    </p>
+                <div className="flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-green-600">
+                        <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                        {t.home.features_section.verified}
+                    </div>
+                    <ArrowUpRight size={14} className="text-[#0a66c2]" />
                 </div>
             </div>
-            <div className="flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-green-600">
-                    <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                    Verified
-                </div>
-                <ArrowUpRight size={14} className="text-[#0a66c2]" />
-            </div>
-        </div>
-    </motion.div>
-);
+        </motion.div>
+    );
+};
 
 const CarRentalFeatures = () => {
-    const features = [
-        { icon: ShieldCheck, title: "Asset Security", description: "Institutional standard fulfillment protocols." },
-        { icon: Truck, title: "Logistics Hub", description: "Direct office or terminal fleet delivery." },
-        { icon: Headphones, title: "Elite Concierge", description: "24/7 dedicated travel support infrastructure." },
-        { icon: CircleDollarSign, title: "Finalized Billing", description: "Transparent net-standard itemized invoicing." },
-        { icon: Zap, title: "Rapid Release", description: "Accelerated booking for instant mobility." },
-        { icon: CarFront, title: "Tier 1 Fleet", description: "50-point technical safety and hygiene audit." }
-    ];
+    const { t } = useLanguage();
+    const icons = [ShieldCheck, Truck, Headphones, CircleDollarSign, Zap, CarFront];
+    const features = t.home.features_section.items.map((item, idx) => ({
+        ...item,
+        icon: icons[idx]
+    }));
 
     return (
         <section className="py-20 px-6 max-w-7xl mx-auto font-sans  relative overflow-hidden">
@@ -74,17 +76,17 @@ const CarRentalFeatures = () => {
                     <div className="max-w-md mb-12">
                         <div className="flex items-center gap-3 mb-6">
                             <Activity size={16} className="text-[#0a66c2]" />
-                            <span className="text-[11px] font-bold text-[#0a66c2]">Operational Protocol</span>
+                            <span className="text-[11px] font-bold text-[#0a66c2]">{t.home.features_section.operational}</span>
                         </div>
                         
                         <h2 className="text-[36px] md:text-[48px] font-extrabold text-gray-900 leading-[1.05] mb-6 tracking-tighter">
-                            Establishing the <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a66c2] to-blue-400">master standard</span> <br />
-                            of mobility.
+                            {t.home.features_section.title_p1} <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a66c2] to-blue-400">{t.home.features_section.title_accent}</span> <br />
+                            {t.home.features_section.title_p2}
                         </h2>
                         
                         <p className="text-gray-500 text-[15px] leading-relaxed font-medium border-l-2 border-[#0a66c2]/20 pl-6">
-                            We bridge the gap between simple transportation and executive-grade logistics, ensuring absolute reliability for our global partners.
+                            {t.home.features_section.desc}
                         </p>
                     </div>
 
@@ -105,8 +107,8 @@ const CarRentalFeatures = () => {
                         {/* Data Points */}
                         <div className="absolute bottom-4 left-0 bg-white/80 backdrop-blur-md px-4 py-2 rounded-lg border border-gray-100 shadow-sm flex items-center gap-3 z-20">
                              <div className="flex flex-col">
-                                 <span className="text-[9px] font-bold text-gray-400">Asset Status</span>
-                                 <span className="text-[13px] font-black text-gray-900">100% Operational</span>
+                                 <span className="text-[9px] font-bold text-gray-400">{t.home.features_section.status}</span>
+                                 <span className="text-[13px] font-black text-gray-900">{t.home.features_section.operational_100}</span>
                              </div>
                              <CheckCircle2 size={16} className="text-green-500" />
                         </div>
@@ -116,8 +118,8 @@ const CarRentalFeatures = () => {
                 {/* --- RIGHT SIDE: FEATURE INDEX --- */}
                 <div className="lg:col-span-12 xl:col-span-7 pt-4">
                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
-                         <h3 className="text-[18px] font-bold text-gray-900">Service Manifest</h3>
-                         <span className="text-[11px] font-bold text-gray-400">Ref: 2024.Elite.01</span>
+                         <h3 className="text-[18px] font-bold text-gray-900">{t.home.features_section.manifest}</h3>
+                         <span className="text-[11px] font-bold text-gray-400">{t.home.features_section.ref}</span>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-x-12 gap-y-2">
@@ -135,8 +137,8 @@ const CarRentalFeatures = () => {
                     {/* Trust Infrastructure */}
                     <div className="mt-12 p-6 rounded-2xl bg-slate-50/50 border border-slate-100/50 flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div className="flex flex-col">
-                            <span className="text-[11px] font-black text-[#0a66c2] mb-1">Global Partnership Scale</span>
-                            <span className="text-[20px] font-bold text-gray-900">12,500+ <span className="text-[14px] text-gray-400 font-medium">Enterprise Clients</span></span>
+                            <span className="text-[11px] font-black text-[#0a66c2] mb-1">{t.home.features_section.partnership_scale}</span>
+                            <span className="text-[20px] font-bold text-gray-900">12,500+ <span className="text-[14px] text-gray-400 font-medium">{t.home.features_section.enterprise_clients}</span></span>
                         </div>
                         <div className="flex gap-6 grayscale opacity-40 items-center">
                              <span className="text-[16px] font-black italic tracking-tighter">FINANCE</span>

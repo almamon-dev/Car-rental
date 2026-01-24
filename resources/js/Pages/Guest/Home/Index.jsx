@@ -8,12 +8,13 @@ import RecommendedCars from "./Sections/RecommendedCars";
 import ClientsFeedback from "./Sections/ClientsFeedback";
 import Pricing from "./Sections/Pricing";
 import FAQ from "./Sections/FAQ";
+import BrandNarrative from "./Sections/BrandNarrative";
 import CarRentalFeatures from "./Sections/FeatureCard";
 import Cars from "./Products/Cars";
 import Category from "./Products/Category";
 import Brand from "./Products/Brand";
 
-export default function Index({ categories, cars, brands }) {
+export default function Index({ categories, cars, brands, locations }) {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -33,7 +34,7 @@ export default function Index({ categories, cars, brands }) {
 
                 {/* Hero Section */}
                 <div className="relative">
-                    <HeroSection />
+                    <HeroSection locations={locations} />
                 </div>
 
                 {/* Main Content Feed - LinkedIn Tighter Spacing */}
@@ -78,6 +79,9 @@ export default function Index({ categories, cars, brands }) {
                         <Pricing />
                     </div>
 
+                    {/* Market Perspective / Brand Narrative (Star Tech Style) */}
+                    <BrandNarrative />
+
                     {/* Institutional Support (FAQ) */}
                     <div className="max-w-7xl mx-auto">
                         <FAQ />
@@ -106,9 +110,9 @@ const ScrollProgress = () => {
     }, []);
 
     return (
-        <div className="fixed top-0 left-0 right-0 h-[3px] bg-[#0a66c2]/10 z-[100]">
+        <div className="fixed top-[52px] sm:top-[62px] left-0 right-0 h-[2px] bg-[#0a66c2]/5 z-[110]">
             <div 
-                className="h-full bg-gradient-to-r from-[#0a66c2] to-cyan-500 transition-all duration-150 ease-out" 
+                className="h-full bg-gradient-to-r from-[#0a66c2] to-cyan-400 p-0 transition-all duration-150 ease-out shadow-[0_0_8px_rgba(10,102,194,0.3)]" 
                 style={{ width: `${progress}%` }}
             />
         </div>

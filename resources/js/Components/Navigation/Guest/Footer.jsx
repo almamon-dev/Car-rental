@@ -24,7 +24,10 @@ import { motion } from "framer-motion";
  * - Institutional: Tier-1 executive architecture for global mobility.
  */
 
+import { useLanguage } from "@/Contexts/LanguageContext";
+
 export default function Footer() {
+    const { t } = useLanguage();
     return (
         <footer className="footer bg-white border-t border-gray-200 py-10 lg:py-14 px-6 relative overflow-hidden font-sans">
             <div className="max-w-7xl mx-auto relative z-10">
@@ -43,8 +46,7 @@ export default function Footer() {
                             </span>
                         </div>
                         <p className="text-[12px] leading-relaxed text-gray-500 font-medium mb-6">
-                            The global benchmark for luxury executive mobility. 
-                            Institutional Tier-1 asset management.
+                            {t.footer.about_desc}
                         </p>
                         <div className="flex gap-2.5">
                             <SocialButton Icon={Linkedin} />
@@ -54,23 +56,19 @@ export default function Footer() {
                     </div>
 
                     {/* Directory Columns */}
-                    <FooterColumn title="General" links={["Sign Up", "Help Center", "About", "Press", "Blog"]} />
-                    <FooterColumn title="Solutions" links={["Enterprise", "Fleet", "Small Business", "Agencies"]} />
-                    <FooterColumn title="Directory" links={["Members", "Assets", "Verification", "Services"]} />
+                    <FooterColumn title={t.footer.quick_links} links={[t.nav.home, t.nav.cars, t.nav.about, t.nav.contact]} />
+                    <FooterColumn title={t.footer.support} links={[t.footer.help_center, t.footer.safety]} />
+                    <FooterColumn title={t.footer.newsletter} links={[t.footer.subscribe]} />
                     
                     {/* Control Panel / Language */}
                     <div className="col-span-1">
-                         <h4 className="text-gray-900 font-bold mb-4 text-[11px] uppercase tracking-[0.15em]">Control</h4>
+                         <h4 className="text-gray-900 font-bold mb-4 text-[11px] uppercase tracking-[0.15em]">{t.footer.rights}</h4>
                          <button className="w-full flex items-center justify-between px-3 py-1.5 border border-gray-300 rounded-[4px] text-[12px] font-bold text-gray-600 hover:bg-gray-50 transition-all mb-4">
                              <div className="flex items-center gap-2">
                                 <Globe size={14} className="text-[#0a66c2]" />
-                                <span>Language</span>
+                                <span>{t.nav.language}</span>
                              </div>
                              <ChevronDown size={14} />
-                         </button>
-                         <button className="w-full flex items-center gap-2 px-3 py-1.5 border border-gray-300 rounded-[4px] text-[12px] font-bold text-gray-600 hover:bg-gray-50 transition-all">
-                             <ShieldCheck size={14} className="text-[#0a66c2]" />
-                             <span>Trust Center</span>
                          </button>
                     </div>
                 </div>
@@ -81,10 +79,8 @@ export default function Footer() {
                          <span className="text-[#000000e6] font-black text-[14px] tracking-tighter uppercase mr-2">
                             Elite<span className="text-[#0a66c2]">Fleet</span> <span className="text-gray-400 font-normal lowercase ml-1">© 2026</span>
                          </span>
-                         <LegalLink label="User Agreement" />
-                         <LegalLink label="Privacy Policy" />
-                         <LegalLink label="Cookie Policy" />
-                         <LegalLink label="Brand Policy" />
+                         <LegalLink label={t.footer.terms} />
+                         <LegalLink label={t.footer.privacy} />
                     </div>
 
                     {/* Verified Payment Grid (LinkedIn Style Grayscale) */}

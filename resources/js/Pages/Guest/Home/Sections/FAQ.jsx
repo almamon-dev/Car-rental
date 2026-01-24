@@ -12,60 +12,34 @@ import { motion, AnimatePresence } from "framer-motion";
  * - Style Sync: LinkedIn Light palette with #0a66c2 accents.
  */
 
-const faqData = [
-    {
-        id: "PROTOCOL-01",
-        category: "Requirements",
-        question: "What is the mandatory age requirement?",
-        answer: "Standard administrative protocol requires members to be at least 21 years of age. For Tier-1 High-Performance assets, a 25-year threshold is enforced.",
-    },
-    {
-        id: "PROTOCOL-02",
-        category: "Documents",
-        question: "Which documents are required?",
-        answer: "Valid government operator license and verified institutional insurance. International operatives must present a global permit.",
-    },
-    {
-        id: "PROTOCOL-03",
-        category: "Fleet",
-        question: "What assets are available within the matrix?",
-        answer: "Spans compact urban utility modules, executive sedans, COMMAND-class SUVs, and elite high-performance units.",
-    },
-    {
-        id: "PROTOCOL-04",
-        category: "Billing",
-        question: "Is acquisition possible via debit interfaces?",
-        answer: "Yes. Major debit rails are supported; a security escrow may be held depending on your membership tier.",
-    },
-    {
-        id: "PROTOCOL-05",
-        category: "Logistics",
-        question: "What is the fuel replenishment policy?",
-        answer: "1:1 parity protocol. Assets are deployed full and must be returned full to bypass refueling surcharges.",
-    },
-    {
-        id: "PROTOCOL-06",
-        category: "Account",
-        question: "Can additional operatives be added?",
-        answer: "Positive. Secondary operators can be authorized at acquisition, provided they clear verification protocols.",
-    },
-];
+// faqData removed from here, now using translations from context
 
-const categories = ["All", "Requirements", "Documents", "Fleet", "Billing", "Logistics", "Account"];
+import { useLanguage } from "@/Contexts/LanguageContext";
 
 export default function FAQ() {
+    const { t } = useLanguage();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState("All");
     const [openId, setOpenId] = useState(null);
 
+    const categories = [
+        t.home.faq.categories.all, 
+        t.home.faq.categories.requirements, 
+        t.home.faq.categories.documents, 
+        t.home.faq.categories.fleet, 
+        t.home.faq.categories.billing, 
+        t.home.faq.categories.logistics, 
+        t.home.faq.categories.account
+    ];
+
     const filteredFaqs = useMemo(() => {
-        return faqData.filter(faq => {
+        return t.home.faq.data.filter(faq => {
             const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
                                 faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesCategory = activeCategory === "All" || faq.category === activeCategory;
+            const matchesCategory = activeCategory === t.home.faq.categories.all || faq.category === activeCategory;
             return matchesSearch && matchesCategory;
         });
-    }, [searchQuery, activeCategory]);
+    }, [searchQuery, activeCategory, t]);
 
     return (
         <section className="py-6 bg-transparent overflow-hidden font-sans relative">
@@ -76,10 +50,10 @@ export default function FAQ() {
                     <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">Institutional Support</span>
+                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">{t.home.faq.support}</span>
                         </div>
                         <h2 className="text-[24px] font-bold text-[#000000e6] tracking-tight">
-                            Operational <span className="text-[#0a66c2]">Knowledge Matrix</span>
+                            {t.home.faq.title}
                         </h2>
                     </div>
 
@@ -88,7 +62,7 @@ export default function FAQ() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                         <input 
                             type="text"
-                            placeholder="Find specific protocol..."
+                            placeholder={t.home.faq.search_placeholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 bg-[#edf3f8] border border-transparent focus:border-[#0a66c2] focus:bg-white rounded-[4px] text-[13px] font-medium text-gray-900 placeholder:text-gray-500 outline-none transition-all"
@@ -145,7 +119,7 @@ export default function FAQ() {
                                             onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
                                             className="text-[11px] font-black text-[#0a66c2] uppercase tracking-widest hover:underline flex items-center gap-1"
                                         >
-                                            {openId === faq.id ? "Minimize Brief" : "Access Brief"}
+                                            {openId === faq.id ? t.home.faq.minimize : t.home.faq.access}
                                             <ArrowRight size={12} className={`transition-transform duration-300 ${openId === faq.id ? "-rotate-90" : ""}`} />
                                         </button>
                                     </div>
@@ -177,7 +151,7 @@ export default function FAQ() {
                 {filteredFaqs.length === 0 && (
                     <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-[12px]">
                          <HelpCircle size={40} className="text-gray-200 mx-auto mb-4" />
-                         <p className="text-[13px] font-bold text-gray-400 uppercase tracking-widest">No matching protocol found in database</p>
+                         <p className="text-[13px] font-bold text-gray-400 uppercase tracking-widest">{t.home.faq.no_results}</p>
                     </div>
                 )}
 
@@ -185,10 +159,10 @@ export default function FAQ() {
                 <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 py-4 px-6 bg-slate-50 border border-gray-100 rounded-[8px]">
                      <div className="flex items-center gap-3">
                          <ShieldCheck size={16} className="text-[#0a66c2]" />
-                         <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest leading-none">Institutional Protocol Verification Level: Tier 1</span>
+                         <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest leading-none">{t.home.faq.verification_level}</span>
                      </div>
                      <button className="py-1.5 px-6 rounded-full bg-[#0a66c2] text-white text-[12px] font-bold hover:bg-[#004182] transition-all shadow-sm">
-                        Contact Command Center
+                        {t.home.faq.contact_center}
                      </button>
                 </div>
 

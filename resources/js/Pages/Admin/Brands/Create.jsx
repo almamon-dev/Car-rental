@@ -36,65 +36,67 @@ export default function BrandCreate({ auth }) {
     return (
         <AdminLayout user={auth.user}>
             <Head title="Create Brand" />
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                {/* Header Section */}
-                <div className="px-8 py-5 border-b border-gray-100 bg-white flex justify-between items-center">
+            <div className="max-w-full mx-auto space-y-4 font-sans antialiased text-[#191919]">
+                {/* LinkedIn-Inspired Header */}
+                <div className="bg-white rounded-t-lg border border-gray-200 border-b-0 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="flex items-center gap-4">
                         <Link
                             href={route("admin.brands.index")}
-                            className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                            className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-all active:scale-95"
                         >
                             <ChevronLeft size={20} />
                         </Link>
                         <div>
-                            <h1 className="text-[18px] font-semibold text-gray-900 leading-tight">
-                                Create Brand Listing
+                            <h1 className="text-[18px] font-semibold text-[#000000e6]">
+                                {isMultiMode ? "Bulk Add Brands" : "Create New Brand"}
                             </h1>
-                            <p className="text-[13px] text-gray-500 font-medium mt-0.5 tracking-widest">
-                                {isMultiMode ? "Bulk Creation Mode" : "Brand Identity Management"}
-                            </p>
+                            <nav className="flex items-center gap-1.5 mt-0.5 text-[12px] text-[#00000099]">
+                                <Link href={route('dashboard')} className="hover:text-[#0a66c2] hover:underline">Admin</Link>
+                                <span>/</span>
+                                <Link href={route('admin.brands.index')} className="hover:text-[#0a66c2] hover:underline">Brands</Link>
+                                <span>/</span>
+                                <span className="font-semibold text-gray-900">Create</span>
+                            </nav>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <button
+                    <div className="flex items-center gap-2">
+                         <button
                             type="button"
                             onClick={() => {
                                 setIsMultiMode(!isMultiMode);
-                                if (isMultiMode) setData("brands", [data.brands[0]]);
+                                if (!isMultiMode) {
+                                     // logic if needed
+                                } else {
+                                     setData("brands", [data.brands[0]]);
+                                }
                             }}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-[13px] font-semibold ${
+                            className={`h-8 flex items-center gap-2 px-4 rounded-full border text-[13px] font-semibold transition-all active:scale-95 ${
                                 isMultiMode
-                                    ? "bg-slate-900 text-white border-slate-900"
-                                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                                    ? "bg-[#0a66c2] text-white border-[#0a66c2] hover:bg-[#004182]"
+                                    : "bg-white text-[#00000099] border-[#00000099] hover:bg-gray-50 hover:text-gray-900"
                             }`}
                         >
-                            <Layers size={16} />
-                            {isMultiMode ? "Multi Mode" : "Single Mode"}
+                            <Layers size={14} />
+                            {isMultiMode ? "Multiple Mode" : "Single Mode"}
                         </button>
 
-                        <div className="h-6 w-[1px] bg-gray-200 mx-1" />
+                        <div className="w-[1px] h-6 bg-gray-200 mx-1 hidden sm:block" />
 
-                        <Link
-                            href={route("admin.brands.index")}
-                            className="px-5 py-2 text-[13px] font-semibold text-gray-600 hover:bg-gray-100 rounded-full transition-all"
-                        >
-                            Discard
-                        </Link>
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 post(route("admin.brand.store"));
                             }}
                             disabled={processing}
-                            className="px-6 py-2 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all shadow-sm flex items-center gap-2"
+                            className="h-8 px-5 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                         >
                             {processing ? (
-                                <Loader2 size={16} className="animate-spin" />
+                                <Loader2 size={14} className="animate-spin" />
                             ) : (
-                                <Save size={16} />
+                                <Save size={14} />
                             )}
-                            {processing ? "Saving..." : "Create Brand"}
+                            Save Brand
                         </button>
                     </div>
                 </div>
@@ -104,37 +106,37 @@ export default function BrandCreate({ auth }) {
                         e.preventDefault();
                         post(route("admin.brand.store"));
                     }}
-                    className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
                 >
-                    <div className="lg:col-span-8 space-y-8">
+                    {/* Left Column: Form Cards */}
+                    <div className="lg:col-span-9 space-y-4">
                         {data.brands.map((brand, index) => (
                             <div
                                 key={index}
-                                className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm relative animate-in fade-in slide-in-from-bottom-4 duration-500"
+                                className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-400"
                             >
-                                {isMultiMode && (
-                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-100">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
-                                            <span className="text-[14px] font-bold text-gray-900 uppercase tracking-tight">
-                                                Brand Entry #{index + 1}
-                                            </span>
-                                        </div>
-                                        {data.brands.length > 1 && (
-                                            <button
-                                                type="button"
-                                                onClick={() => removeRow(index)}
-                                                className="text-gray-400 hover:text-red-500 transition-colors bg-gray-50 hover:bg-red-50 p-2 rounded-full"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        )}
+                                <div className="px-6 py-3 border-b border-gray-100 bg-[#f8f9fa]/50 flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1 h-4 bg-[#0a66c2] rounded-full" />
+                                        <h3 className="text-[13px] font-bold text-gray-700 uppercase tracking-wider">
+                                            {isMultiMode ? `Brand Entry #${index + 1}` : "Primary Information"}
+                                        </h3>
                                     </div>
-                                )}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                                    {isMultiMode && data.brands.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeRow(index)}
+                                            className="text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded-full hover:bg-red-50"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                                     <Input
                                         label="Brand Name *"
-                                        placeholder="e.g. BMW, Mercedes, Toyota"
+                                        placeholder="e.g. Toyota"
                                         value={brand.name}
                                         onChange={(e) =>
                                             handleInputChange(
@@ -144,6 +146,8 @@ export default function BrandCreate({ auth }) {
                                             )
                                         }
                                         error={errors[`brands.${index}.name`]}
+                                        className="h-10 text-[13px]"
+                                        labelClassName="text-[12px]"
                                     />
                                     <FileUpload
                                         data={brand}
@@ -154,48 +158,49 @@ export default function BrandCreate({ auth }) {
                                                 val
                                             )
                                         }
+                                        errors={errors}
+                                        clearErrors={clearErrors}
                                         field={`brands.${index}.logo`}
                                         label="Brand Logo"
                                     />
                                 </div>
                             </div>
                         ))}
+
                         {isMultiMode && (
                             <button
                                 type="button"
                                 onClick={addRow}
-                                className="w-full py-8 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 font-bold text-[12px] hover:border-[#0a66c2] hover:text-[#0a66c2] hover:bg-blue-50/30 transition-all uppercase tracking-widest bg-white"
+                                className="w-full py-6 border-2 border-dashed border-gray-200 bg-white rounded-lg flex flex-col items-center justify-center gap-2 text-[#00000099] hover:border-[#0a66c2] hover:text-[#0a66c2] hover:bg-blue-50/20 transition-all group shadow-sm active:scale-[0.99]"
                             >
-                                <div className="p-2 bg-gray-50 rounded-full group-hover:bg-[#0a66c2]/10">
-                                    <Plus size={24} />
+                                <div className="p-1.5 bg-gray-50 rounded-full group-hover:bg-[#0a66c2]/10 transition-colors">
+                                    <Plus size={20} />
                                 </div>
-                                Add Another Brand
+                                <span className="text-[11px] font-bold uppercase tracking-widest">Append Another Brand</span>
                             </button>
                         )}
                     </div>
 
-                    {/* Right Column (Info Card) */}
-                    <div className="lg:col-span-4 sticky top-8">
-                        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-                            <h3 className="text-[13px] font-bold text-gray-900 tracking-tight mb-6">INFORMATION</h3>
-                            <div className="space-y-4">
-                                <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-lg">
-                                    <p className="text-[12px] text-blue-700 leading-relaxed font-medium">
+                    {/* Right Column: Info Card */}
+                    <div className="lg:col-span-3 space-y-4 h-fit sticky top-20">
+                        {/* Status/Overview Card */}
+                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5">
+                            <h3 className="text-[13px] font-semibold text-[#000000e6] mb-3">Brand Manifest</h3>
+                            <div className="space-y-3">
+                                <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
+                                    <p className="text-[11px] text-blue-700 leading-relaxed font-medium">
                                         {isMultiMode 
-                                            ? "Bulk creation allows you to add multiple brands at once. Ensure each entry has a unique name and high-quality logo."
-                                            : "Enter the brand name and upload its official logo. This will be used across the platform to identify vehicle makes."}
+                                            ? "Bulk creation allows for rapid fleet expansion."
+                                            : "Add a main manufacturer. Brands are critical for vehicle categorization."}
                                     </p>
                                 </div>
-                                <div className="space-y-3 pt-4">
-                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Total Entries</span>
-                                        <span className="text-gray-900">{data.brands.length}</span>
-                                    </div>
-                                    <div className="h-[1px] bg-gray-100" />
-                                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                        <span>Mode</span>
-                                        <span className="text-[#0a66c2]">{isMultiMode ? "BULK" : "SINGLE"}</span>
-                                    </div>
+                                <div className="border-t border-gray-50 pt-3 flex justify-between items-center text-[11px]">
+                                    <span className="font-semibold text-gray-400">ENTRIES</span>
+                                    <span className="font-bold text-gray-900">{data.brands.length}</span>
+                                </div>
+                                 <div className="flex justify-between items-center text-[11px]">
+                                    <span className="font-semibold text-gray-400">MODE</span>
+                                    <span className="font-bold text-[#0a66c2] uppercase">{isMultiMode ? "BULK" : "SINGLE"}</span>
                                 </div>
                             </div>
                         </div>

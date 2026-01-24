@@ -12,8 +12,9 @@ use Inertia\Inertia;
 
 // --- Guest Routes ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/car-details/{id}', [HomeController::class, 'show'])->name('car.details');
+Route::get('/car-details/{slug}', [HomeController::class, 'show'])->name('car.details');
 Route::get('/car-list', [HomeController::class, 'list'])->name('car.list');
+Route::get('/api/check-availability', [HomeController::class, 'checkAvailability'])->name('api.check-availability');
 
 // --- Auth Routes ---
 Route::middleware('auth')->group(function () {
@@ -24,6 +25,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // --- User Specific Routes ---
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('/bookings', [\App\Http\Controllers\User\BookingController::class, 'index'])->name('bookings.index');
+        Route::get('/bookings/{id}', [\App\Http\Controllers\User\BookingController::class, 'show'])->name('bookings.show');
+        
+        Route::get('/favorites', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('favorites.index');
+        Route::post('/favorites/toggle/{carId}', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('favorites.toggle');
+        
+        Route::get('/payments', [\App\Http\Controllers\User\PaymentController::class, 'index'])->name('payments.index');
+    });
 });
 
 // --- Admin Dashboard route ---
@@ -37,12 +49,17 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('cars', AdminCarController::class);
 
     // -- category
+    Route::get('categories/sub-categories', [AdminCategoryController::class, 'index'])->name('category.sub.index');
     Route::delete('categories/bulk-destroy', [AdminCategoryController::class, 'bulkDestroy'])->name('category.bulk-destroy');
     Route::resource('category', AdminCategoryController::class);
 
     // -- brands
     Route::delete('brands/bulk-destroy', [BrandController::class, 'bulkDestroy'])->name('brands.bulk-destroy');
     Route::resource('brands', BrandController::class);
+
+    // -- locations (branches)
+    Route::delete('locations/bulk-destroy', [\App\Http\Controllers\Admin\LocationController::class, 'bulkDestroy'])->name('locations.bulk-destroy');
+    Route::resource('locations', \App\Http\Controllers\Admin\LocationController::class);
 
 });
 

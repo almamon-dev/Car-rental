@@ -3,13 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
@@ -17,19 +14,26 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Create Admin User
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin User',
+            'email' => 'admin@gmail.com',
+            'is_admin' => true,
+        ]);
+
+        // Create Regular User
+        User::factory()->create([
+            'name' => 'John Doe',
+            'email' => 'user@gmail.com',
+            'is_admin' => false,
         ]);
         // -- seeder call
         $this->call([
-            CategorySeeder::class,
-        ]);
-        $this->call([
-            BrandSeeder::class,
-        ]);
-        $this->call([
-            CarSeeder::class,
+            \Database\Seeders\CategorySeeder::class,
+            \Database\Seeders\BrandSeeder::class,
+            \Database\Seeders\LocationSeeder::class,
+            \Database\Seeders\CarSeeder::class,
+            \Database\Seeders\BookingSeeder::class,
         ]);
     }
 }

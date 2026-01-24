@@ -14,6 +14,7 @@ const BasicInfoSection = ({
     handleInputChange,
     brands,
     categories,
+    locations,
 }) => {
     const getBrandLabel = () => {
         const brand = brands?.find(
@@ -27,6 +28,13 @@ const BasicInfoSection = ({
             (c) => c.id.toString() === data.category_id?.toString()
         );
         return category ? category.name : "Select Category";
+    };
+
+    const getLocationLabel = () => {
+        const location = locations?.find(
+            (l) => l.id.toString() === data.location_id?.toString()
+        );
+        return location ? location.name : "Select Location";
     };
 
     const getRentalTypeLabel = () => {
@@ -43,7 +51,7 @@ const BasicInfoSection = ({
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Brand Dropdown */}
                 <div className="space-y-1.5">
                     <label className="text-[13px] font-semibold text-gray-700 block">
@@ -150,6 +158,61 @@ const BasicInfoSection = ({
                     {errors.category_id && (
                         <p className="text-red-600 text-[12px] mt-1">
                             {errors.category_id}
+                        </p>
+                    )}
+                </div>
+
+                {/* Location Dropdown */}
+                <div className="space-y-1.5">
+                    <label className="text-[13px] font-semibold text-gray-700 block">
+                        Store Location <span className="text-red-600">*</span>
+                    </label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            className={dropdownTriggerClass(errors.location_id)}
+                        >
+                            <div className="flex items-center gap-2">
+                                <Tag className="text-gray-400" size={16} />
+                                <span
+                                    className={
+                                        data.location_id
+                                            ? "text-gray-900"
+                                            : "text-gray-400"
+                                    }
+                                >
+                                    {getLocationLabel()}
+                                </span>
+                            </div>
+                            <ChevronDown size={14} className="text-gray-400" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
+                            <DropdownMenuItem
+                                active={!data.location_id}
+                                onClick={() =>
+                                    handleInputChange("location_id", "")
+                                }
+                            >
+                                Select Location
+                            </DropdownMenuItem>
+                            {locations?.map((l) => (
+                                <DropdownMenuItem
+                                    key={l.id}
+                                    active={
+                                        data.location_id?.toString() ===
+                                        l.id.toString()
+                                    }
+                                    onClick={() =>
+                                        handleInputChange("location_id", l.id)
+                                    }
+                                >
+                                    {l.name}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    {errors.location_id && (
+                        <p className="text-red-600 text-[12px] mt-1">
+                            {errors.location_id}
                         </p>
                     )}
                 </div>

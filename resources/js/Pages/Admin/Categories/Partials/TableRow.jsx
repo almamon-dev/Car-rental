@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useState } from "react";
 import { Link, router } from "@inertiajs/react";
-import { MoreVertical, Eye, Pencil, Trash2 } from "lucide-react";
+import { 
+    Pencil, 
+    Trash2, 
+    ChevronRight, 
+    ChevronDown, 
+    Layers,
+    Globe
+} from "lucide-react";
 import DeleteAction from "@/Components/modals/ConfirmDelete";
 
 const CategoryTableRow = React.memo(function CategoryTableRow({
@@ -10,193 +16,127 @@ const CategoryTableRow = React.memo(function CategoryTableRow({
     toggleSelect,
     isClientSideLoading,
     onDeleteSuccess,
+    level = 0
 }) {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [menuStyles, setMenuStyles] = useState({});
     
-    const menuRef = useRef(null);
-    const buttonRef = useRef(null);
+    const hasChildren = item.children && item.children.length > 0;
 
-    // Handle menu positioning logic
-    useLayoutEffect(() => {
-        if (isMenuOpen && buttonRef.current) {
-            const rect = buttonRef.current.getBoundingClientRect();
-            const spaceBelow = window.innerHeight - rect.bottom;
-            const menuHeight = 160; 
-            
-            let topPosition, leftPosition;
-            
-            if (spaceBelow < menuHeight) {
-                topPosition = rect.top + window.scrollY - menuHeight;
-            } else {
-                topPosition = rect.bottom + window.scrollY + 8;
-            }
-            
-            leftPosition = rect.right + window.scrollX - 128; 
-
-            setMenuStyles({
-                position: "absolute",
-                top: `${topPosition}px`,
-                left: `${leftPosition}px`,
-            });
-        }
-    }, [isMenuOpen]);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                menuRef.current && !menuRef.current.contains(event.target) &&
-                buttonRef.current && !buttonRef.current.contains(event.target)
-            ) {
-                setIsMenuOpen(false);
-            }
-        };
-        
-        if (isMenuOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-            window.addEventListener("scroll", () => setIsMenuOpen(false), { once: true, capture: true });
-        }
-        
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-            window.removeEventListener("scroll", () => setIsMenuOpen(false), { capture: true });
-        };
-    }, [isMenuOpen]);
-
-    const handleStatusToggle = () => {
+    const handleStatusToggle = (id) => {
         router.patch(
-            route("admin.category.status", item.id),
+            route("admin.category.status", id),
             {},
             { preserveScroll: true }
         );
     };
 
-    const handleDeleteTrigger = () => {
-        setIsMenuOpen(false);
-        setTimeout(() => setIsDeleteModalOpen(true), 50);
-    };
-
     return (
-        <tr
-            className={`group border-b border-gray-100 transition-colors duration-150 ${
-                isEffectivelySelected(item.id)
-                    ? "bg-blue-50/40"
-                    : "hover:bg-gray-50/50"
-            }`}
-        >
-            <td className="py-4 px-6 text-center">
-                <div className="flex justify-center">
-                    <input
-                        type="checkbox"
-                        checked={isEffectivelySelected(item.id)}
-                        onChange={() => toggleSelect(item.id)}
-                        className="w-4 h-4 rounded border-gray-300 text-[#0a66c2] focus:ring-[#0a66c2]/20 cursor-pointer transition-all"
-                        disabled={isClientSideLoading}
-                    />
-                </div>
-            </td>
-
-            <td className="py-4 px-4">
-                <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center border border-gray-200 overflow-hidden shadow-sm group-hover:border-gray-300 transition-colors p-1.5">
-                    {item.icon ? (
-                        <img
-                            src={`/${item.icon}`}
-                            alt={item.name}
-                            className="w-full h-full object-contain"
+        <React.Fragment>
+            <tr
+                className={`group transition-all duration-200 border-b border-[#f3f2ef] ${
+                    isEffectivelySelected(item.id)
+                        ? "bg-[#f3f6f9]"
+                        : level > 0 ? "bg-[#fcfdfd] hover:bg-[#f8f9fb]" : "hover:bg-[#f8f9fb]"
+                }`}
+            >
+                {/* 1. Selection */}
+                <td className="py-5 px-10 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                        <input
+                            type="checkbox"
+                            checked={isEffectivelySelected(item.id)}
+                            onChange={() => toggleSelect(item.id)}
+                            className="w-4 h-4 rounded border-gray-300 text-[#0a66c2] focus:ring-[#0a66c2]/10 cursor-pointer transition-all"
+                            disabled={isClientSideLoading}
                         />
-                    ) : (
-                        <span className="text-gray-300 text-[9px] font-black uppercase">N/A</span>
-                    )}
-                </div>
-            </td>
-
-            <td className="py-4 px-4 min-w-[180px]">
-                <div className="font-black text-gray-900 text-[15px] mb-0.5">{item.name}</div>
-                <div className="text-[11px] text-gray-400 font-bold tracking-[0.5px] uppercase">
-                    /{item.slug}
-                </div>
-            </td>
-
-            <td className="py-4 px-4 text-[13px] text-gray-500 font-medium max-w-[200px] truncate italic">
-                {item.description || "—"}
-            </td>
-
-            <td className="py-4 px-4">
-                <button
-                    onClick={handleStatusToggle}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm transition-all ${
-                        item.status === "active" 
-                        ? "bg-emerald-500 text-white" 
-                        : "bg-slate-400 text-white"
-                    }`}
-                >
-                    <div className={`w-1.5 h-1.5 rounded-full bg-white ${item.status === "active" ? "animate-pulse" : "opacity-60"}`} />
-                    {item.status === "active" ? "Active" : "Inactive"}
-                </button>
-            </td>
-
-            <td className="py-4 px-4 truncate">
-                <span className="px-3 py-1 bg-gray-50 text-gray-700 text-[12px] font-bold rounded-md border border-gray-200/60 whitespace-nowrap inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                    {new Date(item.created_at).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                    })}
-                </span>
-            </td>
-
-            <td className="py-4 px-4 text-right pr-6">
-                <div className="relative inline-block">
-                    <button
-                        ref={buttonRef}
-                        type="button"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className={`inline-flex items-center justify-center w-8 h-8 rounded-full transition-all ${
-                            isMenuOpen ? "bg-[#eef3f8] text-[#0a66c2]" : "text-gray-400 hover:bg-gray-100"
-                        }`}
-                        disabled={isClientSideLoading}
-                    >
-                        <MoreVertical size={18} />
-                    </button>
-
-                    {isMenuOpen && createPortal(
-                        <div
-                            ref={menuRef}
-                            style={menuStyles}
-                            className="w-32 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
-                        >
-                            <Link
-                                href={route("admin.category.show", item.id)}
-                                className="flex items-center px-4 py-2 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#0a66c2]"
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                <Eye size={16} className="mr-3 text-gray-400" />
-                                View
-                            </Link>
-
-                            <Link
-                                href={route("admin.category.edit", item.id)}
-                                className="flex items-center px-4 py-2 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#0a66c2]"
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                <Pencil size={16} className="mr-3 text-gray-400" />
-                                Edit
-                            </Link>
-
-                            <div className="h-px bg-gray-100 my-1.5 mx-2" />
-
+                        {level === 0 && hasChildren && (
                             <button
-                                onClick={handleDeleteTrigger}
-                                className="flex items-center w-full px-4 py-2 text-[13px] font-semibold text-red-600 hover:bg-red-50 text-left transition-colors"
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className={`p-1 rounded transition-colors ${
+                                    isExpanded ? "text-[#0a66c2] bg-blue-50" : "text-gray-400 hover:text-[#0a66c2] hover:bg-gray-100"
+                                }`}
                             >
-                                <Trash2 size={16} className="mr-3 text-red-400" />
-                                <span>Delete</span>
+                                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                             </button>
-                        </div>,
-                        document.body
-                    )}
+                        )}
+                    </div>
+                </td>
+
+                {/* 2. Identity */}
+                <td className="py-4 px-4 min-w-[240px]">
+                    <div className="flex items-center gap-4">
+                        <div className={`shrink-0 h-10 w-10 bg-white rounded border border-[#f0f0f0] flex items-center justify-center overflow-hidden transition-all ${level > 0 ? 'scale-90' : ''}`}>
+                            {item.icon ? (
+                                <img
+                                    src={`/${item.icon}`}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <Layers size={16} className="text-gray-300" />
+                            )}
+                        </div>
+                        <div style={{ paddingLeft: `${level * 10}px` }}>
+                            <div className="flex items-center gap-2">
+                                <span className={`font-bold text-[#333] tracking-tight ${level > 0 ? 'text-[13px]' : 'text-[15px]'}`}>
+                                    {item.name}
+                                </span>
+                                {level > 0 && (
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Sub</span>
+                                )}
+                            </div>
+                            <p className="text-[11px] text-gray-400 font-medium mt-0.5">
+                                /{item.slug} {item.parent && <span className="ml-1 text-[#0a66c2]/60">• Parent: {item.parent.name}</span>}
+                            </p>
+                        </div>
+                    </div>
+                </td>
+
+                {/* 3. Context */}
+                <td className="py-4 px-4">
+                    <p className="text-[12px] text-gray-500 leading-relaxed line-clamp-1 font-medium max-w-[200px]">
+                        {item.description || "—"}
+                    </p>
+                </td>
+
+                {/* 4. Connectivity */}
+                <td className="py-4 px-4 text-center">
+                    <span className="text-[14px] font-bold text-[#0a66c2]">{item.cars_count || 0}</span>
+                </td>
+
+                {/* 5. Status Badge */}
+                <td className="py-4 px-4">
+                    <button
+                        onClick={() => handleStatusToggle(item.id)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all border ${
+                            item.status === "active" 
+                            ? "border-[#057642] text-[#057642] bg-emerald-50/30" 
+                            : "border-gray-300 text-gray-400 bg-gray-50/50"
+                        }`}
+                    >
+                        {item.status === "active" ? "Active" : "Hold"}
+                    </button>
+                </td>
+
+                {/* 6. Actions */}
+                <td className="py-4 px-4 text-right pr-10">
+                    <div className="flex items-center justify-end gap-2">
+                        <Link
+                            href={route("admin.category.edit", item.id)}
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"
+                            title="Edit Category"
+                        >
+                            <Pencil size={16} strokeWidth={2.5} />
+                        </Link>
+                        <button
+                            onClick={() => setIsDeleteModalOpen(true)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all"
+                            title="Delete Category"
+                        >
+                            <Trash2 size={16} strokeWidth={2.5} />
+                        </button>
+                    </div>
 
                     <DeleteAction
                         trigger={false}
@@ -206,9 +146,22 @@ const CategoryTableRow = React.memo(function CategoryTableRow({
                         routeName="admin.category.destroy"
                         onSuccess={onDeleteSuccess}
                     />
-                </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
+
+            {/* Nested Content */}
+            {isExpanded && hasChildren && item.children.map((child) => (
+                <CategoryTableRow
+                    key={child.id}
+                    item={child}
+                    level={level + 1}
+                    isEffectivelySelected={isEffectivelySelected}
+                    toggleSelect={toggleSelect}
+                    isClientSideLoading={isClientSideLoading}
+                    onDeleteSuccess={onDeleteSuccess}
+                />
+            ))}
+        </React.Fragment>
     );
 });
 

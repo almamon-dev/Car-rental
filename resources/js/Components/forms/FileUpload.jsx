@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Upload, X, CheckCircle2, AlertCircle, Image as ImageIcon } from "lucide-react";
+import { Upload, X, CheckCircle2, AlertCircle, Image as ImageIcon, Plus } from "lucide-react";
 
+/**
+ * FileUpload - Optimized Professional Grid
+ * Fixed layout stretching and text clipping using auto-fit min-max logic.
+ */
 const FileUpload = ({
     data,
     setData,
@@ -9,88 +13,110 @@ const FileUpload = ({
     field = "images",
     label = "Media Assets",
     multiple = true,
+    initialData = null,
 }) => {
-    const [previews, setPreviews] = useState([]);
-    const [isDragging, setIsDragging] = useState(false);
+    const [previews, setPreviewList] = useState([]);
+    const [dragActive, setDragActive] = useState(false);
 
     useEffect(() => {
-        return () => previews.forEach((p) => URL.revokeObjectURL(p.url));
+        if (initialData) {
+            if (Array.isArray(initialData)) {
+                const initialPreviews = initialData.map((path) => ({
+                    url: `/${path}`,
+                    name: path.split("/").pop(),
+                    size: "Existing Asset",
+                    isExisting: true,
+                }));
+                setPreviewList(initialPreviews);
+            } else if (typeof initialData === "string") {
+                setPreviewList([
+                    {
+                        url: `/${initialData}`,
+                        name: initialData.split("/").pop(),
+                        size: "Existing Asset",
+                        isExisting: true,
+                    },
+                ]);
+            }
+        }
+    }, [initialData]);
+
+    useEffect(() => {
+        return () => {
+            previews.forEach((p) => {
+                if (!p.isExisting) URL.revokeObjectURL(p.url);
+            });
+        };
     }, [previews]);
 
-    const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        processFiles(files);
-    };
+    const handleFiles = (files) => {
+        if (!files || files.length === 0) return;
 
-    const processFiles = (files) => {
-        if (files.length === 0) return;
-
-        if (errors[field]) {
+        if (errors && typeof clearErrors === 'function') {
             clearErrors(field);
         }
 
-        const newPreviews = files.map((file) => ({
+        const newPreviews = Array.from(files).map((file) => ({
             url: URL.createObjectURL(file),
             name: file.name,
             size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
         }));
 
         if (multiple) {
-            const currentFiles = data[field] || [];
-            setData(field, [...currentFiles, ...files]);
-            setPreviews((prev) => [...prev, ...newPreviews]);
+            const existing = Array.isArray(data[field]) ? data[field] : [];
+            setData(field, [...existing, ...files]);
+            setPreviewList((prev) => [...prev, ...newPreviews]);
         } else {
             setData(field, files[0]);
-            setPreviews([newPreviews[0]]);
+            setPreviewList([newPreviews[0]]);
         }
     };
 
-    const removeImage = (index) => {
+    const removeFile = (e, index) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         if (multiple) {
-            const updatedFiles = Array.from(data[field]).filter(
-                (_, i) => i !== index,
-            );
+            const updatedData = Array.from(data[field]).filter((_, i) => i !== index);
             const updatedPreviews = previews.filter((_, i) => i !== index);
-            setData(field, updatedFiles);
-            setPreviews(updatedPreviews);
+            setData(field, updatedData);
+            setPreviewList(updatedPreviews);
         } else {
             setData(field, null);
-            setPreviews([]);
+            setPreviewList([]);
         }
     };
 
-    return (
-        <div className="w-full font-sans">
-            {label && (
-                <div className="flex items-center justify-between mb-2.5">
-                    <label className="text-[13px] font-semibold text-gray-700">
-                        {label}
-                    </label>
-                    <span className="text-[11px] font-medium text-gray-400 italic">
-                        {multiple ? "Max 10 files" : "Single upload"}
-                    </span>
-                </div>
-            )}
+    const hasError = errors && typeof errors === 'object' && errors[field];
 
+    return (
+        <div className="w-full font-sans antialiased text-[#1d2226]">
+            {/* Elegant Header */}
+            <div className="flex items-center justify-between mb-3">
+                <div>
+                    <span className="text-[14px] font-semibold block leading-tight">
+                        {label}
+                    </span>
+                    <p className="text-[11px] text-[#00000099] mt-0.5">
+                        {multiple ? "High-res photos (Max 10)" : "Single brand identity asset"}
+                    </p>
+                </div>
+            </div>
+
+            {/* LinkedIn-Inspired Dropzone */}
             <div
-                onDragOver={(e) => {
-                    e.preventDefault();
-                    setIsDragging(true);
-                }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={(e) => {
-                    e.preventDefault();
-                    setIsDragging(false);
-                    processFiles(Array.from(e.dataTransfer.files));
-                }}
-                className={`relative group border-2 border-dashed rounded-lg p-8 transition-all duration-200
-                ${
-                    isDragging
-                        ? "border-[#0a66c2] bg-blue-50/50 scale-[1.005]"
-                        : errors[field]
-                          ? "border-red-200 bg-red-50/20"
-                          : "border-gray-200 bg-gray-50/30 hover:border-[#0a66c2] hover:bg-white"
-                }
+                onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+                onDragLeave={() => setDragActive(false)}
+                onDrop={(e) => { e.preventDefault(); setDragActive(false); handleFiles(e.dataTransfer.files); }}
+                className={`
+                    relative rounded-lg border-2 border-dashed transition-all duration-200 py-4 px-4 cursor-pointer
+                    flex flex-col items-center justify-center text-center
+                    ${dragActive 
+                        ? "border-[#0a66c2] bg-blue-50/50" 
+                        : hasError 
+                            ? "border-red-300 bg-red-50/30" 
+                            : "border-[#1d2226] bg-[#f8f9fa] hover:bg-[#ebebeb] hover:border-[#0a66c2]"
+                    }
                 `}
             >
                 <input
@@ -98,111 +124,112 @@ const FileUpload = ({
                     multiple={multiple}
                     accept="image/*"
                     className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                    onChange={handleFileChange}
+                    onChange={(e) => handleFiles(e.target.files)}
                 />
-
-                <div className="flex flex-col items-center justify-center space-y-3">
-                    <div
-                        className={`p-3 rounded-full transition-colors duration-300
-                        ${isDragging ? "bg-[#0a66c2] text-white" : "bg-white text-[#0a66c2] shadow-sm border border-gray-100 group-hover:border-blue-100"}
-                    `}
-                    >
-                        <Upload size={22} />
+                
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center text-[#0a66c2] mx-auto">
+                        <Upload size={16} strokeWidth={2.5} />
                     </div>
-
-                    <div className="text-center">
-                        <p className="text-[14px] font-semibold text-gray-900 leading-snug">
-                            Drag photo here or <span className="text-[#0a66c2] hover:underline cursor-pointer">upload from computer</span>
+                    <div className="text-left">
+                        <p className="text-[12px] font-bold">
+                            Click or drag to upload
                         </p>
-                        <p className="text-[12px] text-gray-500 mt-1 font-medium">
-                            Supported formats: PNG, JPG, WEBP (Max 20MB)
+                        <p className="text-[9px] text-[#666666] mt-0.5 font-medium">
+                            Max 20MB • PNG, JPG, WebP
                         </p>
                     </div>
                 </div>
             </div>
 
-            {errors[field] && (
-                <div className="flex items-center gap-2 mt-2.5 text-red-600 font-medium text-[12px] animate-in fade-in slide-in-from-top-1">
-                    <AlertCircle size={14} className="flex-shrink-0" />
-                    <span>{errors[field]}</span>
+            {hasError && (
+                <div className="flex items-center gap-1.5 mt-2 text-red-600 px-1">
+                    <AlertCircle size={14} />
+                    <span className="text-[12px] font-bold">{errors[field]}</span>
                 </div>
             )}
 
-            {/* Previews - High Performance Gallery Grid */}
+            {/* PREVIEW GRID - SUPER SMALL OPTIMIZED */}
             {previews.length > 0 && (
-                <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-3">
                     {previews.map((file, index) => (
                         <div
                             key={index}
-                            className="relative group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 ring-offset-2 hover:ring-2 hover:ring-[#0a66c2]/10"
+                            className="bg-white rounded-lg border border-[#0000001a] overflow-hidden shadow-sm hover:shadow-md transition-shadow group flex flex-col"
                         >
-                            {/* Primary Image Badge */}
-                            {index === 0 && (
-                                <div className="absolute top-2 left-2 z-20 bg-[#0a66c2] text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded shadow-lg flex items-center gap-1.5 animate-in fade-in slide-in-from-left-2">
-                                    <div className="w-1 h-1 bg-white rounded-full animate-pulse" />
-                                    Cover Photo
-                                </div>
-                            )}
-
-                            <div className="relative aspect-[4/3] bg-gray-100">
+                            <div className="relative aspect-[4/3] bg-[#f3f2ef]">
                                 <img
                                     src={file.url}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    alt="preview"
+                                    alt="Preview"
+                                    className="w-full h-full object-cover"
                                 />
                                 
-                                {/* Refined Overlay Actions */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4">
+                                {/* Tiny Primary Chip */}
+                                {index === 0 && (
+                                    <div className="absolute top-1 left-1 z-10">
+                                        <span className="bg-[#0a66c2] text-white text-[7px] font-black uppercase px-1 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                            Primary
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Delete Overlay */}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                     <button
                                         type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeImage(index);
-                                        }}
-                                        className="bg-white/10 hover:bg-red-500/90 backdrop-blur-md border border-white/20 text-white p-2.5 rounded-full transition-all transform hover:scale-110 flex items-center gap-2 shadow-2xl"
+                                        onClick={(e) => removeFile(e, index)}
+                                        className="w-6 h-6 rounded-full bg-white text-[#1d2226] flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg"
                                     >
-                                        <X size={16} strokeWidth={2.5} />
+                                        <X size={12} strokeWidth={3} />
+                                    </button>
+                                </div>
+                                
+                                {/* Mobile Fix: Small X visible */}
+                                <div className="sm:hidden absolute top-1 right-1">
+                                    <button 
+                                        type="button" 
+                                        onClick={(e) => removeFile(e, index)}
+                                        className="w-6 h-6 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center p-1"
+                                    >
+                                        <X size={10} strokeWidth={4} />
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Info Section */}
-                            <div className="p-3 bg-white">
-                                <p className="text-[11px] font-bold text-gray-800 truncate mb-1">
+                            {/* Info Area - Compressed */}
+                            <div className="p-1.5 bg-white border-t border-[#0000000a] flex-1 flex flex-col justify-between">
+                                <p className="text-[9px] font-bold text-[#1d2226] truncate leading-tight mb-1">
                                     {file.name}
                                 </p>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-gray-400 tracking-tighter uppercase">
+                                <div className="flex items-center justify-between gap-1">
+                                    <span className="text-[8px] text-[#666666] font-bold uppercase truncate">
                                         {file.size}
                                     </span>
-                                    <div className="flex items-center gap-1.5">
-                                        <CheckCircle2 size={12} className="text-[#057642]" />
-                                        <span className="text-[9px] font-bold text-[#057642] uppercase tracking-widest">Active</span>
+                                    <div className="flex items-center gap-0.5 text-[#057642] flex-shrink-0">
+                                        <CheckCircle2 size={8} strokeWidth={3} />
+                                        <span className="text-[7px] font-black uppercase">Sync</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     ))}
-                    
-                    {/* Advanced Placeholder Slot */}
+
+                    {/* LinkedIn-Style Slot */}
                     {multiple && previews.length < 10 && (
-                        <div className="relative bg-gray-50/30 border-2 border-dashed border-gray-200 rounded-xl aspect-[4/3] transition-all hover:bg-white hover:border-[#0a66c2]/50 group overflow-hidden">
+                        <div className="relative bg-[#f8f9fa] border-2 border-dashed border-[#0000001a] rounded-lg aspect-[4/3] flex flex-col items-center justify-center group hover:bg-white hover:border-[#0a66c2] transition-all cursor-pointer">
                             <input
                                 type="file"
                                 multiple
                                 accept="image/*"
                                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                                onChange={handleFileChange}
+                                onChange={(e) => handleFiles(e.target.files)}
                             />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                                <div className="w-10 h-10 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-[#0a66c2] group-hover:scale-110 transition-all">
-                                    <ImageIcon size={20} />
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-[#0a66c2]">Add More</p>
-                                    <p className="text-[9px] text-gray-300 font-medium">{10 - previews.length} slots left</p>
-                                </div>
+                            <div className="w-6 h-6 rounded-full bg-white border border-[#0000000d] flex items-center justify-center text-[#00000066] group-hover:text-[#0a66c2] transition-colors">
+                                <Plus size={14} strokeWidth={3} />
                             </div>
+                            <span className="mt-1 text-[8px] font-black text-[#00000066] uppercase tracking-wider group-hover:text-[#0a66c2] text-center px-1">
+                                Add
+                            </span>
                         </div>
                     )}
                 </div>

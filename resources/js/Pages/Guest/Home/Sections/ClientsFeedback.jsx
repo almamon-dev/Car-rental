@@ -10,46 +10,18 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const testimonials = [
-    {
-        id: 1,
-        name: "Sarah Johnson",
-        role: "Procurement Lead",
-        company: "Nexus Global",
-        content: "The institutional workflow was remarkably efficient. All Tier-1 assets were delivered precisely according to our executive itinerary.",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-        rating: 5,
-    },
-    {
-        id: 2,
-        name: "Michael Chen",
-        role: "Logistics Director",
-        company: "Horizon Tech",
-        content: "High-fidelity performance metrics. The BMW M8 deployment exceeded our operational standards for executive mobility.",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-        rating: 5,
-    },
-    {
-        id: 3,
-        name: "Emma Williams",
-        role: "Strategic Consultant",
-        company: "Veridian Group",
-        content: "Direct manufacturer integration ensures zero logistical friction. A standardized benchmark for premium mobility solutions.",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80",
-        rating: 5,
-    },
-    {
-        id: 4,
-        name: "David Smith",
-        role: "Operations Manager",
-        company: "Apex Dynamics",
-        content: "Exceptional procedural transparency. The fleet management interface is intuitive, allowing for rapid asset deployment.",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-        rating: 5,
-    },
+// testimonials removed from here, now using translations from context
+const testimonialsImages = [
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80",
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
 ];
 
+import { useLanguage } from "@/Contexts/LanguageContext";
+
 export default function ClientsFeedback() {
+    const { t } = useLanguage();
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -68,12 +40,12 @@ export default function ClientsFeedback() {
                     <div className="max-w-2xl">
                         <div className="flex items-center gap-2 mb-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#0a66c2]" />
-                            <span className="text-[10px] font-bold text-[#0a66c2]">Market Reputation</span>
+                            <span className="text-[10px] font-bold text-[#0a66c2]">{t.home.feedback.reputation}</span>
                         </div>
                         <h2 className="text-[26px] font-bold text-gray-900 tracking-tight leading-tight">
-                            Institutional <span className="text-[#0a66c2]">Endorsements</span>
+                            {t.home.feedback.title}
                         </h2>
-                        <p className="text-[13px] text-gray-500 mt-2 font-medium leading-relaxed italic">Verified testimonials from our enterprise deployment partners and logistics leads.</p>
+                        <p className="text-[13px] text-gray-500 mt-2 font-medium leading-relaxed italic">{t.home.feedback.subtitle}</p>
                     </div>
 
                     {/* Navigation Controls */}
@@ -141,20 +113,19 @@ export default function ClientsFeedback() {
                             }}
                             className="feedback-swiper !pb-12"
                         >
-                            {testimonials.map((item) => (
-                                <SwiperSlide key={item.id} className="h-auto">
+                            {t.home.feedback.testimonials.map((item, index) => (
+                                <SwiperSlide key={index} className="h-auto">
                                     <div className="bg-white rounded-[16px] border border-gray-200 p-6 flex flex-col h-full transition-all duration-300 hover:shadow-md hover:border-[#0a66c2]/20 group relative overflow-hidden">
                                         
                                         {/* Pure Cinematic Quote Mark */}
                                         <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-500">
                                             <Quote size={80} strokeWidth={1} />
                                         </div>
-
                                         {/* User Metadata Profile */}
                                         <div className="flex items-center gap-3 mb-6 relative">
                                             <div className="relative">
                                                 <img 
-                                                    src={item.avatar} 
+                                                    src={testimonialsImages[index % testimonialsImages.length]} 
                                                     alt={item.name} 
                                                     className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-gray-100"
                                                 />
@@ -183,10 +154,10 @@ export default function ClientsFeedback() {
                                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
                                             <div className="flex items-center gap-1.5">
                                                 <Activity size={12} className="text-[#0a66c2]" />
-                                                <span className="text-[10px] font-bold text-gray-400">Verification Status</span>
+                                                <span className="text-[10px] font-bold text-gray-400">{t.home.feedback.verification}</span>
                                             </div>
                                             <div className="flex gap-0.5">
-                                                {[...Array(item.rating)].map((_, i) => (
+                                                {[...Array(5)].map((_, i) => (
                                                     <Star key={i} size={12} className="text-amber-400 fill-amber-400" />
                                                 ))}
                                             </div>

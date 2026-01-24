@@ -29,19 +29,23 @@ const TechSpecsSection = ({ data, errors, handleInputChange }) => {
     ];
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {specs.map((spec) => (
-                <Input
-                    key={spec.name}
-                    label={spec.label}
-                    type={spec.type || "text"}
-                    placeholder={spec.placeholder}
-                    value={data[spec.name] || ""}
-                    onChange={(e) =>
-                        handleInputChange(spec.name, e.target.value)
-                    }
-                    error={errors[spec.name]}
-                />
+                <div key={spec.name} className="space-y-1.5">
+                    <label className="text-[14px] font-medium text-gray-700 block">
+                        {spec.label}
+                    </label>
+                    <Input
+                        type={spec.type || "text"}
+                        placeholder={spec.placeholder}
+                        value={data[spec.name] || ""}
+                        onChange={(e) =>
+                            handleInputChange(spec.name, e.target.value)
+                        }
+                        error={errors[spec.name]}
+                        className="h-[40px]"
+                    />
+                </div>
             ))}
         </div>
     );

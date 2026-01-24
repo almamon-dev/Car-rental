@@ -41,7 +41,7 @@ const Header = ({ onMenuClick }) => {
     }, []);
 
     return (
-        <header className="h-[70px] bg-white/90 backdrop-blur-md sticky top-0 z-[50] flex items-center px-4 md:px-6 border-b border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] transition-all duration-300">
+        <header className="h-[60px] bg-white/90 backdrop-blur-md sticky top-0 z-[50] flex items-center px-4 md:px-6 border-b border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] transition-all duration-300">
             
             {/* LEFT: Toggle & Logo (Mobile) */}
             <div className="flex items-center gap-4">

@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import { ChevronLeft, ChevronRight, ArrowRight, Layers, Star } from "lucide-react";
 import { Skeleton } from "@/Components/ui/Skeleton";
+import { useLanguage } from "@/Contexts/LanguageContext";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -10,6 +11,7 @@ import "swiper/css/navigation";
 import { Link } from "@inertiajs/react";
 
 export default function CategorySlider({ categories = [] }) {
+    const { t } = useLanguage();
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -26,10 +28,10 @@ export default function CategorySlider({ categories = [] }) {
                 {/* --- PROFESSIONAL HEADER --- */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h2 className="text-[20px] font-bold text-[#000000e6] leading-tight">
-                            Explore Vehicle Categories
+                        <h2 className="text-[22px] font-bold text-[#081621] leading-tight">
+                            {t.home.categories.title}
                         </h2>
-                        <p className="text-[13px] text-gray-500 mt-1">Based on your professional travel needs</p>
+                        <p className="text-[13px] text-[#666666] mt-1">{t.home.categories.subtitle}</p>
                     </div>
 
                     {/* Minimalist Controls */}
@@ -130,7 +132,7 @@ export default function CategorySlider({ categories = [] }) {
                                                 {cat.name}
                                             </h3>
                                             <div className="text-[11px] text-gray-500 font-medium tracking-tight">
-                                                {cat.cars_count || 0} Assets
+                                                {cat.cars_count || 0} {t.home.categories.assets}
                                             </div>
                                         </div>
                                     </Link>

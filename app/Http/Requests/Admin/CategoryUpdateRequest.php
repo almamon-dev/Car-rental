@@ -18,6 +18,7 @@ class CategoryUpdateRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255|unique:categories,name,'.$categoryId,
+            'parent_id' => 'nullable|exists:categories,id|not_in:'.$categoryId,
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:20048',
         ];

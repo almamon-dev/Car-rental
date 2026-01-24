@@ -20,15 +20,24 @@ class HomeController extends Controller
             $query->where('status', '=', 'available');
         }])->where('status', '=', 'active', 'and')->get(['*']);
 
-        $cars = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications'])
+        $cars = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications', 'features'])
             ->where('status', '=', 'available', 'and')
             ->latest()
             ->take(8)
             ->get(['*']);
 
+        if (auth()->check()) {
+            $userId = auth()->id();
+            $cars->each(function($car) use ($userId) {
+                $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
+            });
+        }
+
         $brands = \App\Models\Brand::withCount(['cars' => function($query) {
             $query->where('status', '=', 'available');
         }])->get(['*']);
+
+        $locations = \App\Models\Location::where('status', 1)->get();
 
         return Inertia::render('Guest/Home/Index', [
             'canLogin' => Route::has('login'),
@@ -38,6 +47,7 @@ class HomeController extends Controller
             'categories' => $categories,
             'cars' => $cars,
             'brands' => $brands,
+            'locations' => $locations,
         ]);
     }
 
@@ -46,8 +56,9 @@ class HomeController extends Controller
      */
     public function list(\Illuminate\Http\Request $request)
     {
-        $query = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications']);
+        $query = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications', 'features']);
 
+        // ... existing filters ...
         // Search Filter
         if ($request->filled('search')) {
             $search = $request->search;
@@ -80,6 +91,12 @@ class HomeController extends Controller
         if ($request->filled('status')) {
             $statuses = explode(',', $request->status);
             $query->whereIn('status', $statuses);
+        }
+
+        // Filter by Location
+        if ($request->filled('location')) {
+            $locationIds = explode(',', $request->location);
+            $query->whereIn('location_id', $locationIds);
         }
 
         // Filter by Transmission
@@ -130,6 +147,13 @@ class HomeController extends Controller
 
         $cars = $query->paginate($request->get('per_page', 24))->withQueryString();
 
+        if (auth()->check()) {
+            $userId = auth()->id();
+            $cars->getCollection()->each(function($car) use ($userId) {
+                $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
+            });
+        }
+
         $categories = Category::withCount(['cars' => function($q) {
             $q->where('status', '=', 'available');
         }])->where('status', '=', 'active', 'and')->get(['*']);
@@ -139,24 +163,65 @@ class HomeController extends Controller
         }])->get(['*']);
 
         $maxPrice = \App\Models\CarPriceDetail::max('daily_rate') ?: 2500000;
+        $locations = \App\Models\Location::where('status', 1)->get();
 
         return Inertia::render('Guest/Home/Products/CarListingPage', [
             'cars' => $cars,
             'categories' => $categories,
             'brands' => $brands,
             'maxPrice' => (int)$maxPrice,
+            'locations' => $locations,
         ]);
     }
 
     /**
      * Display a specific car's details.
      */
-    public function show($id)
+    public function show($slug)
     {
-        $car = Car::with(['brand', 'category', 'specifications', 'priceDetails', 'features', 'faqs', 'images'])->findOrFail($id);
+        $car = Car::with(['brand', 'category', 'specifications', 'priceDetails', 'features', 'faqs', 'images', 'location'])
+            ->where('slug', $slug)
+            ->firstOrFail();
+        
+        if (auth()->check()) {
+            $car->is_favorited = $car->favorites()->where('user_id', auth()->id())->exists();
+        } else {
+            $car->is_favorited = false;
+        }
+        
+        $locations = \App\Models\Location::where('status', 1)->get();
         
         return Inertia::render('Guest/Home/Products/CarDetails', [
-            'car' => $car
+            'car' => $car,
+            'locations' => $locations,
+        ]);
+    }
+
+    /**
+     * Check if a car is available for the given dates.
+     */
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'car_id' => 'required|exists:cars,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $isBusy = \App\Models\Booking::where('car_id', $request->car_id)
+            ->where('status', 'confirmed')
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                    ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                    ->orWhere(function ($q) use ($request) {
+                        $q->where('start_date', '<=', $request->start_date)
+                            ->where('end_date', '>=', $request->end_date);
+                    });
+            })
+            ->exists();
+
+        return response()->json([
+            'available' => !$isBusy
         ]);
     }
 }

@@ -16,6 +16,7 @@ class CategoryStoreRequest extends FormRequest
         return [
             'categories' => 'required|array|min:1',
             'categories.*.name' => 'required|string|max:255|unique:categories,name',
+            'categories.*.parent_id' => 'nullable|exists:categories,id',
             'categories.*.description' => 'nullable|string',
             'categories.*.image' => 'required|image|mimes:jpeg,png,jpg,webp|max:20048',
         ];
