@@ -37,7 +37,7 @@ export default function BookingWidget({
     rateMode,
     onRateModeChange
 }) {
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
     const currency = car.price_details?.currency || '৳';
     const [error, setError] = useState(null);
 
@@ -74,14 +74,14 @@ export default function BookingWidget({
             {/* Header / Institutional Branding */}
             <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between bg-white rounded-t-[4px]">
                 <div className="flex flex-col leading-none">
-                    <div className="text-[10px] font-bold text-gray-400 mb-0.5 uppercase tracking-tighter">Daily Rate</div>
+                    <div className="text-[10px] font-bold text-gray-400 mb-0.5 uppercase tracking-tighter">{t.details.daily_rate_label}</div>
                     <div className="flex items-center gap-1.5">
                         <span className="text-[18px] font-bold text-[#3749bb]">{currency}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
                         <span className="text-[12px] text-gray-400 line-through font-medium">{currency}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
                     </div>
                 </div>
                 <div className="px-2 py-0.5 bg-blue-50 border border-blue-100 rounded-[2px] text-[9px] font-bold text-blue-600">
-                    Live
+                    {t.details.live}
                 </div>
             </div>
 
@@ -90,7 +90,7 @@ export default function BookingWidget({
                 {/* DEPLOYMENT MODE (Rental Type Sync) */}
                 <div className="px-1">
                     <label className="block text-[11px] font-bold text-gray-500 mb-1.5 ml-1">
-                         Booking Type
+                         {t.details.booking_type}
                     </label>
                     <div className="grid grid-cols-3 gap-2 text-center">
                         {[
@@ -120,7 +120,7 @@ export default function BookingWidget({
                     <div className="grid grid-cols-2 gap-2">
                          <div className="space-y-1">
                             <label className="text-[11px] font-bold text-gray-500 ml-1">
-                                Pickup
+                                {t.details.pickup_label}
                             </label>
                             <div className="relative group/select">
                                 <select
@@ -136,13 +136,13 @@ export default function BookingWidget({
                                 >
                                     {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
                                 </select>
-                                <ChevronRight size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 rotate-90 pointer-events-none" />
+                               
                             </div>
                          </div>
                          
                          <div className="space-y-1">
                             <label className="text-[11px] font-bold text-gray-500 ml-1">
-                                Drop-off
+                                {t.details.dropoff_label}
                             </label>
                             <div className="relative group/select">
                                 <select
@@ -156,9 +156,9 @@ export default function BookingWidget({
                                     className="w-full h-9 pl-2 pr-6 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer appearance-none shadow-sm"
                                 >
                                     {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
-                                    <option value="Custom Drop-off">Custom</option>
+                                    <option value="Custom Drop-off">{t.details.custom_dropoff_label}</option>
                                 </select>
-                                <ChevronRight size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 rotate-90 pointer-events-none" />
+                              
                             </div>
                          </div>
                     </div>
@@ -182,7 +182,7 @@ export default function BookingWidget({
                                     showTimeSelect
                                     dateFormat="MMM d, HH:mm"
                                     minDate={new Date()}
-                                    placeholderText="Pick-up"
+                                    placeholderText={t.details.pickup_placeholder}
                                     className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer shadow-sm"
                                     wrapperClassName="w-full"
                                     popperClassName="!z-[9999]"
@@ -206,7 +206,7 @@ export default function BookingWidget({
                                     showTimeSelect
                                     dateFormat="MMM d, HH:mm"
                                     minDate={new Date()}
-                                    placeholderText="Return"
+                                    placeholderText={t.details.return_placeholder}
                                     className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer shadow-sm"
                                     wrapperClassName="w-full"
                                     popperClassName="!z-[9999]"
@@ -231,12 +231,12 @@ export default function BookingWidget({
                             label={`${t.details.base_allocation} (${priceSummary.multiplier})`} 
                             val={`${currency}${(priceSummary.baseRate * priceSummary.multiplier).toLocaleString()}`} 
                         />
-                        <ManifestItem label="Insurance" val={`${currency}${priceSummary.insurance.toLocaleString()}`} />
-                        <ManifestItem label="System Fee" val={`${currency}${priceSummary.serviceFee.toLocaleString()}`} />
-                        {priceSummary.extras > 0 && <ManifestItem label="Upgrades" val={`${currency}${priceSummary.extras}`} />}
+                        <ManifestItem label={t.details.institutional_insurance} val={`${currency}${priceSummary.insurance.toLocaleString()}`} />
+                        <ManifestItem label={t.details.operational_fee || "System Fee"} val={`${currency}${priceSummary.serviceFee.toLocaleString()}`} />
+                        {priceSummary.extras > 0 && <ManifestItem label={t.details.asset_enhancements} val={`${currency}${priceSummary.extras}`} />}
                         
                         <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
-                            <span className="text-[15px] font-bold text-gray-900">Total Price</span>
+                            <span className="text-[15px] font-bold text-gray-900">{t.details.total_price}</span>
                             <span className="text-[22px] font-bold text-[#3749bb]">{currency}{priceSummary.total.toLocaleString()}</span>
                         </div>
                     </div>
@@ -273,11 +273,11 @@ export default function BookingWidget({
                             {availability === 'checking' ? (
                                 <>
                                     <div className="w-3 h-3 border-2 border-[#3749bb]/30 border-t-[#3749bb] rounded-full animate-spin" />
-                                    Analyzing...
+                                    {t.details.analyzing_status}
                                 </>
                             ) : (
                                 <>
-                                    <Activity size={14} /> Check Availability
+                                    <Activity size={14} /> {t.details.check_availability}
                                 </>
                             )}
                         </button>
@@ -292,11 +292,11 @@ export default function BookingWidget({
                             : "bg-gray-200 cursor-not-allowed text-gray-400"
                         }`}
                     >
-                        Booking Confirm <ArrowRight size={16} />
+                        {t.details.confirm_acquisition} <ArrowRight size={16} />
                     </button>
                     
                     <button className="w-full py-2 bg-gray-50 rounded-[4px] border border-gray-100 text-gray-500 text-[12px] font-semibold hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
-                         <MapPin size={12} /> Sync with Maps
+                         <MapPin size={12} /> {t.details.sync_maps}
                     </button>
                     <style>
                     {`

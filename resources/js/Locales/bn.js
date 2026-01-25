@@ -82,6 +82,8 @@ export const bn = {
         },
         recommended: {
             matrix: "ইন্সটিটিউশনাল ম্যাট্রিক্স",
+            curated: "নির্বাচিত",
+            selections: "সংগ্রহ",
             title: "আপনার জন্য সেরা গাড়ি",
             subtitle: "আপনার পূর্ববর্তী ব্যবহারের ভিত্তিতে সেরা সুপারিশসমূহ।",
             save: "বাঁচান",
@@ -91,6 +93,9 @@ export const bn = {
             energy_arch: "জ্বালানি কাঠামো"
         },
         feedback: {
+            reputation: "ক্লায়েন্ট সুনাম",
+            title: "এক্সিকিউটিভ গ্লোবাল ফিডব্যাক",
+            subtitle: "আমাদের যাচাইকৃত প্রাতিষ্ঠানিক অংশীদার এবং বিশ্বনেতাদের কাছ থেকে উচ্চ-মানের রিভিউ।",
             verification: "ভেরিফিকেশন স্ট্যাটাস",
             testimonials: [
                 {
@@ -121,6 +126,8 @@ export const bn = {
         },
         cars: {
             recommended: "প্রস্তাবিত",
+            available: "উপলব্ধ",
+            fleet: "গাড়ি",
             cars_available: "টি গাড়ি উপলব্ধ",
             explore_all: "সবগুলো দেখুন"
         },
@@ -431,7 +438,26 @@ export const bn = {
         gallery: {
             observation_mode: "গাড়ির পর্যবেক্ষণ মোড",
             view: "দেখছেন"
-        }
+        },
+        brand: "ব্র্যান্ড",
+        category: "ক্যাটাগরি",
+        favorite: "প্রিয়",
+        favorited: "পছন্দ করা হয়েছে",
+        share: "শেয়ার",
+        copied: "কপি হয়েছে",
+        daily_rate_label: "দৈনিক ভাড়া",
+        live: "লাইভ",
+        booking_type: "বুকিংয়ের ধরন",
+        pickup_label: "পিকআপ",
+        dropoff_label: "ড্রপ-অফ",
+        custom_dropoff_label: "কাস্টম",
+        start_label: "শুরু",
+        end_label: "শেষ",
+        pickup_placeholder: "পিক-আপ",
+        return_placeholder: "ফেরত",
+        sync_maps: "ম্যাপে দেখুন",
+        total_price: "মোট মূল্য",
+        analyzing_status: "বিশ্লেষণ করা হচ্ছে...",
     },
     dashboard: {
         looking_for: "আপনার পরবর্তী পেশাদার যাত্রার জন্য কি খুঁজছেন?",

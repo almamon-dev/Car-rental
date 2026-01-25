@@ -80,7 +80,9 @@ export const en = {
             reliability: "Reliability"
         },
         recommended: {
-            matrix: "Institutional Matrix",
+            matrix: "Matrix",
+            curated: "Curated",
+            selections: "Selections",
             title: "Personalized Asset Suggestions",
             subtitle: "High-fidelity recommendations based on your professional deployment history.",
             save: "Save",
@@ -90,6 +92,9 @@ export const en = {
             energy_arch: "Energy Arch."
         },
         feedback: {
+            reputation: "CLIENT REPUTATION",
+            title: "Executive Global Feedback",
+            subtitle: "High-fidelity reviews from our verified institutional partners and global leaders.",
             verification: "Verification Status",
             testimonials: [
                 {
@@ -120,6 +125,8 @@ export const en = {
         },
         cars: {
             recommended: "Recommended",
+            available: "Available",
+            fleet: "Fleet",
             cars_available: "Cars Available",
             explore_all: "Explore All"
         },
@@ -430,7 +437,26 @@ export const en = {
         gallery: {
             observation_mode: "Asset Observation Mode",
             view: "View"
-        }
+        },
+        brand: "Brand",
+        category: "Category",
+        favorite: "Favorite",
+        favorited: "Favorited",
+        share: "Share",
+        copied: "Copied",
+        daily_rate_label: "Daily Rate",
+        live: "Live",
+        booking_type: "Booking Type",
+        pickup_label: "Pickup",
+        dropoff_label: "Drop-off",
+        custom_dropoff_label: "Custom",
+        start_label: "Start",
+        end_label: "End",
+        pickup_placeholder: "Pick-up",
+        return_placeholder: "Return",
+        sync_maps: "Sync with Maps",
+        total_price: "Total Price",
+        analyzing_status: "Analyzing...",
     },
     dashboard: {
         looking_for: "Looking for your next professional journey?",

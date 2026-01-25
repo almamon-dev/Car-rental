@@ -65,10 +65,12 @@ export default function CarListing({ cars = [] }) {
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[11px] font-black text-[#3749bb] uppercase tracking-widest leading-none">Recommended</span>
+                            <span className="text-[11px] font-black text-[#3749bb] uppercase tracking-widest leading-none">
+                                {t.home.cars.recommended}
+                            </span>
                         </div>
                         <h2 className="text-[24px] font-bold text-gray-900 leading-none">
-                            Available <span className="text-[#3749bb]">Fleet</span>
+                            {t.home.cars.available} <span className="text-[#3749bb]">{t.home.cars.fleet}</span>
                         </h2>
                     </div>
 
@@ -76,11 +78,11 @@ export default function CarListing({ cars = [] }) {
                          <div className="hidden md:flex flex-col items-end leading-none">
                               <span className="text-[12px] font-bold text-green-600 flex items-center gap-1.5">
                                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                  {cars.length} Active Units
+                                  {cars.length} {t.home.cars.cars_available}
                               </span>
                          </div>
-                         <Link href={route('car.list')} className="flex items-center gap-1.5 text-[13px] font-bold text-[#3749bb] hover:underline">
-                            Explore All <ChevronRight size={14} />
+                         <Link href={route('car.list')} className="flex items-center gap-1.5 text-[13px] font-bold text-[#3749bb] hover:underline transition-all">
+                            {t.home.cars.explore_all} <ChevronRight size={14} />
                         </Link>
                     </div>
                 </div>

@@ -11,6 +11,7 @@ import {
 
 
 import { useLanguage } from "@/Contexts/LanguageContext";
+import { languageNames } from "@/Locales/index";
 
 // --- Sub-components ---
 
@@ -27,10 +28,10 @@ const LanguageDropdown = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const languages = [
-        { code: "en", label: "English" },
-        { code: "bn", label: "বাংলা" },
-    ];
+    const languages = Object.entries(languageNames).map(([code, label]) => ({
+        code,
+        label
+    }));
 
     return (
         <div className="relative h-full flex flex-col justify-center" ref={containerRef}>
@@ -43,7 +44,7 @@ const LanguageDropdown = () => {
                 <div className="flex flex-col items-center justify-center flex-1">
                     <Globe size={22} className={isOpen ? "text-gray-900" : "text-gray-500"} strokeWidth={1.5} />
                     <span className="text-[12px] font-medium uppercase tracking-tighter leading-none mt-1">
-                        {locale === 'en' ? 'EN' : 'BN'} 
+                        {locale.toUpperCase().slice(0, 2)} 
                         <ChevronDown size={11} className={`inline-block ml-0.5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                     </span>
                 </div>
@@ -58,19 +59,19 @@ const LanguageDropdown = () => {
                         transition={{ duration: 0.1 }}
                         className="absolute top-full right-0 w-40 bg-white rounded-lg shadow-[0_12px_32px_rgba(0,0,0,0.15)] border border-gray-200 overflow-hidden py-1.5 z-[100] origin-top-right mt-1"
                     >
-                        {languages.map((lang) => (
+                        {languages.map(({ code, label }) => (
                             <button
-                                key={lang.code}
+                                key={code}
                                 onClick={() => {
-                                    setLanguage(lang.code);
+                                    setLanguage(code);
                                     setIsOpen(false);
                                 }}
                                 className={`w-full text-left px-4 py-2 text-[13px] hover:bg-gray-50 flex justify-between items-center transition-colors ${
-                                    locale === lang.code ? "bg-blue-50/50 font-black text-[#0a66c2]" : "text-gray-700 font-bold"
+                                    locale === code ? "bg-blue-50/50 font-black text-[#0a66c2]" : "text-gray-700 font-bold"
                                 }`}
                             >
-                                {lang.label}
-                                {locale === lang.code && <Check size={14} strokeWidth={4} />}
+                                {label}
+                                {locale === code && <Check size={14} strokeWidth={4} />}
                             </button>
                         ))}
                     </motion.div>
@@ -294,23 +295,20 @@ const MobileMenu = ({ links, isActive, auth, onClose }) => {
 
                     <div className="px-6 py-2">
                         <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">{t.nav.language}</h3>
-                        <div className="flex gap-2">
-                            {[
-                                { code: "en", label: "English" },
-                                { code: "bn", label: "বাংলা" }
-                            ].map(lang => (
+                            <div className="flex flex-wrap gap-2">
+                            {Object.entries(languageNames).map(([code, label]) => (
                                 <button
-                                    key={lang.code}
+                                    key={code}
                                     onClick={() => {
-                                        setLanguage(lang.code);
+                                        setLanguage(code);
                                     }}
-                                    className={`flex-1 py-3 rounded-xl text-[13px] font-black border transition-all ${
-                                        locale === lang.code 
+                                    className={`flex-1 py-3 rounded-xl text-[13px] font-black border transition-all min-w-[30%] ${
+                                        locale === code 
                                             ? "border-[#0a66c2] text-[#0a66c2] bg-blue-50 shadow-sm ring-1 ring-[#0a66c2]/20" 
                                             : "border-gray-200 text-gray-500 hover:border-gray-300 bg-gray-50"
                                     }`}
                                 >
-                                    {lang.label}
+                                    {label}
                                 </button>
                             ))}
                         </div>

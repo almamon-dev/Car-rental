@@ -36,10 +36,10 @@ export default function SimilarCars() {
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                             <span className="text-[11px] font-black text-[#3749bb] uppercase tracking-widest leading-none">Recommended</span>
+                             <span className="text-[11px] font-black text-[#3749bb] uppercase tracking-widest leading-none">{t.details.similar_cars.recommended}</span>
                         </div>
                         <h2 className="text-[24px] font-bold text-gray-900 leading-none">
-                            Similar <span className="text-[#3749bb]">Cars</span>
+                            {t.details.similar_cars.title} <span className="text-[#3749bb]">{t.details.similar_cars.accent}</span>
                         </h2>
                     </div>
 
@@ -63,7 +63,7 @@ export default function SimilarCars() {
                              {/* Badge */}
                             <div className="absolute top-0 left-0 z-20">
                                 <div className="bg-[#3749bb] text-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide">
-                                    SAVE: ৳{(Number(String(car.price).replace(/,/g, '')) * 0.2).toLocaleString()}
+                                    {t.listing.save}: ৳{(Number(String(car.price).replace(/,/g, '')) * 0.2).toLocaleString()}
                                 </div>
                             </div>
 
@@ -113,7 +113,7 @@ export default function SimilarCars() {
                                 {/* Key Highlights */}
                                 {car.features && car.features.length > 0 && (
                                     <div className="mb-6">
-                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2.5">Key Highlights</h4>
+                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2.5">{t.listing.key_highlights}</h4>
                                         <ul className="space-y-1.5">
                                             {car.features.slice(0, 3).map((feat, idx) => (
                                                 <li key={idx} className="flex items-center gap-2 text-[13px] font-semibold text-[#334155]">
@@ -141,7 +141,7 @@ export default function SimilarCars() {
                                         href={route('car.details', car.slug)}
                                         className="w-full py-2.5 rounded-[4px] border border-[#3749bb] text-[#3749bb] bg-white hover:bg-[#3749bb] hover:text-white transition-all duration-300 text-[14px] font-bold text-center block"
                                     >
-                                        View Details
+                                        {t.listing.view_details}
                                     </Link>
                                 </div>
                             </div>

@@ -1,26 +1,19 @@
 import React, { useState, useMemo } from "react";
-import { ArrowRight, Verified, Search, HelpCircle, ShieldCheck, Info } from "lucide-react";
+import { ArrowRight, Search, HelpCircle, ShieldCheck, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-/**
- * ALTERNATIVE INTERACTIVE FAQ (EXECUTIVE SEARCH DIRECTORY)
- * 
- * Philosophy:
- * - Search-First: A professional utility with real-time filtering.
- * - Grid-Modular: Cards instead of a vertical list for a "Knowledge Base" feel.
- * - High Density: Compact typography and spatial efficiency.
- * - Style Sync: LinkedIn Light palette with #0a66c2 accents.
- */
-
-// faqData removed from here, now using translations from context
 
 import { useLanguage } from "@/Contexts/LanguageContext";
 
 export default function FAQ() {
     const { t } = useLanguage();
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeCategory, setActiveCategory] = useState("All");
+    const [activeCategory, setActiveCategory] = useState(t.home.faq.categories.all);
     const [openId, setOpenId] = useState(null);
+
+    // Sync active category when language changes
+    React.useEffect(() => {
+        setActiveCategory(t.home.faq.categories.all);
+    }, [t.home.faq.categories.all]);
 
     const categories = [
         t.home.faq.categories.all, 
@@ -45,7 +38,6 @@ export default function FAQ() {
         <section className="py-6 bg-transparent overflow-hidden font-sans relative">
             <div className="max-w-7xl mx-auto px-6">
                 
-                {/* --- COMPACT EXECUTIVE HEADER (SEARCH INTEGRATED) --- */}
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
                     <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -57,7 +49,6 @@ export default function FAQ() {
                         </h2>
                     </div>
 
-                    {/* LinkedIn Style Search Bar */}
                     <div className="relative w-full lg:w-[320px]">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                         <input 
@@ -70,7 +61,6 @@ export default function FAQ() {
                     </div>
                 </div>
 
-                {/* --- FILTER CHIPS (LINKEDIN STYLE) --- */}
                 <div className="flex flex-wrap gap-2 mb-8">
                      {categories.map(cat => (
                          <button
@@ -87,7 +77,6 @@ export default function FAQ() {
                      ))}
                 </div>
 
-                {/* --- INTERACTIVE GRID --- */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <AnimatePresence mode="popLayout">
                         {filteredFaqs.map((faq) => (
@@ -147,7 +136,6 @@ export default function FAQ() {
                     </AnimatePresence>
                 </div>
 
-                {/* --- EMPTY STATE --- */}
                 {filteredFaqs.length === 0 && (
                     <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-[12px]">
                          <HelpCircle size={40} className="text-gray-200 mx-auto mb-4" />
@@ -155,7 +143,6 @@ export default function FAQ() {
                     </div>
                 )}
 
-                {/* --- CONCIERGE ACCESS (SYNCED) --- */}
                 <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 py-4 px-6 bg-slate-50 border border-gray-100 rounded-[8px]">
                      <div className="flex items-center gap-3">
                          <ShieldCheck size={16} className="text-[#0a66c2]" />

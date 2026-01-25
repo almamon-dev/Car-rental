@@ -19,72 +19,76 @@ import { router, usePage, Head } from "@inertiajs/react";
  */
 
 const CarDetailsSkeleton = () => (
-    <div className="bg-[#f3f2ef]/40 min-h-screen font-sans">
-        {/* Hero Skeleton */}
-        <div className="bg-white border-b border-gray-200 py-8">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                    <div className="space-y-3 flex-1">
-                        <Skeleton className="h-4 w-32 rounded" />
-                        <Skeleton className="h-10 w-3/4 rounded-lg" />
-                        <div className="flex gap-4">
-                            <Skeleton className="h-4 w-40 rounded" />
-                            <Skeleton className="h-4 w-24 rounded" />
+    <div className="bg-[#f0f2f5] min-h-screen font-sans pt-4 pb-8">
+        <div className="max-w-7xl mx-auto px-4">
+            <div className="flex flex-col lg:flex-row gap-4">
+                {/* Main Content Column */}
+                <div className="lg:w-8/12 space-y-4">
+                    
+                    {/* Header Card (Facebook Style) */}
+                    <div className="bg-white rounded-lg shadow-sm p-4 animate-pulse">
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-3 w-24 rounded-md bg-gray-300" />
+                                <Skeleton className="h-3 w-3 rounded-full bg-gray-300" />
+                                <Skeleton className="h-3 w-16 rounded-md bg-gray-300" />
+                            </div>
+                            <Skeleton className="h-8 w-3/4 rounded-md bg-gray-300" />
+                            <div className="flex gap-2 mt-2">
+                                <Skeleton className="h-8 w-24 rounded-full bg-gray-300" />
+                                <Skeleton className="h-8 w-24 rounded-full bg-gray-300" />
+                                <Skeleton className="h-8 w-24 rounded-full bg-gray-300" />
+                            </div>
                         </div>
                     </div>
-                    <div className="flex gap-3">
-                        <Skeleton className="h-12 w-32 rounded-full" />
-                        <Skeleton className="h-12 w-12 rounded-full" />
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-8">
-            <div className="flex flex-col lg:flex-row gap-6">
-                {/* Primary Content Skeleton */}
-                <div className="lg:w-8/12 space-y-6">
-                    <div className="bg-white rounded-[12px] border border-gray-200 shadow-sm overflow-hidden p-2">
-                        <Skeleton className="aspect-video w-full rounded-lg" />
-                        <div className="flex gap-2 mt-4 p-2">
-                            {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-20 flex-1 rounded-md" />)}
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-[12px] border border-gray-200 p-6 space-y-6">
-                        <div className="flex gap-8 border-b border-gray-100 pb-4">
-                            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-6 w-20 rounded" />)}
-                        </div>
-                        <div className="space-y-4">
-                            <Skeleton className="h-4 w-full rounded" />
-                            <Skeleton className="h-4 w-full rounded" />
-                            <Skeleton className="h-4 w-2/3 rounded" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-x-12 gap-y-4 mt-8">
-                            {[1, 2, 3, 4, 5, 6].map(i => (
-                                <div key={i} className="flex justify-between">
-                                    <Skeleton className="h-4 w-24 rounded" />
-                                    <Skeleton className="h-4 w-16 rounded" />
-                                </div>
+                    {/* Media Card */}
+                    <div className="bg-white rounded-lg shadow-sm p-4 animate-pulse">
+                         <Skeleton className="w-full aspect-[16/9] rounded-lg mb-3 bg-gray-300" />
+                         <div className="flex gap-2 overflow-hidden">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                                <Skeleton key={i} className="h-16 w-20 rounded-md flex-shrink-0 bg-gray-300" />
                             ))}
+                         </div>
+                    </div>
+
+                    {/* Info/Tabs Card */}
+                    <div className="bg-white rounded-lg shadow-sm p-4 animate-pulse">
+                        <div className="flex gap-4 border-b border-gray-100 pb-3 mb-4">
+                             <Skeleton className="h-8 w-24 rounded-md bg-gray-300" />
+                             <Skeleton className="h-8 w-24 rounded-md bg-gray-300" />
+                             <Skeleton className="h-8 w-24 rounded-md bg-gray-300" />
+                        </div>
+                        <div className="space-y-3">
+                            <Skeleton className="h-4 w-full rounded bg-gray-300" />
+                            <Skeleton className="h-4 w-full rounded bg-gray-300" />
+                            <Skeleton className="h-4 w-5/6 rounded bg-gray-300" />
+                            <Skeleton className="h-4 w-4/6 rounded bg-gray-300" />
                         </div>
                     </div>
                 </div>
 
-                {/* Sidebar Skeleton */}
-                <div className="lg:w-4/12 space-y-6">
-                    <div className="bg-white rounded-[12px] border border-gray-200 p-6 shadow-sm space-y-6">
-                        <Skeleton className="h-12 w-full rounded-lg" />
+                {/* Sidebar Column */}
+                <div className="lg:w-4/12">
+                     <div className="bg-white rounded-lg shadow-sm p-4 animate-pulse space-y-6 sticky top-4">
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-1/3 rounded bg-gray-300" />
+                            <Skeleton className="h-10 w-full rounded-md bg-gray-300" />
+                        </div>
+
                         <div className="space-y-4">
-                            <Skeleton className="h-20 w-full rounded-md" />
-                            <Skeleton className="h-20 w-full rounded-md" />
+                            <Skeleton className="h-12 w-full rounded-md bg-gray-300" />
+                            <Skeleton className="h-12 w-full rounded-md bg-gray-300" />
                         </div>
+
                         <div className="space-y-3 pt-4 border-t border-gray-100">
-                            <div className="flex justify-between"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-4 w-16 rounded" /></div>
-                            <div className="flex justify-between"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-4 w-16 rounded" /></div>
-                            <div className="flex justify-between pt-2"><Skeleton className="h-6 w-32 rounded" /><Skeleton className="h-6 w-20 rounded" /></div>
+                             <div className="flex justify-between"><Skeleton className="h-4 w-24 bg-gray-300" /><Skeleton className="h-4 w-16 bg-gray-300" /></div>
+                             <div className="flex justify-between"><Skeleton className="h-4 w-24 bg-gray-300" /><Skeleton className="h-4 w-16 bg-gray-300" /></div>
+                             <div className="flex justify-between pt-2"><Skeleton className="h-6 w-32 bg-gray-300" /><Skeleton className="h-6 w-20 bg-gray-300" /></div>
                         </div>
-                        <Skeleton className="h-14 w-full rounded-full" />
-                    </div>
+                        
+                        <Skeleton className="h-12 w-full rounded-full mt-2 bg-gray-300" />
+                     </div>
                 </div>
             </div>
         </div>

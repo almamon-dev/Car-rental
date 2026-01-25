@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { en } from "../Locales/en";
-import { bn } from "../Locales/bn";
+import { locales, rtlLanguages } from "../Locales/index";
 
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
     const [locale, setLocale] = useState(localStorage.getItem("locale") || "en");
-    const [t, setT] = useState(locale === "en" ? en : bn);
+    const [t, setT] = useState(locales[locale] || locales.en);
 
     const setLanguage = (newLocale) => {
         setLocale(newLocale);
@@ -14,13 +13,19 @@ export const LanguageProvider = ({ children }) => {
     };
 
     const toggleLanguage = () => {
-        const newLocale = locale === "en" ? "bn" : "en";
+        // Toggle logic might need update if we have multiple languages, 
+        // but keeping simple toggle between en/bn for legacy or updating to cycle/modal?
+        // User asked for "easy add", let's assume specific selector is used elsewhere.
+        // For now, let's just default this to cycling en/bn or maybe just next key?
+        // Better to minimal change here: just let setLanguage handle it.
+        const newLocale = locale === "en" ? "bn" : "en"; 
         setLanguage(newLocale);
     };
 
     useEffect(() => {
-        setT(locale === "en" ? en : bn);
+        setT(locales[locale] || locales.en);
         document.documentElement.lang = locale;
+        document.documentElement.dir = rtlLanguages.includes(locale) ? "rtl" : "ltr";
     }, [locale]);
 
     return (
