@@ -4,10 +4,11 @@ namespace App\Http\Controllers\User\Booking;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
 use App\Services\PaymentService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
@@ -36,74 +37,77 @@ class PaymentController extends Controller
     }
 
     /**
-     * Create Stripe Intent
+     * Handle SSLCommerz Payment Initiation
      */
-    public function createPaymentIntent(Request $request)
+    public function sslCommerzPayment(Request $request)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric',
             'car_id' => 'required|exists:cars,id',
         ]);
 
         try {
-            $intent = $this->paymentService->createStripeIntent($request->amount, $request->car_id);
-            return response()->json(['clientSecret' => $intent->client_secret]);
+            $result = $this->paymentService->initiateSslCommerzPayment($request->amount, $request->car_id);
+            return response()->json($result);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Handle bKash Payment Initiation
-     */
-    public function bkashPayment(Request $request)
+    public function sslCommerzSuccess(Request $request)
     {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'car_id' => 'required|exists:cars,id',
-            'phone' => 'required|string|min:11',
-        ]);
+        // SSLCommerz returns data in POST
+        $data = $request->all();
+        
+        $tran_id = $data['tran_id'] ?? null;
+        if ($tran_id) {
+            $parts = explode('_', $tran_id);
+            if ($parts[0] === 'car' && isset($parts[1])) {
+                $carId = $parts[1];
+                $amount = $data['amount'] ?? 0;
+                
+                $this->paymentService->finalizeTransaction([
+                    'car_id' => $carId,
+                    'amount' => $amount,
+                    'method' => 'sslcommerz',
+                    'transaction_id' => $data['bank_tran_id'] ?? $tran_id,
+                ]);
 
-        $result = $this->paymentService->initiateBkashPayment($request->amount, $request->car_id, $request->phone);
-        return response()->json($result);
-    }
-
-    /**
-     * Handle Nagad Payment Initiation
-     */
-    public function nagadPayment(Request $request)
-    {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'car_id' => 'required|exists:cars,id',
-            'phone' => 'required|string|min:11',
-        ]);
-
-        $result = $this->paymentService->initiateNagadPayment($request->amount, $request->car_id, $request->phone);
-        return response()->json($result);
-    }
-
-    /**
-     * Finalize Transaction
-     */
-    public function success(Request $request)
-    {
-        $request->validate([
-            'amount' => 'required|numeric',
-            'car_id' => 'required|exists:cars,id',
-            'method' => 'required|string',
-            'transaction_id' => 'nullable|string'
-        ]);
-
-        try {
-            $booking = $this->paymentService->finalizeTransaction($request->all());
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Payment processed and booking confirmed',
-                'booking_id' => $booking->id
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+                return Inertia::render('User/Payments/Success', [
+                    'data' => [
+                        'transaction_id' => $data['bank_tran_id'] ?? $tran_id,
+                        'amount' => $amount,
+                    ]
+                ]);
+            }
         }
+
+        return Inertia::render('User/Payments/Failure', [
+            'status' => 'fail',
+            'message' => 'Payment validation failed or invalid data received.'
+        ]);
+    }
+
+    public function sslCommerzFail(Request $request)
+    {
+        return Inertia::render('User/Payments/Failure', [
+            'status' => 'fail',
+            'message' => 'The payment transaction was unsuccessful. Please check your bank status.'
+        ]);
+    }
+
+    public function sslCommerzCancel(Request $request)
+    {
+        return Inertia::render('User/Payments/Failure', [
+            'status' => 'cancel',
+            'message' => 'You have cancelled the payment process. No charges were made.'
+        ]);
+    }
+
+    public function sslCommerzIpn(Request $request)
+    {
+        // Log IPN for debugging
+        Log::info('SSLCommerz IPN Received:', $request->all());
+        return response()->json(['status' => 'success']);
     }
 }

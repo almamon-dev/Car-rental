@@ -216,7 +216,13 @@ export default function CarDetails({ car, locations }) {
         }
     };
 
-    const handleBookNow = () => setShowBookingModal(true);
+    const handleBookNow = () => {
+        if (!auth.user) {
+            router.get(route('login'));
+            return;
+        }
+        setShowBookingModal(true);
+    };
 
     if (isLoading) return <CarDetailsSkeleton />;
 

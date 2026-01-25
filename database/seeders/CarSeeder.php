@@ -58,7 +58,7 @@ class CarSeeder extends Seeder
             'pexels-wolfart-10822041.jpg',
         ];
 
-        $total = 2000; // Seeding 20 realistic cars
+        $total = 20; // Seeding 20 realistic cars
 
         for ($i = 0; $i < $total; $i++) {
             $modelData = $carModels[$i % count($carModels)];
@@ -107,7 +107,7 @@ class CarSeeder extends Seeder
             // Gallery Images - Optimized for large seeding
             // For first 20 cars, we do real uploads, then reuse paths
             static $uploadedPaths = [];
-            
+
             if (count($uploadedPaths) < 15) {
                 $selectedImages = Arr::random($allImages, min(4, count($allImages)));
                 foreach ($selectedImages as $imgName) {

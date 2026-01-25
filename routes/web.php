@@ -4,9 +4,8 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CarController as AdminCarController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -30,21 +29,23 @@ Route::middleware('auth')->group(function () {
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/bookings', [\App\Http\Controllers\User\Booking\BookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{id}', [\App\Http\Controllers\User\Booking\BookingController::class, 'show'])->name('bookings.show');
-        
+
         Route::get('/favorites', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('favorites.index');
         Route::post('/favorites/toggle/{carId}', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('favorites.toggle');
-        
+
         Route::get('/payments', [\App\Http\Controllers\User\Booking\PaymentController::class, 'index'])->name('payments.index');
 
         // Review Routes
         Route::post('/reviews', [\App\Http\Controllers\CarReviewController::class, 'store'])->name('reviews.store');
         Route::post('/reviews/{reviewId}/like', [\App\Http\Controllers\CarReviewController::class, 'toggleLike'])->name('reviews.like');
 
-        // Payment/Stripe Routes
-        Route::post('/stripe/intent', [\App\Http\Controllers\User\Booking\PaymentController::class, 'createPaymentIntent'])->name('stripe.intent');
-        Route::post('/stripe/success', [\App\Http\Controllers\User\Booking\PaymentController::class, 'success'])->name('stripe.success');
-        Route::post('/bkash/payment', [\App\Http\Controllers\User\Booking\PaymentController::class, 'bkashPayment'])->name('bkash.payment');
-        Route::post('/nagad/payment', [\App\Http\Controllers\User\Booking\PaymentController::class, 'nagadPayment'])->name('nagad.payment');
+
+        // SSLCommerz Routes
+        Route::post('/sslcommerz/payment', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzPayment'])->name('sslcommerz.payment');
+        Route::post('/sslcommerz/success', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzSuccess'])->name('sslcommerz.success');
+        Route::post('/sslcommerz/fail', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzFail'])->name('sslcommerz.fail');
+        Route::post('/sslcommerz/cancel', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzCancel'])->name('sslcommerz.cancel');
+        Route::post('/sslcommerz/ipn', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzIpn'])->name('sslcommerz.ipn');
     });
 });
 
