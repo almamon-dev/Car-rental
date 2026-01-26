@@ -248,9 +248,20 @@ const BasicInfoSection = ({
                     />
                 </div>
             </div>
-            
-            {/* Rental Type & Description */}
-            <div className="grid grid-cols-1 gap-6">
+
+            {/* Extra Row: Seats & Rental Type */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5">
+                    <label className="text-[14px] font-medium text-gray-700 block">Seat Capacity <span className="text-red-500">*</span></label>
+                    <Input
+                        type="number"
+                        placeholder="e.g. 5"
+                        value={data.seats}
+                        onChange={(e) => handleInputChange("seats", e.target.value)}
+                        error={errors.seats}
+                        className="h-[40px]"
+                    />
+                </div>
                 <div className="space-y-1.5">
                      <label className="text-[14px] font-medium text-gray-700 block">Rental Type</label>
                      <DropdownMenu>
@@ -278,6 +289,10 @@ const BasicInfoSection = ({
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+            </div>
+            
+            {/* Description */}
+            <div className="grid grid-cols-1 gap-6">
             
                 <div className="space-y-1.5">
                     <label className="text-[14px] font-medium text-gray-700 block">Description</label>

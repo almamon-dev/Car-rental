@@ -51,25 +51,24 @@ function FlashMessages({ children }) {
 import { LanguageProvider } from "./Contexts/LanguageContext";
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => {
+        const dynamicName = window.siteName || appName;
+        return title ? `${title} - ${dynamicName}` : dynamicName;
+    },
     resolve: async (name) => {
         const page = await resolvePageComponent(
             `./Pages/${name}.jsx`,
             import.meta.glob("./Pages/**/*.jsx")
         );
 
-        // Backup existing layout if any
         const pageLayout = page.default.layout;
 
-        // Wrap layout with FlashMessages & LanguageProvider
         page.default.layout = (pageNode) => {
-            // Determine how to render user layout
+            
             let content = pageNode;
             
             if (pageLayout) {
-                // If layout is a function, call it. If component, wrap it.
-                // Inertia allows both but function is safer here
-                content = typeof pageLayout === 'function' 
+                    content = typeof pageLayout === 'function' 
                     ? pageLayout(pageNode) 
                     : <pageLayout>{pageNode}</pageLayout>;
             }

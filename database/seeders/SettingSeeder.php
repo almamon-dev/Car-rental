@@ -80,6 +80,10 @@ class SettingSeeder extends Seeder
             ['group' => 'contact', 'key' => 'contact_email', 'value' => 'contact@carrental.com'],
             ['group' => 'contact', 'key' => 'support_phone', 'value' => '+880 1234-567890'],
             ['group' => 'contact', 'key' => 'whatsapp_number', 'value' => '+880 1234-567890'],
+
+            // Legal Settings
+            ['group' => 'legal', 'key' => 'terms_of_service', 'value' => '<h2>1. Acceptance of Terms</h2><p>By access and using this service, you accept and agree to be bound by the terms and provision of this agreement.</p><h2>2. Use of Assets</h2><p>All rental cars must be used in accordance with the safety protocols defined in your rental agreement.</p>'],
+            ['group' => 'legal', 'key' => 'privacy_policy', 'value' => '<h2>1. Data Collection</h2><p>We collect information to provide better services to all our users. We do not sell your personal information to third parties.</p><h2>2. Data Security</h2><p>We use encrypted protocols to protect your personal identity and mobility logs.</p>'],
         ];
 
         foreach ($settings as $setting) {

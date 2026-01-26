@@ -20,7 +20,7 @@ class CarController extends Controller
     public function index(Request $request)
     {
         $query = Car::query()->select([
-            'id', 'brand_id', 'category_id', 'make', 'model', 'status', 'created_at', 'year', 'rental_type', 'description',
+            'id', 'brand_id', 'category_id', 'make', 'model', 'status', 'created_at', 'year', 'seats', 'rental_type', 'description',
         ]);
         // dd($query);
         // ২. Eager Loading with constraints
@@ -66,10 +66,10 @@ class CarController extends Controller
         //
         $counts = Cache::remember('car_counts', 3600, function () {
             return [
-                'all' => Car::count(),
-                'available' => Car::where('status', 'available')->count(),
-                'reserved' => Car::where('status', 'reserved')->count(),
-                'sold' => Car::where('status', 'sold')->count(),
+                'all' => Car::count('*'),
+                'available' => Car::where('status', '=', 'available')->count('*'),
+                'reserved' => Car::where('status', '=', 'reserved')->count('*'),
+                'sold' => Car::where('status', '=', 'sold')->count('*'),
             ];
         });
 
@@ -103,6 +103,7 @@ class CarController extends Controller
                     'make',
                     'model',
                     'year',
+                    'seats',
                     'rental_type',
                     'description',
                     'status',
@@ -224,6 +225,7 @@ class CarController extends Controller
                     'make',
                     'model',
                     'year',
+                    'seats',
                     'rental_type',
                     'description',
                     'status',

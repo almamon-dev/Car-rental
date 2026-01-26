@@ -32,6 +32,7 @@ export default function CarEdit({ auth, car, categories, brands, locations }) {
         make: car.make || "",
         model: car.model || "",
         year: car.year || new Date().getFullYear(),
+        seats: car.seats || "",
         rental_type: car.rental_type || "daily",
         description: car.description || "",
         status: car.status || "available",
@@ -65,7 +66,7 @@ export default function CarEdit({ auth, car, categories, brands, locations }) {
 
     const findTabForField = (field) => {
         const mapping = {
-            essentials: ["brand_id", "category_id", "location_id", "make", "model", "year", "rental_type", "description", "status", "daily_rate", "weekly_rate", "monthly_rate", "security_deposit", "currency", "tax_percentage"],
+            essentials: ["brand_id", "category_id", "location_id", "make", "model", "year", "seats", "rental_type", "description", "status", "daily_rate", "weekly_rate", "monthly_rate", "security_deposit", "currency", "tax_percentage"],
             technical: ["transmission", "mileage", "fuel_type", "steering", "model_year", "vehicle_type", "engine_capacity", "color", "features"],
             media: ["images", "existing_images"],
             admin: ["registration_number", "chassis_number", "engine_number", "tax_token_expiry", "fitness_expiry", "faqs", "has_faqs"]

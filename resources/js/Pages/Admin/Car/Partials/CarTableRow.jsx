@@ -174,6 +174,7 @@ const CarTableRow = React.memo(function CarTableRow({
                     {(() => {
                         const specs = [
                             item.specifications?.transmission,
+                            item.seats ? `${item.seats} Seats` : null,
                             item.specifications?.fuel_type,
                             item.specifications?.mileage ? `${Number(item.specifications.mileage).toFixed(0)} KM` : null,
                             item.specifications?.steering,

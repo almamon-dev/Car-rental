@@ -16,28 +16,32 @@ class HomeController extends Controller
     public function index()
     {
         $categories = Category::withCount(['cars' => function($query) {
-            $query->where('status', 'available');
-        }])->where('status', 'active')->get();
+            $query->where('status', '=', 'available');
+        }])->where('status', '=', 'active')->get(['*']);
 
         $cars = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications', 'features'])
             ->where('status', 'available')
             ->latest()
             ->take(8)
-            ->get();
+            ->get(['*']);
 
         if (Auth::check()) {
             $userId = Auth::id();
             $cars->each(function($car) use ($userId) {
                 // Check if car is favorited by the current user
-                $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
+                if ($car instanceof \App\Models\Car) {
+                    $car->is_favorited = $car->favorites()->where('user_id', '=', $userId)->exists();
+                } else {
+                    $car->is_favorited = false;
+                }
             });
         }
 
         $brands = \App\Models\Brand::withCount(['cars' => function($query) {
-            $query->where('status', 'available');
-        }])->get();
+            $query->where('status', '=', 'available');
+        }])->get(['*']);
 
-        $locations = \App\Models\Location::where('status', 1)->get();
+        $locations = \App\Models\Location::where('status', '=', 1)->get(['*']);
 
         return Inertia::render('Guest/Home/Index', [
             'categories' => $categories,
@@ -52,7 +56,7 @@ class HomeController extends Controller
      */
     public function list(\Illuminate\Http\Request $request)
     {
-        $query = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications', 'features']);
+        $query = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications', 'features', 'location']);
 
         // ... existing filters ...
         // Search Filter
@@ -146,7 +150,11 @@ class HomeController extends Controller
         if (Auth::check()) {
             $userId = Auth::id();
             $cars->getCollection()->each(function($car) use ($userId) {
-                $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
+                if ($car instanceof \App\Models\Car) {
+                    $car->is_favorited = $car->favorites()->where('user_id', '=', $userId)->exists();
+                } else {
+                    $car->is_favorited = false;
+                }
             });
         }
 
@@ -159,7 +167,7 @@ class HomeController extends Controller
         }])->get(['*']);
 
         $maxPrice = \App\Models\CarPriceDetail::max('daily_rate') ?: 2500000;
-        $locations = \App\Models\Location::where('status', 1)->get();
+        $locations = \App\Models\Location::where('status', '=', 1)->get(['*']);
 
         return Inertia::render('Guest/Home/Products/CarListingPage', [
             'cars' => $cars,
@@ -181,7 +189,7 @@ class HomeController extends Controller
         
         if (Auth::check()) {
             $userId = Auth::id();
-            $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
+            $car->is_favorited = $car->favorites()->where('user_id', '=', $userId)->exists();
             
             // Check if current user liked each review
             $car->reviews->each(function($review) use ($userId) {
@@ -196,7 +204,7 @@ class HomeController extends Controller
             });
         }
         
-        $locations = \App\Models\Location::where('status', 1)->get();
+        $locations = \App\Models\Location::where('status', '=', 1)->get(['*']);
         
         return Inertia::render('Guest/Home/Products/CarDetails', [
             'car' => $car,
@@ -238,8 +246,8 @@ class HomeController extends Controller
     public function categories()
     {
         $categories = Category::withCount(['cars' => function($query) {
-            $query->where('status', 'available');
-        }])->where('status', 'active')->get();
+            $query->where('status', '=', 'available');
+        }])->where('status', '=', 'active')->get(['*']);
 
         return Inertia::render('Guest/Categories/Index', [
             'categories' => $categories,
@@ -252,13 +260,45 @@ class HomeController extends Controller
     public function brands()
     {
         $brands = \App\Models\Brand::withCount(['cars' => function($query) {
-            $query->where('status', 'available');
-        }])->get();
+            $query->where('status', '=', 'available');
+        }])->get(['*']);
 
         return Inertia::render('Guest/Brands/Index', [
             'brands' => $brands,
         ]);
     }
+    /**
+     * Display about page.
+     */
+    public function about()
+    {
+        return Inertia::render('Guest/About/Index');
+    }
+
+    /**
+     * Display help center.
+     */
+    public function help()
+    {
+        return Inertia::render('Guest/Support/HelpCenter');
+    }
+
+    /**
+     * Display terms page.
+     */
+    public function terms()
+    {
+        return Inertia::render('Guest/Legal/Terms');
+    }
+
+    /**
+     * Display privacy page.
+     */
+    public function privacy()
+    {
+        return Inertia::render('Guest/Legal/Privacy');
+    }
+
     /**
      * Display contact page.
      */

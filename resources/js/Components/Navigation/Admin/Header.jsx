@@ -14,12 +14,13 @@ import {
     LogOut,
     User,
     ChevronDown,
-    ChevronLeft ,
-    CreditCard
+    ChevronLeft,
+    CreditCard,
+    Home
 } from "lucide-react";
 
 /**
- * Header Component - Dreams POS Layout w/ LinkedIn Blue Theme
+ * Header Component 
  */
 const Header = ({ onMenuClick }) => {
     const { auth } = usePage().props;
@@ -92,7 +93,14 @@ const Header = ({ onMenuClick }) => {
                 <div className="h-6 w-px bg-slate-200 hidden md:block mx-1" />
 
                 {/* Utility Icons */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 slice-x-2">
+                     <Link 
+                        href="/" 
+                        className="w-9 h-9 flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-[#0a66c2] rounded-full transition-all duration-300" 
+                        title="Go to Frontend Home"
+                    >
+                        <Home size={19} strokeWidth={1.5} />
+                    </Link>
                      <button className="w-9 h-9 flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-[#0a66c2] rounded-full transition-all duration-300" title="Language">
                         <Globe size={19} strokeWidth={1.5} />
                     </button>

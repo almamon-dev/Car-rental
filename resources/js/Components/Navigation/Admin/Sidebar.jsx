@@ -122,6 +122,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
             items: [
                 { label: "Profile", path: "/profile", icon: <UserCircle size={20} strokeWidth={1.5} /> },
                 { label: "Users", path: "/admin/users", icon: <UserGroup size={20} strokeWidth={1.5} />, routeName: "admin.users.index" },
+                { label: "Contacts", path: "/admin/contacts", icon: <Mail size={20} strokeWidth={1.5} />, routeName: "admin.contacts.index" },
                 { label: "Under Maintenance", path: "/maintenance", icon: <AlertCircle size={20} strokeWidth={1.5} /> },
             ]
         },
@@ -147,6 +148,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
                         { label: "Company Info", path: route('admin.settings.business') },
                         { label: "Contact Details", path: route('admin.settings.contact') },
                         { label: "Booking Rules", path: route('admin.settings.booking') },
+                        { label: "Legal Policies", path: route('admin.settings.legal') },
                     ]
                 },
                 { 

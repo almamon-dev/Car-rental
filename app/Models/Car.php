@@ -10,7 +10,7 @@ class Car extends Model
 {
     protected $fillable = [
         'make', 'model', 'slug', 'year', 'rental_type', 'description', 'brand_id', 'category_id', 'location_id',
-        'status', 'transmission', 'fuel_type', 'mileage', 'steering', 'engine_capacity', 'color',
+        'status', 'transmission', 'seats', 'fuel_type', 'mileage', 'steering', 'engine_capacity', 'color',
         'daily_rate', 'weekly_rate', 'monthly_rate', 'currency'
     ];
 

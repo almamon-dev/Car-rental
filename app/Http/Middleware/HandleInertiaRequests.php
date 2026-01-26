@@ -40,7 +40,16 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
             ],
-            'settings' => \App\Models\Setting::pluck('value', 'key')->toArray(),
+            'settings' => function() {
+                $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
+                if (isset($settings['site_logo'])) {
+                    $settings['site_logo'] = \App\Helpers\Helper::generateURL($settings['site_logo']);
+                }
+                if (isset($settings['favicon'])) {
+                    $settings['favicon'] = \App\Helpers\Helper::generateURL($settings['favicon']);
+                }
+                return $settings;
+            },
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

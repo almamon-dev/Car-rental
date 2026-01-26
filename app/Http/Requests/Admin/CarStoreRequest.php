@@ -21,6 +21,7 @@ class CarStoreRequest extends FormRequest
             'make' => ['required', 'string', 'max:255'],
             'model' => ['required', 'string', 'max:255'],
             'year' => ['required', 'integer', 'min:1950', 'max:'.(date('Y') + 5)],
+            'seats' => ['required', 'integer', 'min:1', 'max:100'],
             'rental_type' => ['required', 'in:daily,weekly,monthly'],
             'description' => ['required', 'string', 'min:10'],
 

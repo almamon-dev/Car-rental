@@ -10,7 +10,8 @@ import {
     ArrowRight,
     Activity,
     Settings,
-    Fuel
+    Fuel,
+    Users
 } from "lucide-react";
 import { Skeleton } from "@/Components/ui/Skeleton";
 
@@ -142,8 +143,10 @@ export default function RecommendedCars({ cars = [] }) {
                                         {/* Specs List */}
                                         <div className="space-y-1.5 mb-5 border-t border-gray-100 pt-3">
                                             <ListSpec Icon={Activity} label={t.listing.ops_range} val={car.specifications?.mileage || 'N/A'} />
-                                            <ListSpec Icon={Settings} label={t.listing.transmission} val={car.specifications?.transmission || 'Auto'} />
-                                            <ListSpec Icon={Fuel} label={t.listing.fuel_type} val={car.specifications?.fuel_type || 'N/A'} />
+                                            <ListSpec Icon={Settings} label={t.listing.transmission} val={car.specifications?.transmission || car.transmission || 'Auto'} />
+                                            <ListSpec Icon={Fuel} label={car.specifications?.fuel_type || car.fuel_type || t.listing.fuel_type} val={car.specifications?.fuel_type || car.fuel_type || 'N/A'} />
+                                            <ListSpec Icon={Users} label="Seats" val={`${car.seats || 5} Seats`} />
+                                            <ListSpec Icon={MapPin} label="Branch" val={car.location?.name || 'Main Hub'} />
                                         </div>
 
                                         {/* Key Highlights */}

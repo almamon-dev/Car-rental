@@ -384,9 +384,19 @@ const Header = () => {
                         {/* --- LEFT SECTION --- */}
                         <div className="flex items-center gap-2 sm:gap-4 md:gap-4">
                             <Link href="/" className="flex-shrink-0 group relative">
-                                <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-[4px] bg-[#0a66c2] text-white shadow-sm transition-all group-hover:scale-105 active:scale-95">
-                                     <Car size={20} strokeWidth={2.5} className="sm:w-6 sm:h-6" />
-                                </div>
+                                {props.settings?.site_logo ? (
+                                    <div className="flex items-center justify-center h-8 sm:h-9 w-auto">
+                                        <img 
+                                            src={props.settings.site_logo} 
+                                            alt="Logo" 
+                                            className="h-full w-auto object-contain"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-[4px] bg-[#0a66c2] text-white shadow-sm transition-all group-hover:scale-105 active:scale-95">
+                                         <Car size={20} strokeWidth={2.5} className="sm:w-6 sm:h-6" />
+                                    </div>
+                                )}
                             </Link>
                             
                             {/* Search */}

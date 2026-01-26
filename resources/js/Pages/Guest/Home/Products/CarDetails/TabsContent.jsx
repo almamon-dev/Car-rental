@@ -47,6 +47,7 @@ export default function TabsContent({
                 { label: t.details.manufacturer, value: car.brand?.name || car.make },
                 { label: t.details.model_ref, value: car.model },
                 { label: t.details.production_year, value: car.year },
+                { label: "Seats Capacity", value: `${car.seats || 5} Seats` },
                 { label: t.details.asset_class, value: car.specifications?.vehicle_type || car.category?.name },
                 { label: t.details.exterior_finish, value: car.specifications?.color },
             ]

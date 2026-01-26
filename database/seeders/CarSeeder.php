@@ -88,6 +88,7 @@ class CarSeeder extends Seeder
                 'description' => "This is a premium {$modelData['make']} {$modelData['model']} available for executive rental. Perfect for business trips or luxury leisure. Maintained to Startech-grade standards.",
                 'status' => 'available',
                 'transmission' => $transmission,
+                'seats' => Arr::random([2, 4, 5, 7]),
                 'fuel_type' => $fuelType,
                 'mileage' => rand(8, 18).' km/L (Combined)',
                 'steering' => 'Precision Electronic Power Steering',

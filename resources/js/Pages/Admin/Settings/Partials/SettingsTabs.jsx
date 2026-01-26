@@ -27,6 +27,7 @@ export default function SettingsTabs({ activeTab }) {
                 { id: 'business', label: 'Company Info', path: route('admin.settings.business') },
                 { id: 'contact', label: 'Contact', path: route('admin.settings.contact') },
                 { id: 'booking', label: 'Booking Rules', path: route('admin.settings.booking') },
+                { id: 'legal', label: 'Legal Policies', path: route('admin.settings.legal') },
             ]
         },
         {

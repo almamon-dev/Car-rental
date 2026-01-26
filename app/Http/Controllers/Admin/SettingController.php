@@ -45,6 +45,14 @@ class SettingController extends Controller
     public function branding()
     {
         $settings = Setting::where('group', 'branding')->pluck('value', 'key')->toArray();
+        
+        if (isset($settings['site_logo'])) {
+            $settings['site_logo'] = \App\Helpers\Helper::generateURL($settings['site_logo']);
+        }
+        if (isset($settings['favicon'])) {
+            $settings['favicon'] = \App\Helpers\Helper::generateURL($settings['favicon']);
+        }
+
         return Inertia::render('Admin/Settings/Branding', [
             'settings' => $settings
         ]);
@@ -90,15 +98,43 @@ class SettingController extends Controller
         ]);
     }
 
+    public function legal()
+    {
+        $settings = Setting::where('group', 'legal')->pluck('value', 'key')->toArray();
+        return Inertia::render('Admin/Settings/Legal', [
+            'settings' => $settings
+        ]);
+    }
+
     public function update(Request $request)
     {
         $group = $request->input('group', 'general');
         $inputs = $request->except(['group', '_token']);
 
-        foreach ($inputs as $key => $value) {
-            Setting::set($key, $value, $group);
+        if ($group === 'branding') {
+            if ($request->hasFile('site_logo')) {
+                $upload = \App\Helpers\Helper::uploadFile($request->file('site_logo'), 'settings', false);
+                if ($upload) {
+                    $inputs['site_logo'] = $upload['original'];
+                }
+            }
+
+            if ($request->hasFile('favicon')) {
+                $upload = \App\Helpers\Helper::uploadFile($request->file('favicon'), 'settings', false);
+                if ($upload) {
+                    $inputs['favicon'] = $upload['original'];
+                }
+            }
         }
 
+        foreach ($inputs as $key => $value) {
+            if ($value instanceof \Illuminate\Http\UploadedFile) {
+                continue; 
+            }
+            if ($value !== null) {
+                Setting::set($key, $value, $group);
+            }
+        }
         return Redirect::back()->with('success', 'Settings updated successfully.');
     }
 }

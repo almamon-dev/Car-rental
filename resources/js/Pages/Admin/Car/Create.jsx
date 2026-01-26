@@ -31,6 +31,7 @@ export default function CarCreate({ auth, categories, brands, locations }) {
         make: "",
         model: "",
         year: new Date().getFullYear(),
+        seats: "",
         rental_type: "daily",
         description: "",
         status: "available",
@@ -63,7 +64,7 @@ export default function CarCreate({ auth, categories, brands, locations }) {
 
     const findTabForField = (field) => {
         const mapping = {
-            essentials: ["brand_id", "category_id", "location_id", "make", "model", "year", "rental_type", "description", "daily_rate", "weekly_rate", "monthly_rate", "security_deposit", "currency", "tax_percentage"],
+            essentials: ["brand_id", "category_id", "location_id", "make", "model", "year", "seats", "rental_type", "description", "daily_rate", "weekly_rate", "monthly_rate", "security_deposit", "currency", "tax_percentage"],
             technical: ["transmission", "mileage", "fuel_type", "steering", "model_year", "vehicle_type", "engine_capacity", "color", "features"],
             media: ["images"],
             admin: ["registration_number", "chassis_number", "engine_number", "tax_token_expiry", "fitness_expiry", "faqs", "has_faqs"]

@@ -23,6 +23,7 @@ return new class extends Migration
             
             // Core Specifications (Directly on car for performance)
             $table->string('transmission')->nullable();      // Gear Type: Manual/Automatic
+            $table->integer('seats')->nullable();            // 5 Seats
             $table->string('fuel_type')->nullable();         // Petrol/Electric/Hybrid
             $table->string('mileage')->nullable();           // 18 KM
             $table->string('steering')->nullable();          // Left/Right

@@ -7,6 +7,7 @@ import SettingsTabs from "./Partials/SettingsTabs";
 export default function SocialSettings({ auth, settings = {} }) {
     const { data, setData, post, processing, errors } = useForm({
         group: 'social',
+        site_url: settings.site_url || "",
         facebook_url: settings.facebook_url || "",
         twitter_url: settings.twitter_url || "",
         instagram_url: settings.instagram_url || "",
@@ -70,6 +71,23 @@ export default function SocialSettings({ auth, settings = {} }) {
                             <div className="p-6">
                                 <h3 className="text-[14px] font-bold text-gray-900 mb-4">Social Media Profiles</h3>
                                 <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                                        <label className="text-[13px] font-bold text-[#00000099] flex items-center gap-2">
+                                            <Globe size={16} className="text-[#0a66c2]" />
+                                            Website Address
+                                        </label>
+                                        <div className="md:col-span-3">
+                                            <input 
+                                                type="url" 
+                                                value={data.site_url}
+                                                onChange={e => setData('site_url', e.target.value)}
+                                                className="w-full bg-[#f3f6f8] border-none rounded py-2 px-4 text-[13px] text-gray-700 outline-none focus:ring-2 focus:ring-[#0a66c2]/10 transition-all font-medium"
+                                                placeholder="https://www.yourwebsite.com"
+                                            />
+                                            {errors.site_url && <p className="text-red-600 text-[11px] mt-1 font-bold">{errors.site_url}</p>}
+                                        </div>
+                                    </div>
+
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                                         <label className="text-[13px] font-bold text-[#00000099] flex items-center gap-2">
                                             <Facebook size={16} className="text-[#1877f2]" />

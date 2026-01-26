@@ -15,6 +15,10 @@ Route::get('/car-details/{slug}', [\App\Http\Controllers\HomeController::class, 
 Route::get('/car-list', [\App\Http\Controllers\HomeController::class, 'list'])->name('car.list');
 Route::get('/categories', [\App\Http\Controllers\HomeController::class, 'categories'])->name('categories.index');
 Route::get('/brands', [\App\Http\Controllers\HomeController::class, 'brands'])->name('brands.index');
+Route::get('/about', [\App\Http\Controllers\HomeController::class, 'about'])->name('about.index');
+Route::get('/help', [\App\Http\Controllers\HomeController::class, 'help'])->name('help.index');
+Route::get('/terms', [\App\Http\Controllers\HomeController::class, 'terms'])->name('terms.index');
+Route::get('/privacy', [\App\Http\Controllers\HomeController::class, 'privacy'])->name('privacy.index');
 Route::get('/contact', [\App\Http\Controllers\HomeController::class, 'contact'])->name('contact.index');
 Route::post('/contact', [\App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.submit');
 Route::get('/api/check-availability', [\App\Http\Controllers\HomeController::class, 'checkAvailability'])->name('api.check-availability');
@@ -101,6 +105,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Users
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 
+    // Contacts (User Messages)
+    Route::resource('contacts', \App\Http\Controllers\Admin\ContactController::class)->only(['index', 'show', 'destroy']);
+
     // Settings
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('general', [\App\Http\Controllers\Admin\SettingController::class, 'general'])->name('general');
@@ -113,6 +120,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         Route::get('email', [\App\Http\Controllers\Admin\SettingController::class, 'email'])->name('email');
         Route::get('sslcommerz', [\App\Http\Controllers\Admin\SettingController::class, 'sslCommerz'])->name('sslcommerz');
         Route::get('contact', [\App\Http\Controllers\Admin\SettingController::class, 'contact'])->name('contact');
+        Route::get('legal', [\App\Http\Controllers\Admin\SettingController::class, 'legal'])->name('legal');
         Route::post('update', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
     });
 
