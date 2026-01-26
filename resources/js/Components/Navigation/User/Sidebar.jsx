@@ -107,13 +107,13 @@ export default function UserSidebar({ user, stats = {} }) {
 const SidebarLink = ({ href, icon: Icon, label, active }) => (
     <Link 
         href={href}
-        className={`px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-all border-l-4 ${
+        className={`px-5 py-2.5 flex items-center gap-3.5 hover:bg-slate-50 transition-all border-l-[4px] ${
             active 
-                ? "bg-blue-50/30 border-[#0a66c2] text-[#0a66c2]" 
-                : "border-transparent text-gray-600 hover:text-gray-900"
+                ? "bg-blue-50/40 border-[#0a66c2] text-[#0a66c2]" 
+                : "border-transparent text-slate-600 hover:text-slate-900"
         }`}
     >
-        <Icon size={18} className={active ? "text-[#0a66c2]" : "text-gray-400"} />
-        <span className={`text-[13px] ${active ? "font-semibold" : "font-medium"}`}>{label}</span>
+        <Icon size={20} strokeWidth={active ? 2 : 1.5} className={active ? "text-[#0a66c2]" : "text-slate-400"} />
+        <span className={`text-[14px] ${active ? "font-bold" : "font-medium"}`}>{label}</span>
     </Link>
 );

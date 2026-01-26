@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import {
-    LayoutDashboard, Package, PlusSquare, AlertCircle, TrendingDown,
+    LayoutDashboard, Users as UserGroup, Package, PlusSquare, AlertCircle, TrendingDown,
     List, Layers, Tag, Boxes, FileText, ShieldCheck, Barcode, QrCode,
-    UserCircle, Lock, FileQuestion, File, DollarSign, Clock,
-    Settings, Globe, Smartphone, Monitor, CreditCard, Settings2,
-    LogOut, ChevronDown, ChevronRight, ChevronLeft, X, ChevronsLeft
+    UserCircle, Mail, Lock, FileQuestion, File, DollarSign, Clock, Calendar,
+    Settings, Globe, Smartphone, Monitor, CreditCard, Settings2, Briefcase, Plug,
+    LogOut, ChevronDown, ChevronRight, ChevronLeft, X, ChevronsLeft, Phone
 } from "lucide-react";
 
 const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse }) => {
@@ -13,59 +13,81 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
     const { auth } = props;
     const currentPath = url.split("?")[0];
     const [openMenus, setOpenMenus] = useState({});
+    const navRef = useRef(null);
 
-    // Close all menus when collapsing to avoid floating submenus looking weird
+    const checkActive = (path, routeName) => {
+        if (routeName) {
+            if (route().current(routeName)) return true;
+            // Handle resource wildcards (index also covers create, edit, show)
+            if (routeName.endsWith('.index') && route().current(routeName.replace('.index', '.*'))) return true;
+        }
+
+        if (!path) return false;
+        
+        // Normalize path in case it's a full URL
+        const normalizedPath = (typeof path === 'string' && path.startsWith('http')) 
+            ? new URL(path).pathname 
+            : path;
+            
+        if (currentPath === normalizedPath) return true;
+
+        // Sub-path match for admin resources (e.g. /admin/cars matches /admin/cars/create)
+        if (normalizedPath.startsWith('/admin') && currentPath.startsWith(normalizedPath) && normalizedPath !== '/admin') {
+            const pathParts = normalizedPath.split('/').filter(Boolean);
+            const currentParts = currentPath.split('/').filter(Boolean);
+            return pathParts.every((part, i) => currentParts[i] === part);
+        }
+            
+        return false;
+    };
+
+    // Auto-expand active menus and scroll into view
     useEffect(() => {
-        if (isCollapsed) setOpenMenus({});
-    }, [isCollapsed]);
+        if (!isCollapsed) {
+            const initialOpenMenus = {};
+            menuItems.forEach(group => {
+                group.items.forEach(item => {
+                    if (item.children) {
+                        const hasActiveChild = item.children.some(child => checkActive(child.path, child.routeName));
+                        if (hasActiveChild) {
+                            initialOpenMenus[item.key] = true;
+                        }
+                    }
+                });
+            });
+            setOpenMenus(prev => ({ ...prev, ...initialOpenMenus }));
+
+            // Scroll active element into view
+            setTimeout(() => {
+                const activeElement = navRef.current?.querySelector('.active-sidebar-link');
+                if (activeElement) {
+                    activeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 300);
+        }
+    }, [currentPath, isCollapsed]);
 
     const menuItems = [
         {
-            group: "Main",
+            group: "Overview",
             items: [
-                {
-                    label: "Dashboard",
-                    key: "dashboard",
-                    icon: <LayoutDashboard size={20} strokeWidth={1.5} />,
-                    children: [
-                        { label: "Admin Dashboard", path: "/dashboard" },
-                        { label: "Admin Dashboard 2", path: "/dashboard-v2" },
-                        { label: "Sales Dashboard", path: "/sales-dashboard" },
-                    ]
-                },
-                { label: "Super Admin", path: "/super-admin", icon: <UserCircle size={20} strokeWidth={1.5} />, hasArrow: true },
-                { label: "Application", path: "/application", icon: <Boxes size={20} strokeWidth={1.5} />, hasArrow: true },
-                {
-                    label: "Layouts",
-                    key: "layouts",
-                    icon: <Layers size={20} strokeWidth={1.5} />,
-                    children: [
-                        { label: "Horizontal", path: "/layouts/horizontal" },
-                        { label: "Detached", path: "/layouts/detached" },
-                        { label: "Two Column", path: "/layouts/two-column" },
-                        { label: "Hovered", path: "/layouts/hovered" },
-                        { label: "Boxed", path: "/layouts/boxed" },
-                        { label: "RTL", path: "/layouts/rtl" },
-                        { label: "Dark", path: "/layouts/dark" },
-                    ]
-                },
+                { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={20} strokeWidth={1.5} /> },
+                { label: "Bookings", path: "/admin/bookings", icon: <Calendar size={20} strokeWidth={1.5} />, routeName: "admin.bookings.index" },
             ]
         },
         {
             group: "Inventory",
             items: [
-               
-              
                 {
                     label: "Brands",
                     key: "brands",
                     icon: <Tag size={20} strokeWidth={1.5} />,
                     children: [
-                        { label: "Brand List", path: "/admin/brands" },
-                        { label: "Add Brand", path: "/admin/brands/create" },
+                        { label: "Brand List", path: "/admin/brands", routeName: "admin.brands.index" },
+                        { label: "Add Brand", path: "/admin/brands/create", routeName: "admin.brands.create" },
                     ]
                 },
-                   {
+                {
                     label: "Category Hierarchy",
                     key: "categories",
                     icon: <Layers size={20} strokeWidth={1.5} />,
@@ -75,13 +97,13 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
                         { label: "Add Category", path: "/admin/category/create", routeName: "admin.category.create" },
                     ]
                 },
-                  {
+                {
                     label: "Branches",
                     key: "locations",
                     icon: <Globe size={20} strokeWidth={1.5} />,
                     children: [
-                        { label: "Branch List", path: "/admin/locations" },
-                        { label: "Add Branch", path: "/admin/locations/create" },
+                        { label: "Branch List", path: "/admin/locations", routeName: "admin.locations.index" },
+                        { label: "Add Branch", path: "/admin/locations/create", routeName: "admin.locations.create" },
                     ]
                 },
                 {
@@ -89,29 +111,17 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
                     key: "cars",
                     icon: <Package size={20} strokeWidth={1.5} />,
                     children: [
-                        { label: "Car List", path: "/admin/cars" },
-                        { label: "Add New Car", path: "/admin/cars/create" },
-                        { label: "Expired Cars", path: "/admin/products/expired" },
-                        { label: "Low Stocks", path: "/admin/products/low-stock" },
+                        { label: "Car List", path: "/admin/cars", routeName: "admin.cars.index" },
+                        { label: "Add New Car", path: "/admin/cars/create", routeName: "admin.cars.create" },
                     ]
                 },
-              
-                { label: "Units", path: "/admin/units", icon: <Boxes size={20} strokeWidth={1.5} /> },
-                { label: "Variant Attributes", path: "/admin/variants", icon: <FileText size={20} strokeWidth={1.5} /> },
-                { label: "Warranties", path: "/admin/warranties", icon: <ShieldCheck size={20} strokeWidth={1.5} /> },
-                { label: "Print Barcode", path: "/admin/print-barcode", icon: <Barcode size={20} strokeWidth={1.5} /> },
-                { label: "Print QR Code", path: "/admin/print-qrcode", icon: <QrCode size={20} strokeWidth={1.5} /> },
             ]
         },
         {
             group: "Pages",
             items: [
                 { label: "Profile", path: "/profile", icon: <UserCircle size={20} strokeWidth={1.5} /> },
-                { label: "Authentication", path: "/auth", icon: <Lock size={20} strokeWidth={1.5} />, hasArrow: true },
-                { label: "Error Pages", path: "/errors", icon: <FileQuestion size={20} strokeWidth={1.5} />, hasArrow: true },
-                { label: "Blank Page", path: "/blank", icon: <File size={20} strokeWidth={1.5} /> },
-                { label: "Pricing", path: "/pricing", icon: <DollarSign size={20} strokeWidth={1.5} /> },
-                { label: "Coming Soon", path: "/coming-soon", icon: <Clock size={20} strokeWidth={1.5} /> },
+                { label: "Users", path: "/admin/users", icon: <UserGroup size={20} strokeWidth={1.5} />, routeName: "admin.users.index" },
                 { label: "Under Maintenance", path: "/maintenance", icon: <AlertCircle size={20} strokeWidth={1.5} /> },
             ]
         },
@@ -119,61 +129,45 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
             group: "Settings",
             items: [
                 { 
-                    label: "General Settings", 
-                    key: "general_settings",
+                    label: "Platform Settings", 
+                    key: "platform_settings",
                     icon: <Settings size={20} strokeWidth={1.5} />, 
                     children: [
-                         { label: "Profile", path: "/settings/general/profile" },
-                         { label: "Security", path: "/settings/general/security" },
-                         { label: "Notifications", path: "/settings/general/notifications" }
+                        { label: "General", path: route('admin.settings.general') },
+                        { label: "Branding & Logo", path: route('admin.settings.branding') },
+                        { label: "SEO & Analytics", path: route('admin.settings.seo') },
+                        { label: "Social Media", path: route('admin.settings.social') },
                     ]
                 },
                 { 
-                    label: "Website Settings", 
-                    key: "website_settings",
-                    icon: <Globe size={20} strokeWidth={1.5} />, 
+                    label: "Business Settings", 
+                    key: "business_settings",
+                    icon: <Briefcase size={20} strokeWidth={1.5} />, 
                     children: [
-                        { label: "SEO", path: "/settings/website/seo" },
-                        { label: "Appearance", path: "/settings/website/appearance" },
-                        { label: "Locales", path: "/settings/website/locales" }
+                        { label: "Company Info", path: route('admin.settings.business') },
+                        { label: "Contact Details", path: route('admin.settings.contact') },
+                        { label: "Booking Rules", path: route('admin.settings.booking') },
                     ]
                 },
                 { 
-                    label: "App Settings", 
-                    key: "app_settings",
-                    icon: <Smartphone size={20} strokeWidth={1.5} />, 
-                    children: [
-                        { label: "API Keys", path: "/settings/app/api" },
-                        { label: "Integrations", path: "/settings/app/integrations" }
-                    ]
-                },
-                { 
-                    label: "System Settings", 
+                    label: "System & Maintenance", 
                     key: "system_settings",
                     icon: <Monitor size={20} strokeWidth={1.5} />, 
                     children: [
-                        { label: "Logs", path: "/settings/system/logs" },
-                        { label: "Backups", path: "/settings/system/backups" },
-                        { label: "Updates", path: "/settings/system/updates" }
+                        { label: "System Logs", path: route('admin.maintenance.logs') },
+                        { label: "Database Backups", path: route('admin.maintenance.backups') },
+                        { label: "Cache & Optimize", path: route('admin.maintenance.optimize') },
+                        { label: "System Updates", path: route('admin.maintenance.updates') }
                     ]
                 },
                 { 
-                    label: "Financial Settings", 
-                    key: "financial_settings",
-                    icon: <CreditCard size={20} strokeWidth={1.5} />, 
+                    label: "Integrations", 
+                    key: "integration_settings",
+                    icon: <Plug size={20} strokeWidth={1.5} />, 
                     children: [
-                        { label: "Currency", path: "/settings/financial/currency" },
-                        { label: "Tax Rules", path: "/settings/financial/tax" },
-                        { label: "Payment Gateways", path: "/settings/financial/gateways" }
-                    ]
-                },
-                { 
-                    label: "Other Settings", 
-                    key: "other_settings",
-                    icon: <Settings2 size={20} strokeWidth={1.5} />, 
-                    children: [
-                        { label: "Cron Jobs", path: "/settings/others/cron" },
-                        { label: "Cache", path: "/settings/others/cache" }
+                        { label: "Email Configuration", path: route('admin.settings.email') },
+                        { label: "Payment Gateway", path: route('admin.settings.sslcommerz') },
+                        { label: "Notifications", path: route('admin.settings.notifications') },
                     ]
                 },
                 { label: "Logout", path: "/logout", icon: <LogOut size={20} strokeWidth={1.5} /> },
@@ -188,7 +182,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
     };
 
     return (
-        <aside className="flex flex-col h-full bg-white border-r border-slate-100 transition-all duration-300 w-full relative group/sidebar">
+        <div className="flex flex-col h-full bg-white border-r border-slate-100 transition-all duration-300 w-full relative group/sidebar">
             
             {/* Collapse Toggle Button - Orange Circle */}
             <button 
@@ -209,13 +203,25 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
                         </div>
                         <span className={`font-bold text-xl text-[#0a66c2] tracking-tight transition-opacity duration-300 
                             ${isCollapsed ? 'opacity-0 w-0 group-hover:opacity-100 group-hover:w-auto' : 'opacity-100'}`}>
-                            Dreams<span className="text-slate-600 text-xs align-top ml-0.5 font-semibold opacity-70">POS</span>
+                            {props.settings.site_name ? (
+                                <>
+                                    {props.settings.site_name.split(' ')[0]}
+                                    <span className="text-slate-600 text-xs align-top ml-0.5 font-semibold opacity-70">
+                                        {props.settings.site_name.split(' ').slice(1).join(' ')}
+                                    </span>
+                                </>
+                            ) : (
+                                <>Dreams<span className="text-slate-600 text-xs align-top ml-0.5 font-semibold opacity-70">POS</span></>
+                            )}
                         </span>
                 </div>
             </div>
 
             {/* Navigation Section */}
-            <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-7 custom-sidebar-scrollbar overflow-x-hidden">
+            <nav 
+                ref={navRef}
+                className="flex-1 overflow-y-auto py-6 px-4 space-y-7 custom-sidebar-scrollbar overflow-x-hidden"
+            >
                 {menuItems.map((group) => (
                     <div key={group.group} className="space-y-3">
                         <h3 className={`px-4 text-[13px] font-bold text-[#2c3e50] tracking-tight whitespace-nowrap transition-opacity duration-300
@@ -233,26 +239,24 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen, isCollapsed, toggleCollapse })
                                     isOpen={openMenus[item.key]}
                                     onToggle={() => toggleMenu(item.key)}
                                     isCollapsed={isCollapsed}
+                                    checkActive={checkActive}
                                 />
                             ))}
                         </div>
                     </div>
                 ))}
             </nav>
-        </aside>
+        </div>
     );
 };
 
-const SidebarLink = ({ item, currentPath, isOpen, onToggle, isCollapsed }) => {
+const SidebarLink = ({ item, currentPath, isOpen, onToggle, isCollapsed, checkActive }) => {
     const isActive = item.children 
-        ? item.children.some(child => 
-            currentPath === child.path || 
-            (child.routeName && route().current(child.routeName))
-          )
-        : (currentPath === item.path || (item.routeName && route().current(item.routeName)));
+        ? item.children.some(child => checkActive(child.path, child.routeName))
+        : checkActive(item.path, item.routeName);
 
     return (
-        <div>
+        <div className={isActive ? 'active-sidebar-link' : ''}>
             {item.children ? (
                 <button
                     onClick={onToggle}
@@ -299,15 +303,15 @@ const SidebarLink = ({ item, currentPath, isOpen, onToggle, isCollapsed }) => {
                 {item.children && (
                     <div className="mt-1 space-y-1">
                         {item.children.map(child => (
-                             <Link
-                                key={child.label}
-                                href={child.path}
-                                className={`flex items-center gap-3 py-2 pl-10 pr-4 rounded-md text-[13px] transition-all group relative whitespace-nowrap
-                                    ${currentPath === child.path || (child.routeName && route().current(child.routeName)) ? 'text-[#0a66c2] font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
-                            >
-                                <span className={`w-1.5 h-1.5 rounded-full transition-colors shrink-0 ${currentPath === child.path || (child.routeName && route().current(child.routeName)) ? 'bg-[#0a66c2]' : 'bg-slate-300 group-hover:bg-slate-400'}`}></span>
-                                <span className="truncate">{child.label}</span>
-                            </Link>
+                                 <Link
+                                    key={child.label}
+                                    href={child.path}
+                                    className={`flex items-center gap-3 py-2 pl-10 pr-4 rounded-md text-[13px] transition-all group relative whitespace-nowrap
+                                        ${checkActive(child.path, child.routeName) ? 'text-[#0a66c2] font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
+                                >
+                                    <span className={`w-1.5 h-1.5 rounded-full transition-colors shrink-0 ${checkActive(child.path, child.routeName) ? 'bg-[#0a66c2]' : 'bg-slate-300 group-hover:bg-slate-400'}`}></span>
+                                    <span className="truncate">{child.label}</span>
+                                </Link>
                         ))}
                     </div>
                 )}

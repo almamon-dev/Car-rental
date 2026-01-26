@@ -1,81 +1,149 @@
 <?php
 
-use App\Http\Controllers\Admin\BrandController;
-use App\Http\Controllers\Admin\CarController as AdminCarController;
-use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// --- Guest Routes ---
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/car-details/{slug}', [HomeController::class, 'show'])->name('car.details');
-Route::get('/car-list', [HomeController::class, 'list'])->name('car.list');
-Route::get('/api/check-availability', [HomeController::class, 'checkAvailability'])->name('api.check-availability');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
-// --- Auth Routes ---
+// --- Public Routes ---
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/car-details/{slug}', [\App\Http\Controllers\HomeController::class, 'show'])->name('car.details');
+Route::get('/car-list', [\App\Http\Controllers\HomeController::class, 'list'])->name('car.list');
+Route::get('/categories', [\App\Http\Controllers\HomeController::class, 'categories'])->name('categories.index');
+Route::get('/brands', [\App\Http\Controllers\HomeController::class, 'brands'])->name('brands.index');
+Route::get('/contact', [\App\Http\Controllers\HomeController::class, 'contact'])->name('contact.index');
+Route::post('/contact', [\App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.submit');
+Route::get('/api/check-availability', [\App\Http\Controllers\HomeController::class, 'checkAvailability'])->name('api.check-availability');
+
+// --- Authenticated Routes ---
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    
+    // Dashboard
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+        ->middleware('verified')
+        ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Profile Management
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // --- User Specific Routes ---
+    // User Routes
     Route::prefix('user')->name('user.')->group(function () {
+        
+        // Bookings
         Route::get('/bookings', [\App\Http\Controllers\User\Booking\BookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{id}', [\App\Http\Controllers\User\Booking\BookingController::class, 'show'])->name('bookings.show');
 
+        // Favorites
         Route::get('/favorites', [\App\Http\Controllers\User\FavoriteController::class, 'index'])->name('favorites.index');
         Route::post('/favorites/toggle/{carId}', [\App\Http\Controllers\User\FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
+        // Payments History
         Route::get('/payments', [\App\Http\Controllers\User\Booking\PaymentController::class, 'index'])->name('payments.index');
 
-        // Review Routes
+        // Reviews
         Route::post('/reviews', [\App\Http\Controllers\CarReviewController::class, 'store'])->name('reviews.store');
         Route::post('/reviews/{reviewId}/like', [\App\Http\Controllers\CarReviewController::class, 'toggleLike'])->name('reviews.like');
 
-
-        // SSLCommerz Routes
+        // Payment Gateway (SSLCommerz)
+        // Initiation
         Route::post('/sslcommerz/payment', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzPayment'])->name('sslcommerz.payment');
-        Route::post('/sslcommerz/success', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzSuccess'])->name('sslcommerz.success');
-        Route::post('/sslcommerz/fail', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzFail'])->name('sslcommerz.fail');
-        Route::post('/sslcommerz/cancel', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzCancel'])->name('sslcommerz.cancel');
-        Route::post('/sslcommerz/ipn', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzIpn'])->name('sslcommerz.ipn');
+
+        // Callbacks (Public Exception for Gateway)
+        Route::post('/sslcommerz/success', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzSuccess'])
+            ->withoutMiddleware('auth')
+            ->name('sslcommerz.success');
+        
+        Route::post('/sslcommerz/fail', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzFail'])
+            ->withoutMiddleware('auth')
+            ->name('sslcommerz.fail');
+
+        Route::post('/sslcommerz/cancel', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzCancel'])
+            ->withoutMiddleware('auth')
+            ->name('sslcommerz.cancel');
+
+        Route::post('/sslcommerz/ipn', [\App\Http\Controllers\User\Booking\PaymentController::class, 'sslCommerzIpn'])
+            ->withoutMiddleware('auth')
+            ->name('sslcommerz.ipn');
     });
 });
 
-// --- Admin Dashboard route ---
+// --- Admin Routes ---
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Cars
+    Route::delete('cars/image/{id}', [\App\Http\Controllers\Admin\CarController::class, 'destroyImage'])->name('cars.image.destroy');
+    Route::delete('cars/bulk-destroy', [\App\Http\Controllers\Admin\CarController::class, 'bulkDestroy'])->name('cars.bulk-destroy');
+    Route::resource('cars', \App\Http\Controllers\Admin\CarController::class);
 
-    // 1. Specific custom routes FIRST
-    Route::delete('cars/image/{id}', [AdminCarController::class, 'destroyImage'])->name('cars.image.destroy');
-    Route::delete('cars/bulk-destroy', [AdminCarController::class, 'bulkDestroy'])->name('cars.bulk-destroy');
+    // Categories
+    Route::get('categories/sub-categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('category.sub.index');
+    Route::delete('categories/bulk-destroy', [\App\Http\Controllers\Admin\CategoryController::class, 'bulkDestroy'])->name('category.bulk-destroy');
+    Route::resource('category', \App\Http\Controllers\Admin\CategoryController::class);
 
-    // 2. Resource route SECOND
-    Route::resource('cars', AdminCarController::class);
+    // Brands
+    Route::delete('brands/bulk-destroy', [\App\Http\Controllers\Admin\BrandController::class, 'bulkDestroy'])->name('brands.bulk-destroy');
+    Route::resource('brands', \App\Http\Controllers\Admin\BrandController::class);
 
-    // -- category
-    Route::get('categories/sub-categories', [AdminCategoryController::class, 'index'])->name('category.sub.index');
-    Route::delete('categories/bulk-destroy', [AdminCategoryController::class, 'bulkDestroy'])->name('category.bulk-destroy');
-    Route::resource('category', AdminCategoryController::class);
-
-    // -- brands
-    Route::delete('brands/bulk-destroy', [BrandController::class, 'bulkDestroy'])->name('brands.bulk-destroy');
-    Route::resource('brands', BrandController::class);
-
-    // -- locations (branches)
+    // Locations
     Route::delete('locations/bulk-destroy', [\App\Http\Controllers\Admin\LocationController::class, 'bulkDestroy'])->name('locations.bulk-destroy');
     Route::resource('locations', \App\Http\Controllers\Admin\LocationController::class);
 
+    // Bookings
+    Route::post('bookings/{id}/status', [\App\Http\Controllers\Admin\BookingController::class, 'updateStatus'])->name('bookings.update-status');
+    Route::post('bookings/{id}/payment-status', [\App\Http\Controllers\Admin\BookingController::class, 'updatePaymentStatus'])->name('bookings.update-payment-status');
+    Route::resource('bookings', \App\Http\Controllers\Admin\BookingController::class)->only(['index', 'show', 'destroy']);
+
+    // Users
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+
+    // Settings
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('general', [\App\Http\Controllers\Admin\SettingController::class, 'general'])->name('general');
+        Route::get('branding', [\App\Http\Controllers\Admin\SettingController::class, 'branding'])->name('branding');
+        Route::get('seo', [\App\Http\Controllers\Admin\SettingController::class, 'seo'])->name('seo');
+        Route::get('social', [\App\Http\Controllers\Admin\SettingController::class, 'social'])->name('social');
+        Route::get('booking', [\App\Http\Controllers\Admin\SettingController::class, 'booking'])->name('booking');
+        Route::get('notifications', [\App\Http\Controllers\Admin\SettingController::class, 'notifications'])->name('notifications');
+        Route::get('business', [\App\Http\Controllers\Admin\SettingController::class, 'business'])->name('business');
+        Route::get('email', [\App\Http\Controllers\Admin\SettingController::class, 'email'])->name('email');
+        Route::get('sslcommerz', [\App\Http\Controllers\Admin\SettingController::class, 'sslCommerz'])->name('sslcommerz');
+        Route::get('contact', [\App\Http\Controllers\Admin\SettingController::class, 'contact'])->name('contact');
+        Route::post('update', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+    });
+
+    // Maintenance
+    Route::prefix('maintenance')->name('maintenance.')->group(function () {
+        Route::get('logs', [\App\Http\Controllers\Admin\MaintenanceController::class, 'logs'])->name('logs');
+        Route::get('backups', [\App\Http\Controllers\Admin\MaintenanceController::class, 'backups'])->name('backups');
+        Route::get('updates', [\App\Http\Controllers\Admin\MaintenanceController::class, 'updates'])->name('updates');
+        Route::get('optimize', [\App\Http\Controllers\Admin\MaintenanceController::class, 'optimize'])->name('optimize');
+        Route::get('backups/download/{filename}', [\App\Http\Controllers\Admin\MaintenanceController::class, 'downloadFile'])->name('backups.download');
+        Route::post('backups/generate', [\App\Http\Controllers\Admin\MaintenanceController::class, 'generateBackup'])->name('backups.generate');
+        Route::delete('backups/delete/{filename}', [\App\Http\Controllers\Admin\MaintenanceController::class, 'deleteFile'])->name('backups.delete');
+        Route::post('logs/clear', [\App\Http\Controllers\Admin\MaintenanceController::class, 'clearLogs'])->name('logs.clear');
+        Route::post('optimize/run', [\App\Http\Controllers\Admin\MaintenanceController::class, 'runOptimize'])->name('optimize.run');
+    });
 });
 
+// --- Maintenance Page ---
+Route::get('/maintenance', function () {
+    return Inertia::render('Maintenance/Index');
+})->name('maintenance');
+
+// --- Special Payment Restoration Route (Public) ---
+Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
+    Route::get('/payment/finish', [\App\Http\Controllers\User\Booking\PaymentController::class, 'paymentFinish'])->name('payment.finish');
+});
+
+// --- Fallback ---
 Route::fallback(function () {
     return Inertia::render('Errors/404');
 });
 
+// --- Auth Routes ---
 require __DIR__.'/auth.php';

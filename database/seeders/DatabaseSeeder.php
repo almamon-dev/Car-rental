@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         ]);
         // -- seeder call
         $this->call([
+            \Database\Seeders\SettingSeeder::class,
             \Database\Seeders\CategorySeeder::class,
             \Database\Seeders\BrandSeeder::class,
             \Database\Seeders\LocationSeeder::class,

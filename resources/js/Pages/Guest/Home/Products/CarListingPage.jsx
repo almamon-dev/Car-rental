@@ -456,26 +456,44 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                                 
                                 {last_page > 1 && (
                                     <div className="flex justify-center items-center gap-2">
-                                         {links.map((link, i) => (
-                                            link.url ? (
-                                                <Link 
-                                                    key={i} 
-                                                    href={link.url} 
-                                                    className={`min-w-[36px] h-9 px-3 rounded-[4px] flex items-center justify-center text-[13px] font-bold transition-all ${link.active ? "bg-[#3749bb] text-white" : "bg-white border border-gray-200 text-gray-600 hover:border-[#3749bb] hover:text-[#3749bb]"}`} 
-                                                    preserveScroll 
-                                                    preserveState
-                                                >
-                                                    {link.label.replace('&laquo; Previous', '<').replace('Next &raquo;', '>')}
-                                                </Link>
-                                            ) : (
-                                                <span 
-                                                    key={i} 
-                                                    className={`min-w-[36px] h-9 px-3 rounded-[4px] flex items-center justify-center text-[13px] font-bold bg-white border border-gray-100 text-gray-300 cursor-not-allowed ${link.label.includes('...') ? "" : "hidden"}`}
-                                                >
-                                                    {link.label.replace('&laquo; Previous', '<').replace('Next &raquo;', '>')}
-                                                </span>
-                                            )
-                                        ))}
+                                         {links.map((link, i) => {
+                                            // Determine Label Content
+                                            let labelContent = link.label;
+                                            if (link.label.includes('Previous')) labelContent = <ChevronDown className="rotate-90" size={16} />;
+                                            else if (link.label.includes('Next')) labelContent = <ChevronDown className="-rotate-90" size={16} />;
+                                            else if (link.label.includes('laquo')) labelContent = <ChevronDown className="rotate-90" size={16} />;
+                                            else if (link.label.includes('raquo')) labelContent = <ChevronDown className="-rotate-90" size={16} />;
+                                            
+                                            if (link.url) {
+                                                return (
+                                                    <Link 
+                                                        key={i} 
+                                                        href={link.url} 
+                                                        className={`min-w-[36px] h-9 px-3 rounded-[4px] flex items-center justify-center text-[13px] font-bold transition-all ${link.active ? "bg-[#3749bb] text-white" : "bg-white border border-gray-200 text-gray-600 hover:border-[#3749bb] hover:text-[#3749bb]"}`} 
+                                                        preserveScroll 
+                                                        preserveState
+                                                    >
+                                                        {labelContent}
+                                                    </Link>
+                                                );
+                                            } else {
+                                                if (link.label.includes('...')) {
+                                                    return (
+                                                        <span key={i} className="min-w-[36px] h-9 flex items-center justify-center text-gray-400">
+                                                            <Grid3X3 size={12} className="opacity-50" />
+                                                        </span>
+                                                    );
+                                                }
+                                                return (
+                                                    <span 
+                                                        key={i} 
+                                                        className={`min-w-[36px] h-9 px-3 rounded-[4px] flex items-center justify-center text-[13px] font-bold bg-white border border-gray-100 text-gray-300 cursor-not-allowed`}
+                                                    >
+                                                        {labelContent}
+                                                    </span>
+                                                );
+                                            }
+                                         })}
                                     </div>
                                 )}
                             </div>

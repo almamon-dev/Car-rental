@@ -205,10 +205,10 @@ const DropdownItem = ({ children, icon: Icon, href, onClick }) => (
     <Link 
         href={href} 
         onClick={onClick}
-        className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors group"
+        className="flex items-center gap-3 px-4 py-3 text-[14px] text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors group"
     >
-        <Icon size={18} className="text-gray-400 group-hover:text-gray-900 transition-colors" />
-        <span className="font-bold">{children}</span>
+        <Icon size={20} className="text-gray-500 group-hover:text-gray-900 transition-colors" />
+        <span className="text-[15px] font-semibold text-gray-700 group-hover:text-gray-900">{children}</span>
     </Link>
 );
 
@@ -277,15 +277,15 @@ const MobileMenu = ({ links, isActive, auth, onClose }) => {
                         {links.map((link) => (
                             <Link
                                 key={link.name}
-                                href={link.href}
+                                href={route(link.routeName)}
                                 onClick={onClose}
                                 className={`flex items-center gap-4 px-6 py-4 text-[15px] font-black transition-all border-l-[4px] ${
-                                    isActive(link.href)
+                                    isActive(link.routeName)
                                         ? "bg-blue-50/50 text-[#0a66c2] border-[#0a66c2]"
                                         : "bg-transparent text-gray-700 border-transparent hover:bg-gray-50"
                                 }`}
                             >
-                                <link.icon size={22} strokeWidth={isActive(link.href) ? 2.5 : 2} />
+                                <link.icon size={22} strokeWidth={isActive(link.routeName) ? 2.5 : 2} />
                                 {link.name}
                             </Link>
                         ))}
@@ -360,14 +360,14 @@ const Header = () => {
     }, []);
 
     const navLinks = [
-        { name: t.nav.home, href: "/", icon: Home },
-        { name: t.nav.cars, href: "/fleet", icon: Car },
-        { name: t.nav.brands, href: "/fleet", icon: Briefcase },
-        { name: t.nav.categories, href: "/fleet", icon: Users },
-        { name: t.nav.contact, href: "/contact", icon: MessageSquare },
+        { name: t.nav.home, routeName: 'home', icon: Home },
+        { name: t.nav.cars, routeName: 'car.list', icon: Car },
+        { name: t.nav.brands, routeName: 'brands.index', icon: Briefcase },
+        { name: t.nav.categories, routeName: 'categories.index', icon: Users },
+        { name: t.nav.contact, routeName: 'contact.index', icon: MessageSquare },
     ];
 
-    const isActive = (path) => url === path || (path !== "/" && url.startsWith(path));
+    const isActive = (routeName) => route().current(routeName);
 
     return (
         <>
@@ -413,12 +413,12 @@ const Header = () => {
                         {/* --- CENTER SECTION --- */}
                         <nav className="hidden lg:flex items-center ml-auto h-full gap-0 sm:gap-1">
                             {navLinks.map((link) => {
-                                const active = isActive(link.href);
+                                const active = isActive(link.routeName);
                                 const Icon = link.icon;
                                 return (
                                     <Link
                                         key={link.name}
-                                        href={link.href}
+                                        href={route(link.routeName)}
                                         className={`group relative flex flex-col items-center justify-between h-full pt-2 pb-1.5 min-w-[70px] sm:min-w-[80px] cursor-pointer transition-all border-b-[2px] ${
                                             active 
                                                 ? "border-gray-900 text-gray-900" 

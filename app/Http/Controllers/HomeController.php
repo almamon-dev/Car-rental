@@ -6,8 +6,6 @@ use App\Models\Car;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -18,33 +16,30 @@ class HomeController extends Controller
     public function index()
     {
         $categories = Category::withCount(['cars' => function($query) {
-            $query->where('status', '=', 'available');
-        }])->where('status', '=', 'active', 'and')->get(['*']);
+            $query->where('status', 'available');
+        }])->where('status', 'active')->get();
 
         $cars = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications', 'features'])
-            ->where('status', '=', 'available', 'and')
+            ->where('status', 'available')
             ->latest()
             ->take(8)
-            ->get(['*']);
+            ->get();
 
         if (Auth::check()) {
             $userId = Auth::id();
             $cars->each(function($car) use ($userId) {
+                // Check if car is favorited by the current user
                 $car->is_favorited = $car->favorites()->where('user_id', $userId)->exists();
             });
         }
 
         $brands = \App\Models\Brand::withCount(['cars' => function($query) {
-            $query->where('status', '=', 'available');
-        }])->get(['*']);
+            $query->where('status', 'available');
+        }])->get();
 
         $locations = \App\Models\Location::where('status', 1)->get();
 
         return Inertia::render('Guest/Home/Index', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
             'categories' => $categories,
             'cars' => $cars,
             'brands' => $brands,
@@ -235,5 +230,63 @@ class HomeController extends Controller
         return response()->json([
             'available' => !$isBusy
         ]);
+    }
+
+    /**
+     * Display all categories.
+     */
+    public function categories()
+    {
+        $categories = Category::withCount(['cars' => function($query) {
+            $query->where('status', 'available');
+        }])->where('status', 'active')->get();
+
+        return Inertia::render('Guest/Categories/Index', [
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * Display all brands.
+     */
+    public function brands()
+    {
+        $brands = \App\Models\Brand::withCount(['cars' => function($query) {
+            $query->where('status', 'available');
+        }])->get();
+
+        return Inertia::render('Guest/Brands/Index', [
+            'brands' => $brands,
+        ]);
+    }
+    /**
+     * Display contact page.
+     */
+    public function contact()
+    {
+        return Inertia::render('Guest/Contact/Index');
+    }
+
+    /**
+     * Store contact message (Placeholder).
+     */
+    public function storeContact(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        \App\Models\Contact::create([
+            'user_id' => Auth::id(), // Will be null if guest
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'message' => $request->message,
+        ]);
+
+        return redirect()->back()->with('success', 'Message sent successfully!');
     }
 }

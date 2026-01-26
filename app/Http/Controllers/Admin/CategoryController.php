@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CategoryStoreRequest;
-use App\Http\Requests\Admin\CategoryUpdateRequest;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -16,18 +12,23 @@ use Inertia\Inertia;
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of categories.
+     * Display a listing of the resource.
+     * Supports filtering by search, status, and view type (root vs sub).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Inertia\Response
      */
     public function index(Request $request)
     {
         $view = $request->routeIs('admin.category.sub.index') ? 'sub' : $request->query('view', 'root');
-        $query = Category::query();
+        $query = \App\Models\Category::query();
 
         // 1. Filter by Search
-        if ($request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->search}%")
-                    ->orWhere('description', 'like', "%{$request->search}%");
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -36,29 +37,30 @@ class CategoryController extends Controller
             $query->where('status', $request->status);
         }
 
-        // 3. Hierarchy Filter
+        // 3. Hierarchy Filter (Root vs Sub-categories)
         if ($view === 'sub') {
             $query->whereNotNull('parent_id')
-                ->with('parent')
-                ->withCount('cars');
+                  ->with('parent')
+                  ->withCount('cars');
         } else {
             $query->whereNull('parent_id')
-                ->withCount(['children', 'cars'])
-                ->with(['children' => function ($q) {
-                    $q->latest()->limit(5);
-                }]);
+                  ->withCount(['children', 'cars'])
+                  ->with(['children' => function ($q) {
+                      $q->latest()->limit(5);
+                  }]);
         }
 
         $categories = $query->latest()
             ->paginate($request->per_page ?? 10)
             ->withQueryString();
 
+        // Method to get counts efficiently
         $counts = Cache::remember('category_counts', 10, function () {
             return [
-                'all' => Category::whereNull('parent_id')->count(),
-                'active' => Category::whereNull('parent_id')->where('status', 'active')->count(),
-                'inactive' => Category::whereNull('parent_id')->where('status', 'inactive')->count(),
-                'sub_total' => Category::whereNotNull('parent_id')->count(),
+                'all' => \App\Models\Category::whereNull('parent_id')->count(),
+                'active' => \App\Models\Category::whereNull('parent_id')->where('status', 'active')->count(),
+                'inactive' => \App\Models\Category::whereNull('parent_id')->where('status', 'inactive')->count(),
+                'sub_total' => \App\Models\Category::whereNotNull('parent_id')->count(),
             ];
         });
 
@@ -71,11 +73,13 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new category.
+     * Show the form for creating a new resource.
+     *
+     * @return \Inertia\Response
      */
     public function create()
     {
-        $parentCategories = Category::whereNull('parent_id')
+        $parentCategories = \App\Models\Category::whereNull('parent_id')
             ->select('id', 'name')
             ->get();
 
@@ -85,11 +89,15 @@ class CategoryController extends Controller
     }
 
     /**
-     * store the specified category.
+     * Store a newly created resource in storage.
+     * Handles single or bulk creation logic as defined in the request.
+     *
+     * @param  \App\Http\Requests\Admin\CategoryStoreRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(CategoryStoreRequest $request)
+    public function store(\App\Http\Requests\Admin\CategoryStoreRequest $request)
     {
-        // -- validate
+        // Process each category item from the request
         foreach ($request->categories as $categoryData) {
             $data = [
                 'parent_id' => $categoryData['parent_id'] ?? null,
@@ -100,13 +108,13 @@ class CategoryController extends Controller
             ];
 
             if (isset($categoryData['image'])) {
-                $upload = Helper::uploadFile($categoryData['image'], 'categories', true);
+                $upload = \App\Helpers\Helper::uploadFile($categoryData['image'], 'categories', true);
                 if ($upload) {
                     $data['icon'] = $upload['original'];
                 }
             }
 
-            Category::create($data);
+            \App\Models\Category::create($data);
         }
 
         return redirect()->route('admin.category.index')
@@ -114,16 +122,19 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for editing the category.
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Inertia\Response
      */
-    public function edit(Category $category)
+    public function edit(\App\Models\Category $category)
     {
-        $parentCategories = Category::whereNull('parent_id')
+        $parentCategories = \App\Models\Category::whereNull('parent_id')
             ->where('id', '!=', $category->id)
             ->select('id', 'name')
             ->get();
 
-        $subCategories = Category::where('parent_id', $category->id)->get();
+        $subCategories = \App\Models\Category::where('parent_id', $category->id)->get();
 
         return Inertia::render('Admin/Categories/Edit', [
             'category' => $category,
@@ -133,22 +144,27 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified category.
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\Admin\CategoryUpdateRequest  $request
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(CategoryUpdateRequest $request, Category $category)
+    public function update(\App\Http\Requests\Admin\CategoryUpdateRequest $request, \App\Models\Category $category)
     {
-        // validate the request data
         $data = $request->only(['name', 'description', 'parent_id']);
         $data['slug'] = Str::slug($request->name);
 
         if ($request->hasFile('image')) {
+            // Delete old image if exists
             if ($category->icon) {
-                Helper::deleteFile($category->icon);
+                \App\Helpers\Helper::deleteFile($category->icon);
+                // Also try deleting potential thumbnail
                 $thumbPath = str_replace('categories/', 'categories/thumbs/', $category->icon);
-                Helper::deleteFile($thumbPath);
+                \App\Helpers\Helper::deleteFile($thumbPath);
             }
 
-            $upload = Helper::uploadFile($request->file('image'), 'categories', true);
+            $upload = \App\Helpers\Helper::uploadFile($request->file('image'), 'categories', true);
             if ($upload) {
                 $data['icon'] = $upload['original'];
             }
@@ -160,8 +176,13 @@ class CategoryController extends Controller
             ->with('success', 'Category updated successfully.');
     }
 
-    // single delete
-    public function destroy(Category $category)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(\App\Models\Category $category)
     {
         $this->deleteFileSafely($category);
         $category->delete();
@@ -171,7 +192,12 @@ class CategoryController extends Controller
         return back()->with('success', 'Category deleted successfully.');
     }
 
-    // bulk delete
+    /**
+     * Bulk remove resources from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function bulkDestroy(Request $request)
     {
         $selectAllGlobal = filter_var($request->input('all'), FILTER_VALIDATE_BOOLEAN);
@@ -181,24 +207,24 @@ class CategoryController extends Controller
             DB::beginTransaction();
 
             if ($selectAllGlobal) {
-                $query = Category::query();
+                $query = \App\Models\Category::query();
                 if ($request->input('view') === 'sub') {
                     $query->whereNotNull('parent_id');
                 } else {
                     $query->whereNull('parent_id');
                 }
 
-                // Also apply search filter if present
-                if ($request->search) {
-                    $query->where(function ($q) use ($request) {
-                        $q->where('name', 'like', "%{$request->search}%")
-                            ->orWhere('description', 'like', "%{$request->search}%");
+                if ($request->filled('search')) {
+                    $search = $request->search;
+                    $query->where(function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                          ->orWhere('description', 'like', "%{$search}%");
                     });
                 }
 
                 $categories = $query->get();
             } elseif (! empty($ids) && is_array($ids)) {
-                $categories = Category::whereIn('id', $ids)->get();
+                $categories = \App\Models\Category::whereIn('id', $ids)->get();
             } else {
                 return back()->with('error', 'No items selected.');
             }
@@ -215,18 +241,22 @@ class CategoryController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return back()->with('error', 'Something went wrong: '.$e->getMessage());
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
 
-    // ফাইল ডিলিট করার জন্য প্রাইভেট মেথড
+    /**
+     * Helper method to safely delete category images.
+     *
+     * @param  \App\Models\Category  $category
+     * @return void
+     */
     private function deleteFileSafely($category)
     {
         if ($category->icon) {
-            Helper::deleteFile($category->icon);
+            \App\Helpers\Helper::deleteFile($category->icon);
             $thumbPath = str_replace('categories/', 'categories/thumbs/', $category->icon);
-            Helper::deleteFile($thumbPath);
+            \App\Helpers\Helper::deleteFile($thumbPath);
         }
     }
 }

@@ -54,28 +54,53 @@ class BrandController extends Controller
 
     public function store(Request $request)
     {
-        // Note: You should create a BrandStoreRequest for validation
-        foreach ($request->brands as $brandData) {
-            $data = [
-                'name' => $brandData['name'],
-                'slug' => Str::slug($brandData['name']),
-                'is_active' => true,
-            ];
+        // Validate the incoming request
+        $validated = $request->validate([
+            'brands' => 'required|array|min:1',
+            'brands.*.name' => 'required|string|max:255',
+            'brands.*.logo' => 'nullable|file|image|max:2048',
+        ]);
 
-            if (isset($brandData['logo'])) {
-                // Uploading to public/brands/
-                $upload = Helper::uploadFile($brandData['logo'], 'brands', true);
-                if ($upload) {
-                    $data['logo'] = $upload['original'];
+        $createdCount = 0;
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($validated['brands'] as $brandData) {
+                $data = [
+                    'name' => $brandData['name'],
+                    'slug' => Str::slug($brandData['name']),
+                    'is_active' => true,
+                ];
+
+                if (isset($brandData['logo']) && $brandData['logo']) {
+                    // Uploading to public/brands/
+                    $upload = Helper::uploadFile($brandData['logo'], 'brands', true);
+                    if ($upload) {
+                        $data['logo'] = $upload['original'];
+                    }
                 }
+
+                Brand::create($data);
+                $createdCount++;
             }
 
-            Brand::create($data);
+            DB::commit();
+            Cache::forget('brand_counts');
+
+            $message = $createdCount === 1 
+                ? 'Brand created successfully.' 
+                : "{$createdCount} brands created successfully.";
+
+            return redirect()->route('admin.brands.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return back()
+                ->withInput()
+                ->with('error', 'Failed to create brands: ' . $e->getMessage());
         }
-
-        Cache::forget('brand_counts');
-
-        return redirect()->route('admin.brands.index')->with('success', 'Brands created.');
     }
 
     public function edit(Brand $brand)

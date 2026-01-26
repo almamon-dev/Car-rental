@@ -86,7 +86,7 @@ export default function BrandCreate({ auth }) {
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
-                                post(route("admin.brand.store"));
+                                post(route("admin.brands.store"));
                             }}
                             disabled={processing}
                             className="h-8 px-5 text-[13px] font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
@@ -104,7 +104,7 @@ export default function BrandCreate({ auth }) {
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        post(route("admin.brand.store"));
+                        post(route("admin.brands.store"));
                     }}
                     className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
                 >

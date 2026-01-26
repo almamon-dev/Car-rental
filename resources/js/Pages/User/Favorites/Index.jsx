@@ -79,8 +79,8 @@ export default function Index({ auth, favorites, stats }) {
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="text-[18px] font-bold text-[#0a66c2]">
-                                                            {fav.car?.priceDetails?.currency || '৳'}
-                                                            {Number(fav.car?.priceDetails?.daily_rate || 0).toLocaleString()}
+                                                            {fav.car?.price_details?.currency || '৳'}
+                                                            {Number(fav.car?.price_details?.daily_rate || 0).toLocaleString()}
                                                         </p>
                                                         <p className="text-[10px] text-gray-400 font-semibold uppercase leading-none">{t.listing.daily}</p>
                                                     </div>

@@ -49,19 +49,24 @@ export default function DeleteUserForm({ className = '' }) {
 
     return (
         <section className={`space-y-6 ${className}`}>
-            <header>
-                <h2 className="text-lg font-medium text-gray-900">
+            <header className="mb-1">
+                <h2 className="text-[20px] font-bold text-slate-900 tracking-tight">
                     {t.profile.delete_account}
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-0 text-[13px] text-slate-500 font-medium">
                     {t.profile.delete_subtitle}
                 </p>
             </header>
 
-            <DangerButton onClick={confirmUserDeletion}>
-                {t.profile.delete_account}
-            </DangerButton>
+            <div className="pt-4 border-t border-slate-100">
+                <DangerButton 
+                    onClick={confirmUserDeletion}
+                    className="rounded-full px-8 py-2.5 text-[14px] font-bold"
+                >
+                    {t.profile.delete_account}
+                </DangerButton>
+            </div>
 
             <Modal show={confirmingUserDeletion} onClose={closeModal}>
                 <form onSubmit={deleteUser} className="p-6">
@@ -89,7 +94,7 @@ export default function DeleteUserForm({ className = '' }) {
                             onChange={(e) =>
                                 setData('password', e.target.value)
                             }
-                            className="mt-1 block w-3/4"
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-[#0a66c2] focus:ring-[#0a66c2] py-2 px-3 text-[14px] font-medium placeholder:text-gray-400"
                             isFocused
                             placeholder={t.auth.password}
                         />

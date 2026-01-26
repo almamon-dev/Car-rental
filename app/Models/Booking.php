@@ -15,6 +15,7 @@ class Booking extends Model
         'pickup_location',
         'dropoff_location',
         'status',
+        'total_price',
     ];
 
     protected $casts = [

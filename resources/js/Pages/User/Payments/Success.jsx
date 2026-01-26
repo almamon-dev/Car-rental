@@ -9,7 +9,7 @@ export default function Success({ auth, data }) {
         <UserLayout>
             <Head title="Payment Successful" />
 
-            <div className="py-12 px-4">
+            <div className="py-12 px-4 mt-24">
                 <div className="max-w-2xl mx-auto">
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}

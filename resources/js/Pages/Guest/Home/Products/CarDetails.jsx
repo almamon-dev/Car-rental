@@ -303,6 +303,7 @@ export default function CarDetails({ car, locations }) {
                     setShowBookingModal={setShowBookingModal}
                     priceSummary={priceSummary}
                     car={car}
+                    bookingDates={bookingDates}
                 />
             </main>
         </GuestLayout>

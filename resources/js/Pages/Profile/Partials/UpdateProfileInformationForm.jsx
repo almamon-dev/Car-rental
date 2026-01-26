@@ -1,6 +1,5 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
@@ -47,19 +46,19 @@ export default function UpdateProfileInformation({
     return (
         <section className={className}>
             <header className="mb-6">
-                <h2 className="text-[17px] font-semibold text-gray-900">
+                <h2 className="text-[20px] font-bold text-slate-900 tracking-tight">
                     {t.profile.profile_information}
                 </h2>
-                <p className="mt-0.5 text-[13px] text-gray-500">
-                    {t.profile.profile_subtitle}
+                <p className="mt-1 text-[13px] text-slate-500 font-medium">
+                    Update your identity and digital presence.
                 </p>
             </header>
 
             <form onSubmit={submit} className="space-y-6">
-                {/* Profile Photo Section */}
-                <div className="flex flex-col items-center sm:items-start gap-3">
+                {/* Profile Photo Section - Clean Minimal Box */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100/50 transition-all hover:bg-slate-50 mb-4">
                     <div className="relative group">
-                        <div className="w-16 h-16 rounded-full border-2 border-white shadow-md overflow-hidden bg-gray-50 relative">
+                        <div className="w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden bg-white relative">
                             {photoPreview ? (
                                 <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
                             ) : (
@@ -70,14 +69,13 @@ export default function UpdateProfileInformation({
                                 />
                             )}
                             
-                            {/* Upload Overlay */}
+                            {/* Minimal Upload Overlay */}
                             <button 
                                 type="button"
                                 onClick={() => photoInput.current.click()}
-                                className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="absolute inset-0 bg-slate-900/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[2px]"
                             >
-                                <Camera size={18} />
-                                <span className="text-[8px] font-semibold mt-0.5">{t.profile.edit}</span>
+                                <Camera size={16} strokeWidth={2.5} />
                             </button>
                         </div>
                         
@@ -90,87 +88,90 @@ export default function UpdateProfileInformation({
                         />
                     </div>
                     
-                    <div className="flex flex-col gap-1 text-center sm:text-left">
-                        <p className="text-[14px] font-semibold text-gray-900 leading-none">{t.profile.avatar_label}</p>
-                        <p className="text-[11px] text-gray-500">{t.profile.avatar_help}</p>
-                        <InputError className="mt-2" message={errors.photo} />
+                    <div className="flex flex-col gap-0.5 text-center sm:text-left">
+                        <p className="text-[14px] font-bold text-slate-800">{t.profile.avatar_label}</p>
+                        <p className="text-[11px] text-slate-400 font-medium leading-relaxed">PNG, JPG, or WEBP. Max 2MB.</p>
+                        <InputError className="mt-1" message={errors.photo} />
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="name" value={t.auth.name} className="text-[13px] font-semibold text-gray-700 pl-0.5" />
-                        <div className="relative group">
-                            <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0a66c2] transition-colors" size={18} />
-                            <TextInput
-                                id="name"
-                                className="block w-full pl-10 h-10 bg-white border-gray-300 focus:border-[#0a66c2] focus:ring-0 transition-all rounded-[4px] shadow-none"
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
-                                required
-                                autoComplete="name"
-                            />
-                        </div>
-                        <InputError className="mt-2" message={errors.name} />
+                <div className="space-y-4">
+                    <div className="space-y-1">
+                        <InputLabel htmlFor="name" value={t.auth.name} className="text-[14px] font-bold text-gray-700 ml-0.5" />
+                        <TextInput
+                            id="name"
+                            className="block w-full border-gray-300 rounded-md shadow-sm focus:border-[#0a66c2] focus:ring-[#0a66c2] py-2 px-3 text-[14px] font-medium placeholder:text-gray-400"
+                            value={data.name}
+                            onChange={(e) => setData('name', e.target.value)}
+                            required
+                            autoComplete="name"
+                            placeholder="Full Name"
+                        />
+                        <InputError className="mt-1" message={errors.name} />
                     </div>
 
-                    <div className="space-y-1.5">
-                        <InputLabel htmlFor="email" value={t.auth.email} className="text-[13px] font-semibold text-gray-700 pl-0.5" />
-                        <div className="relative group">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0a66c2] transition-colors" size={18} />
-                            <TextInput
-                                id="email"
-                                type="email"
-                                className="block w-full pl-10 h-10 bg-white border-gray-300 focus:border-[#0a66c2] focus:ring-0 transition-all rounded-[4px] shadow-none"
-                                value={data.email}
-                                onChange={(e) => setData('email', e.target.value)}
-                                required
-                                autoComplete="username"
-                            />
-                        </div>
-                        <InputError className="mt-2" message={errors.email} />
+                    <div className="space-y-1">
+                        <InputLabel htmlFor="email" value={t.auth.email} className="text-[14px] font-bold text-gray-700 ml-0.5" />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            className="block w-full border-gray-300 rounded-md shadow-sm focus:border-[#0a66c2] focus:ring-[#0a66c2] py-2 px-3 text-[14px] font-medium placeholder:text-gray-400"
+                            value={data.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                            required
+                            autoComplete="username"
+                            placeholder="Email Address"
+                        />
+                        <InputError className="mt-1" message={errors.email} />
                     </div>
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (
-                    <div className="bg-amber-50 border border-amber-100 p-4 rounded-lg">
-                        <p className="text-[13px] text-amber-800 font-medium">
-                            {t.profile.email_unverified}
+                    <div className="bg-amber-50 border border-amber-200 p-5 rounded-xl flex items-start gap-3">
+                        <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
+                             <Mail size={20} />
+                        </div>
+                        <div>
+                            <p className="text-[14px] text-amber-900 font-bold">
+                                {t.profile.email_unverified}
+                            </p>
                             <Link
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
-                                className="ml-2 text-[#0a66c2] underline hover:no-underline font-semibold"
+                                className="mt-1 text-[#0a66c2] text-[13px] font-bold hover:underline underline-offset-4"
                             >
                                 {t.profile.trigger_verification}
                             </Link>
-                        </p>
 
-                        {status === 'verification-link-sent' && (
-                            <div className="mt-2 text-[12px] font-semibold text-green-600 uppercase">
-                                {t.profile.verification_sent}
-                            </div>
-                        )}
+                            {status === 'verification-link-sent' && (
+                                <div className="mt-2 text-[12px] font-bold text-emerald-600 uppercase tracking-widest">
+                                    {t.profile.verification_sent}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-6 pt-4 border-t border-slate-100">
                     <button 
                         disabled={processing}
-                        className="bg-[#0a66c2] text-white px-8 py-2.5 rounded-full font-semibold text-[14px] hover:bg-[#004182] transition-all flex items-center justify-center gap-2 relative disabled:opacity-50"
+                        className="bg-[#0f172a] text-white px-8 py-2.5 rounded-full font-bold text-[14px] hover:bg-black hover:shadow-lg transition-all flex items-center justify-center gap-2 relative disabled:opacity-50"
                     >
+                        {processing && <Loader2 size={16} className="animate-spin" />}
                         {t.listing.save}
                     </button>
 
                     <Transition
                         show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
+                        enter="transition ease-in-out duration-500"
+                        enterFrom="opacity-0 translate-x-4"
+                        enterTo="opacity-100 translate-x-0"
+                        leave="transition ease-in-out duration-300"
+                        leaveTo="opacity-0 -translate-x-4"
                     >
-                        <p className="text-[14px] font-semibold text-green-600 flex items-center gap-2">
-                            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <p className="text-[14px] font-bold text-emerald-600 flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
                             {t.profile.protocol_synchronized}
                         </p>
                     </Transition>

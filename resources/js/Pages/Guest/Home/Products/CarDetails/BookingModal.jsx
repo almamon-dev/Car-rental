@@ -13,7 +13,8 @@ export default function BookingModal({
     showBookingModal,
     setShowBookingModal,
     priceSummary,
-    car
+    car,
+    bookingDates
 }) {
     const [step, setStep] = useState('summary'); // summary, success
     const [isSuccess, setIsSuccess] = useState(false);
@@ -22,22 +23,21 @@ export default function BookingModal({
     if (!car) return null;
     const currency = car.price_details?.currency || '৳';
 
-    const handleConfirmBooking = () => {
+const handleConfirmBooking = () => {
         setIsInitiating(true);
         axios.post(route('user.sslcommerz.payment'), {
             amount: priceSummary.total,
-            car_id: car.id
+            car_id: car.id,
+            start_date: bookingDates.pickup,
+            end_date: bookingDates.dropoff
         }).then(res => {
             if (res.data.status === 'success' && res.data.GatewayPageURL) {
                 window.location.href = res.data.GatewayPageURL;
             } else {
                 setIsInitiating(false);
-                toast.error(res.data.error || "SSLCommerz Initiation Failed. Please check store credentials.");
             }
         }).catch(err => {
             setIsInitiating(false);
-            const msg = err.response?.data?.error || "Communication failure";
-            toast.error(msg);
         });
     };
 
