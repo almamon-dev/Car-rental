@@ -4,40 +4,24 @@ import "./bootstrap";
 import { createInertiaApp, usePage } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot, hydrateRoot } from "react-dom/client";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 function FlashMessages({ children }) {
     const { flash, errors } = usePage().props;
-    const lastFlash = useRef({ success: null, error: null });
 
     useEffect(() => {
         // server side (Flash Success)
-        if (flash?.success && flash.success !== lastFlash.current.success) {
-            toast.success(flash.success, { 
-                id: `success-${flash.success}`,
-                position: "bottom-right",
-                duration: 4000
-            });
-            lastFlash.current.success = flash.success;
+        if (flash?.success) {
+            toast.success(flash.success, { position: "top-center" });
         }
 
         // server side (Flash Error)
-        if (flash?.error && flash.error !== lastFlash.current.error) {
-            toast.error(flash.error, { 
-                id: `error-${flash.error}`,
-                position: "bottom-right",
-                duration: 4000
-            });
-            lastFlash.current.error = flash.error;
+        if (flash?.error) {
+            toast.error(flash.error, { position: "top-center" });
         }
-
-        // Reset tracking if flash is cleared
-        if (!flash?.success) lastFlash.current.success = null;
-        if (!flash?.error) lastFlash.current.error = null;
-
     }, [flash, errors]);
 
     return (
@@ -51,44 +35,36 @@ function FlashMessages({ children }) {
 import { LanguageProvider } from "./Contexts/LanguageContext";
 
 createInertiaApp({
-    title: (title) => {
-        const dynamicName = window.siteName || appName;
-        return title ? `${title} - ${dynamicName}` : dynamicName;
-    },
+    title: (title) => `${title} - ${appName}`,
     resolve: async (name) => {
         const page = await resolvePageComponent(
             `./Pages/${name}.jsx`,
             import.meta.glob("./Pages/**/*.jsx")
         );
 
-        const pageLayout = page.default.layout;
-
-        page.default.layout = (pageNode) => {
-            
-            let content = pageNode;
-            
-            if (pageLayout) {
-                    content = typeof pageLayout === 'function' 
-                    ? pageLayout(pageNode) 
-                    : <pageLayout>{pageNode}</pageLayout>;
-            }
-
-            return (
+        page.default.layout =
+            page.default.layout ||
+            ((page) => (
                 <LanguageProvider>
-                    <FlashMessages>
-                        {content}
-                    </FlashMessages>
+                    <FlashMessages>{page}</FlashMessages>
                 </LanguageProvider>
-            );
-        };
+            ));
 
         return page;
     },
-    setup({ el, App, props }) {
+   setup({ el, App, props }) {
         if (import.meta.env.SSR) {
-            hydrateRoot(el, <App {...props} />);
+            hydrateRoot(el, (
+                <LanguageProvider>
+                    <App {...props} />
+                </LanguageProvider>
+            ));
         } else {
-            createRoot(el).render(<App {...props} />);
+            createRoot(el).render((
+                <LanguageProvider>
+                    <App {...props} />
+                </LanguageProvider>
+            ));
         }
 
         // Remove the server-side preloader

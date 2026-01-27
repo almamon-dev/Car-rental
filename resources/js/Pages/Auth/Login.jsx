@@ -2,6 +2,7 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
 import { useLanguage } from "@/Contexts/LanguageContext";
 import { Car } from "lucide-react";
+import InputError from "@/Components/InputError";
 
 
 
@@ -77,7 +78,7 @@ export default function Login({ status, canResetPassword }) {
                             >
                                 {t.auth.email}
                             </label>
-                            {errors.email && <p className="text-[12px] text-red-600 mt-1 font-medium">{errors.email}</p>}
+                            <InputError message={errors.email} className="mt-1" />
                         </div>
 
                         {/* Password Input */}
@@ -109,7 +110,7 @@ export default function Login({ status, canResetPassword }) {
                             >
                                 {showPassword ? t.auth.hide : t.auth.show}
                             </button>
-                            {errors.password && <p className="text-[12px] text-red-600 mt-1 font-medium">{errors.password}</p>}
+                            <InputError message={errors.password} className="mt-1" />
                         </div>
 
                         {/* Reset Password */}
