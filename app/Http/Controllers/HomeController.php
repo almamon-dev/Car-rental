@@ -206,9 +206,25 @@ class HomeController extends Controller
         
         $locations = \App\Models\Location::where('status', '=', 1)->get(['*']);
         
+        // Fetch Similar Cars based on category
+        $similarCars = Car::with(['brand', 'category', 'priceDetails', 'images', 'specifications', 'features'])
+            ->where('category_id', $car->category_id)
+            ->where('id', '!=', $car->id)
+            ->where('status', 'available')
+            ->take(4)
+            ->get();
+
+        if (Auth::check()) {
+            $userId = Auth::id();
+            $similarCars->each(function($sCar) use ($userId) {
+                $sCar->is_favorited = $sCar->favorites()->where('user_id', '=', $userId)->exists();
+            });
+        }
+        
         return Inertia::render('Guest/Home/Products/CarDetails', [
             'car' => $car,
             'locations' => $locations,
+            'similarCars' => $similarCars,
         ]);
     }
 

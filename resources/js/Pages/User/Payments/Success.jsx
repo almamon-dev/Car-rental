@@ -84,7 +84,7 @@ export default function Success({ auth, data }) {
                         </div>
 
                         <div className="bg-gray-50 px-8 py-4 border-t border-gray-100 flex items-center justify-center gap-2 opacity-60">
-                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Powered by Antigravity Car Rental</span>
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Powered by AL Mamon Car Rental</span>
                         </div>
                     </motion.div>
                 </div>

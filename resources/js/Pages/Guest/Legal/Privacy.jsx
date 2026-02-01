@@ -1,8 +1,23 @@
+/**
+ * Privacy Policy Page
+ * 
+ * Outlines the data protection protocols, security measures, and 
+ * privacy standards implemented for user information security.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import { Head, usePage } from '@inertiajs/react';
 import UserLayout from '@/Layouts/UserLayout';
 import { ShieldCheck, Lock, EyeOff, FileText, Clock, Shield } from 'lucide-react';
 import 'react-quill/dist/quill.snow.css';
 
+/**
+ * Privacy Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function Privacy() {
     const { settings } = usePage().props;
     const siteName = settings?.company_name || settings?.site_name || "EliteFleet";

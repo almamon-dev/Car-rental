@@ -1,3 +1,13 @@
+/**
+ * About Us Page
+ * 
+ * Provides an institutional overview of the company, mission, milestones,
+ * leadership, and corporate information.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import React from 'react';
 import { Head, usePage, Link } from '@inertiajs/react';
 import UserLayout from '@/Layouts/UserLayout';
@@ -10,6 +20,11 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+/**
+ * About Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function About() {
     const { settings } = usePage().props;
     const siteName = settings?.company_name || settings?.site_name || "EliteFleet";

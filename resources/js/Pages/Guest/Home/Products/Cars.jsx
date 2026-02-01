@@ -1,3 +1,13 @@
+/**
+ * Car Listing Component
+ * 
+ * Renders a grid of available vehicles with integrated filtering and favoriting functionality.
+ * Features a high-performance "Asset Grid" layout with detailed specifications and pricing.
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect } from "react";
 import {
     Heart,
@@ -15,6 +25,12 @@ import { Skeleton } from "../../../../Components/ui/Skeleton";
 import { Link, router, usePage } from "@inertiajs/react";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
+/**
+ * CarSkeleton Component
+ * Placeholder loader for car cards during data fetching.
+ * 
+ * @returns {JSX.Element}
+ */
 const CarSkeleton = () => (
     <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden flex flex-col h-full">
         <Skeleton className="aspect-[16/10] rounded-none" />
@@ -34,11 +50,24 @@ const CarSkeleton = () => (
     </div>
 );
 
+/**
+ * CarListing Component
+ * 
+ * @param {Object} props
+ * @param {Array} props.cars - Array of car objects from the backend
+ * @returns {JSX.Element}
+ */
 export default function CarListing({ cars = [] }) {
     const { t } = useLanguage();
     const { auth } = usePage().props;
     const [isLoading, setIsLoading] = useState(true);
 
+    /**
+     * Toggles a car's favorite status. Redirects to login if unauthenticated.
+     * 
+     * @param {Event} e - Click event object
+     * @param {number|string} carId - Unique identifier for the vehicle
+     */
     const toggleFavorite = (e, carId) => {
         e.preventDefault();
         e.stopPropagation();
@@ -53,6 +82,9 @@ export default function CarListing({ cars = [] }) {
         });
     };
 
+    /**
+     * Manages initial content loading state
+     */
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 800);
         return () => clearTimeout(timer);
@@ -62,7 +94,7 @@ export default function CarListing({ cars = [] }) {
         <section className="py-6 bg-transparent font-sans relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
                 
-                {/* --- HEADER --- */}
+                {/* --- Section Header: Inventory Snapshot --- */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -76,6 +108,7 @@ export default function CarListing({ cars = [] }) {
                     </div>
 
                     <div className="flex items-center gap-6">
+                         {/* Live inventory count indicator */}
                          <div className="hidden md:flex flex-col items-end leading-none">
                               <span className="text-[12px] font-bold text-green-600 flex items-center gap-1.5">
                                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -88,98 +121,117 @@ export default function CarListing({ cars = [] }) {
                     </div>
                 </div>
 
-                {/* --- ASSET GRID --- */}
+                {/* --- Primary Asset Grid: Vehicle Cards --- */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {isLoading
-                        ? [...Array(4)].map((_, i) => (
+                        ? /* Render skeletons while fetching or during hydration */
+                          [...Array(4)].map((_, i) => (
                                <div key={`skel-${i}`}>
                                    <CarSkeleton />
                                </div>
                            ))
-                        : (cars.length > 0 ? cars : []).map((car) => (
-                              <div
-                                  key={car.id}
-                                  className="bg-white rounded-[4px] border border-gray-200 overflow-hidden flex flex-col h-full group transition-all duration-300 relative"
-                              >
-                                  {/* --- SAVE BADGE (STAR TECH CHIP STYLE) --- */}
-                                  <div className="absolute top-2 left-2 z-10">
-                                      <div className="bg-[#3749bb] text-white px-2 py-0.5 text-[10px] font-black rounded-[2px] shadow-sm uppercase tracking-tighter">
-                                          {t.listing.save}: {car.price_details?.currency || '৳'}{Math.floor(Number(car.price_details?.daily_rate || 0) * 0.2).toLocaleString()}
-                                      </div>
-                                  </div>
+                        : /* Map actual vehicle data to interactive cards */
+                          (cars.length > 0 ? cars : []).map((car) => (
+                               <div
+                                   key={car.id}
+                                   className="bg-white rounded-[4px] border border-gray-200 overflow-hidden flex flex-col h-full group transition-all duration-300 relative"
+                               >
+                                   {/* Value Badge: Dynamic Discount Computation */}
+                                   <div className="absolute top-2 left-2 z-10">
+                                       <div className="bg-[#3749bb] text-white px-2 py-0.5 text-[10px] font-black rounded-[2px] shadow-sm uppercase tracking-tighter">
+                                           {t.listing.save}: {car.price_details?.currency || '৳'}{Math.floor(Number(car.price_details?.daily_rate || 0) * 0.2).toLocaleString()}
+                                       </div>
+                                   </div>
 
-                                  {/* --- MEDIA --- */}
-                                  <div className="relative aspect-[16/10] bg-gray-900 overflow-hidden">
-                                      <img
-                                          src={car.images && car.images.length > 0 ? `/${car.images[0].file_path}` : "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"}
-                                          alt={`${car.make} ${car.model}`}
-                                          className="w-full h-full object-cover transition-all duration-700 hover:scale-110"
-                                      />
-                                      
-                                      <button 
-                                          onClick={(e) => toggleFavorite(e, car.id)}
-                                          className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity ${
-                                              car.is_favorited ? "text-red-500" : "text-gray-400 hover:text-red-500"
-                                          }`}
-                                      >
-                                          <Heart size={15} fill={car.is_favorited ? "currentColor" : "none"} />
-                                      </button>
-                                  </div>
+                                   {/* Media Container with Cinematic Hover Effects */}
+                                   <div className="relative aspect-[16/10] bg-gray-900 overflow-hidden">
+                                       <img
+                                           src={car.images && car.images.length > 0 ? `/${car.images[0].file_path}` : "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"}
+                                           alt={`${car.make} ${car.model} Performance Profile`}
+                                           className="w-full h-full object-cover transition-all duration-700 hover:scale-110"
+                                       />
+                                       
+                                       {/* Dynamic Wishlist Interaction */}
+                                       <button 
+                                           onClick={(e) => toggleFavorite(e, car.id)}
+                                           aria-label={car.is_favorited ? "Remove from Favorites" : "Add to Favorites"}
+                                           className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity ${
+                                               car.is_favorited ? "text-red-500" : "text-gray-400 hover:text-red-500"
+                                           }`}
+                                       >
+                                           <Heart size={15} fill={car.is_favorited ? "currentColor" : "none"} />
+                                       </button>
+                                   </div>
 
-                                  {/* --- CONTENT SECTION --- */}
-                                  <div className="p-4 flex flex-col flex-1 border-gray-50 text-left">
-                                      <div className="mb-4">
-                                          <h4 className="text-[14px] font-bold text-gray-900 group-hover:text-[#3749bb] transition-colors leading-tight line-clamp-2">
-                                              {car.brand?.name || car.make} {car.model} {car.year}
-                                          </h4>
-                                      </div>
+                                   {/* Descriptive Content Section */}
+                                   <div className="p-4 flex flex-col flex-1 border-gray-50 text-left">
+                                       <div className="mb-4">
+                                           <h4 className="text-[14px] font-bold text-gray-900 group-hover:text-[#3749bb] transition-colors leading-tight line-clamp-2">
+                                               {car.brand?.name || car.make} {car.model} {car.year}
+                                           </h4>
+                                       </div>
 
-                                      {/* Specs List */}
-                                      <div className="space-y-1.5 mb-5 border-t border-gray-100 pt-3">
-                                          <ListSpec Icon={Activity} label={t.listing.ops_range} val={car.specifications?.mileage || 'N/A'} />
-                                          <ListSpec Icon={Settings} label={t.listing.transmission} val={car.specifications?.transmission || car.transmission || 'Auto'} />
-                                          <ListSpec Icon={Fuel} label={car.specifications?.fuel_type || car.fuel_type || t.listing.fuel_type} val={car.specifications?.fuel_type || car.fuel_type || 'N/A'} />
-                                          <ListSpec Icon={Users} label="Seats" val={`${car.seats || 5} Seats`} />
-                                          <ListSpec Icon={MapPin} label="Branch" val={car.location?.name || 'Main Hub'} />
-                                      </div>
+                                       {/* Core Technical Specifications List */}
+                                       <div className="space-y-1.5 mb-5 border-t border-gray-100 pt-3">
+                                           <ListSpec Icon={Activity} label={t.listing.ops_range} val={car.specifications?.mileage || 'N/A'} />
+                                           <ListSpec Icon={Settings} label={t.listing.transmission} val={car.specifications?.transmission || car.transmission || 'Auto'} />
+                                           <ListSpec Icon={Fuel} label={car.specifications?.fuel_type || car.fuel_type || t.listing.fuel_type} val={car.specifications?.fuel_type || car.fuel_type || 'N/A'} />
+                                           <ListSpec Icon={Users} label="Seats" val={`${car.seats || 5} Seats`} />
+                                           <ListSpec Icon={MapPin} label="Branch" val={car.location?.name || 'Main Hub'} />
+                                       </div>
 
-                                      {/* Key Highlights (Bullet style) */}
-                                      {car.features && car.features.length > 0 && (
-                                          <div className="mb-5">
-                                              <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter block mb-2 leading-none">Key Highlights</span>
-                                              <div className="grid grid-cols-1 gap-1">
-                                                  {car.features.slice(0, 3).map((feat, idx) => (
-                                                      <div key={idx} className="flex items-center gap-1.5">
-                                                           <div className="w-1 h-1 rounded-full bg-[#3749bb]" />
-                                                           <span className="text-[11px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
-                                                      </div>
-                                                  ))}
-                                              </div>
-                                          </div>
-                                      )}
+                                       {/* Qualitative Feature Highlights */}
+                                       {car.features && car.features.length > 0 && (
+                                           <div className="mb-5">
+                                               <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter block mb-2 leading-none">Key Highlights</span>
+                                               <div className="grid grid-cols-1 gap-1">
+                                                   {car.features.slice(0, 3).map((feat, idx) => (
+                                                       <div key={idx} className="flex items-center gap-1.5">
+                                                            <div className="w-1 h-1 rounded-full bg-[#3749bb]" />
+                                                            <span className="text-[11px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
+                                                       </div>
+                                                   ))}
+                                               </div>
+                                           </div>
+                                       )}
 
-                                      <div className="mt-auto border-t border-gray-100 pt-3 text-center">
-                                          <div className="flex items-center justify-center gap-2 mb-3">
-                                              <span className="text-[16px] font-black text-[#3749bb]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
-                                              <span className="text-[12px] text-gray-400 line-through font-bold leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
-                                          </div>
-                                          
-                                          <Link 
-                                              href={car.slug ? `${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}` : '#'}
-                                              className={`w-full py-1.5 inline-block px-4 rounded-[4px] border border-[#3749bb] text-[#3749bb] text-[13px] font-bold hover:bg-[#3749bb] hover:text-white transition-all duration-200 active:scale-[0.98] ${!car.slug ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
-                                          >
-                                              {t.listing.view_details}
-                                          </Link>
-                                      </div>
-                                  </div>
-                              </div>
-                          ))}
+                                       {/* Interactive Pricing and Action Footer */}
+                                       <div className="mt-auto border-t border-gray-100 pt-3 text-center">
+                                           <div className="flex items-center justify-center gap-2 mb-3">
+                                               <span className="text-[16px] font-black text-[#3749bb]">
+                                                   {car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}
+                                               </span>
+                                               <span className="text-[12px] text-gray-400 line-through font-bold leading-none">
+                                                   {car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}
+                                               </span>
+                                           </div>
+                                           
+                                           <Link 
+                                               href={car.slug ? `${route('car.details', car.slug)}` : '#'}
+                                               className={`w-full py-1.5 inline-block px-4 rounded-[4px] border border-[#3749bb] text-[#3749bb] text-[13px] font-bold hover:bg-[#3749bb] hover:text-white transition-all duration-200 active:scale-[0.98] ${!car.slug ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                                           >
+                                               {t.listing.view_details}
+                                           </Link>
+                                       </div>
+                                   </div>
+                               </div>
+                           ))}
                 </div>
             </div>
         </section>
     );
 }
 
+/**
+ * ListSpec Component
+ * Internal utility for rendering consistent specification rows.
+ * 
+ * @param {Object} props
+ * @param {React.ElementType} props.Icon - Lucide icon component
+ * @param {string} props.label - Specification title
+ * @param {string|number} props.val - Specification numeric or text value
+ * @returns {JSX.Element}
+ */
 const ListSpec = ({ Icon, label, val }) => (
     <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -190,6 +242,15 @@ const ListSpec = ({ Icon, label, val }) => (
     </div>
 );
 
+/**
+ * SpecItem Component
+ * Alternative concise specification display for varied layouts.
+ * 
+ * @param {Object} props
+ * @param {string|number} props.val - The value to display
+ * @param {string} props.label - Descriptive label
+ * @returns {JSX.Element}
+ */
 const SpecItem = ({ val, label }) => (
     <div className="flex flex-col items-start leading-none text-left">
         <span className="text-[11px] font-bold text-gray-900 truncate mb-0.5">{val}</span>

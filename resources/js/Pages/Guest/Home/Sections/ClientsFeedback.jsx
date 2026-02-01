@@ -1,3 +1,13 @@
+/**
+ * Clients Feedback (Testimonials) Component
+ * 
+ * Displays a carousel of client testimonials with verified tags and ratings.
+ * Uses Swiper for interactive transitions and Framer Motion for animations.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import React, { useState, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
@@ -5,12 +15,16 @@ import { ChevronLeft, ChevronRight, Quote, Star, Verified, Activity } from "luci
 import { motion } from "framer-motion";
 import { Skeleton } from "@/Components/ui/Skeleton";
 
-// Swiper Styles
+// --- Swiper Styles ---
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-// testimonials removed from here, now using translations from context
+import { useLanguage } from "@/Contexts/LanguageContext";
+
+/**
+ * Static asset map for testimonial avatars
+ */
 const testimonialsImages = [
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
@@ -18,10 +32,15 @@ const testimonialsImages = [
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
 ];
 
-import { useLanguage } from "@/Contexts/LanguageContext";
-
+/**
+ * ClientsFeedback Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function ClientsFeedback() {
     const { t } = useLanguage();
+    
+    // --- Refs & State ---
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);

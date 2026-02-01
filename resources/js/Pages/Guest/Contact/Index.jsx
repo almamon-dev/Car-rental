@@ -1,3 +1,13 @@
+/**
+ * Contact Us Page
+ * 
+ * Provides a formal communication channel for users to reach out,
+ * including a message submission form and official contact information.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import React, { useState } from 'react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import UserLayout from '@/Layouts/UserLayout';
@@ -8,6 +18,13 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+/**
+ * Contact Component
+ * 
+ * @param {Object} props
+ * @param {Object} props.auth - Authentication context
+ * @returns {JSX.Element}
+ */
 export default function Contact({ auth }) {
     const { settings, errors: pageErrors } = usePage().props;
     const { data, setData, post, processing, reset, errors: formErrors } = useForm({

@@ -1,3 +1,13 @@
+/**
+ * Admin - Dashboard Overview
+ * 
+ * Provides a clear and user-friendly summary of the rental platform's 
+ * performance, including bookings, revenue, and fleet status.
+ * 
+ * @author AL Mamon
+ * @version 1.2.0
+ */
+
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head } from "@inertiajs/react";
 import {
@@ -10,7 +20,10 @@ import {
     ArrowRight,
     MapPin,
     BarChart3,
-    Package
+    Package,
+    Activity,
+    ShieldCheck,
+    Globe
 } from "lucide-react";
 import {
     AreaChart,
@@ -22,16 +35,26 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import { useLanguage } from "@/Contexts/LanguageContext";
+import { motion } from "framer-motion";
 
-// Separate Components Import
+// Components
 import StatCard from "@/Components/admin/dashboard/StatCard";
 import SmallInfoCard from "@/Components/admin/dashboard/SmallInfoCard";
 import InfoRow from "@/Components/admin/dashboard/InfoRow";
 
+/**
+ * Dashboard Component
+ * 
+ * @param {Object} props
+ * @param {Object} props.auth - Authenticated session data
+ * @param {Object} props.stats - Operational data points
+ * @param {Array} props.chartData - Performance data for the chart
+ * @returns {JSX.Element}
+ */
 export default function Dashboard({ auth, stats, chartData }) {
     const { t } = useLanguage();
 
-    // Default chart data if none provided
+    // Default data if none provided
     const displayChartData = chartData && chartData.length > 0 ? chartData : [
         { name: 'Jan', bookings: 45, revenue: 2400 },
         { name: 'Feb', bookings: 52, revenue: 1398 },
@@ -44,77 +67,85 @@ export default function Dashboard({ auth, stats, chartData }) {
 
     return (
         <AdminLayout user={auth.user}>
-            <Head title={t.nav.dashboard} />
-            <div className="p-4 md:p-6 bg-[#f3f2ef] min-h-screen">
+            <Head title={`${t.nav.dashboard} | Admin Panel`} />
+            
+            <div className="space-y-8 animate-in fade-in duration-500">
                 
-                {/* Dashboard Header */}
-                <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Insights</h1>
-                        <p className="text-slate-500 text-sm mt-1">Detailed overview of your fleet performance and revenue.</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="bg-white border border-slate-200 rounded-lg px-4 py-2 flex items-center gap-2 shadow-sm">
-                            <Calendar size={16} className="text-[#0a66c2]" />
-                            <span className="text-sm font-semibold text-slate-700">Last 30 Days</span>
+                {/* --- HEADER: WELCOME SECTION --- */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-100 pb-8">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-4 bg-[#0a66c2] rounded-full" />
+                            <span className="text-[13px] font-bold text-[#0a66c2]">Analytics Overview</span>
                         </div>
-                        <button className="bg-[#0a66c2] text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-[#004182] transition-all">
+                        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Welcome Back, {auth.user.name.split(' ')[0]}!</h1>
+                        <p className="text-slate-500 text-[14px] font-medium">Here is what's happening with your car rental business today.</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                        <div className="bg-white border border-slate-200 rounded-xl px-5 py-2.5 flex items-center gap-3 shadow-sm">
+                            <Calendar size={16} className="text-[#0a66c2]" />
+                            <span className="text-[13px] font-semibold text-slate-600">Last 30 Days</span>
+                        </div>
+                        <button className="bg-[#0a66c2] text-white px-6 py-2.5 rounded-xl text-[13px] font-bold shadow-md shadow-[#0a66c2]/10 hover:bg-[#084d92] transition-all">
                             Export Report
                         </button>
                     </div>
                 </div>
 
-                {/* Top Stat Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                {/* --- STAT CARDS: QUICK LOOK --- */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <StatCard
-                        title="Fleet Size"
+                        title="Total Cars"
                         value={stats.total_cars}
-                        change="+5"
+                        change="+5 new this month"
                         color="bg-[#0a66c2]"
-                        icon={<Car />}
+                        icon={<Car size={24} />}
                     />
                     <StatCard
                         title="Active Bookings"
                         value={stats.active_bookings}
-                        change={`${stats.booking_growth > 0 ? '+' : ''}${stats.booking_growth}%`}
-                        color="bg-emerald-600"
-                        icon={<ClipboardList />}
+                        change={`${stats.booking_growth > 0 ? '+' : ''}${stats.booking_growth}% from last month`}
+                        color="bg-emerald-500"
+                        icon={<ClipboardList size={24} />}
                     />
                     <StatCard
                         title="Registered Users"
                         value={stats.total_users}
-                        change="+12"
+                        change="+12 since yesterday"
                         color="bg-slate-700"
-                        icon={<Users />}
+                        icon={<Users size={24} />}
                     />
                     <StatCard
                         title="Total Revenue"
                         value={`৳${stats.total_revenue.toLocaleString()}`}
-                        change="+18%"
-                        color="bg-amber-500"
-                        icon={<ShoppingCart />}
+                        change="+18% vs last period"
+                        color="bg-indigo-500"
+                        icon={<Activity size={24} />}
                     />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    {/* Main Chart Area */}
-                    <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-slate-200 shadow-sm relative group overflow-hidden">
+                {/* --- MAIN ANALYTICS SECTION --- */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    {/* Booking Trend Chart */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="lg:col-span-2 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm"
+                    >
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
+                                <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
                                     <BarChart3 size={20} className="text-[#0a66c2]" />
                                     Booking Trends
                                 </h3>
-                                <p className="text-slate-400 text-xs mt-1 font-medium italic">Tracking car reservations per month</p>
+                                <p className="text-slate-400 text-[12px] mt-1 font-medium">Monthly reservation volume and growth</p>
                             </div>
-                            <div className="flex items-center gap-4 text-[11px] font-bold">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="w-3 h-3 rounded-full bg-[#0a66c2]"></span>
-                                    <span className="text-slate-600">Bookings</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <span className="w-3 h-3 rounded-full bg-emerald-400"></span>
-                                    <span className="text-slate-600">Growth</span>
+                            <div className="flex items-center gap-4 text-[12px] font-semibold">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-[#0a66c2]" />
+                                    <span className="text-slate-500">Bookings</span>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +155,7 @@ export default function Dashboard({ auth, stats, chartData }) {
                                 <AreaChart data={displayChartData}>
                                     <defs>
                                         <linearGradient id="colorBook" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#0a66c2" stopOpacity={0.15}/>
+                                            <stop offset="5%" stopColor="#0a66c2" stopOpacity={0.1}/>
                                             <stop offset="95%" stopColor="#0a66c2" stopOpacity={0}/>
                                         </linearGradient>
                                     </defs>
@@ -133,17 +164,17 @@ export default function Dashboard({ auth, stats, chartData }) {
                                         dataKey="name" 
                                         axisLine={false} 
                                         tickLine={false} 
-                                        tick={{fontSize: 12, fill: '#64748b', fontWeight: 500}} 
+                                        tick={{fontSize: 12, fill: '#64748b', fontWeight: 600}} 
                                         dy={10}
                                     />
                                     <YAxis 
                                         axisLine={false} 
                                         tickLine={false} 
-                                        tick={{fontSize: 12, fill: '#64748b', fontWeight: 500}} 
+                                        tick={{fontSize: 12, fill: '#64748b', fontWeight: 600}} 
                                     />
                                     <Tooltip 
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                                        itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', padding: '10px' }}
+                                        itemStyle={{ fontSize: '13px', fontWeight: '700', color: '#0a66c2' }}
                                     />
                                     <Area 
                                         type="monotone" 
@@ -152,79 +183,89 @@ export default function Dashboard({ auth, stats, chartData }) {
                                         strokeWidth={3}
                                         fillOpacity={1} 
                                         fill="url(#colorBook)" 
-                                        animationDuration={1500}
                                     />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Overall Info Column */}
-                    <div className="space-y-6">
-                         <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
-                            <h3 className="font-bold text-slate-900 mb-6 flex items-center justify-between">
-                                Operating Hubs
-                                <button className="text-[11px] text-[#0a66c2] hover:underline uppercase tracking-wider">All Cities</button>
+                    {/* Regional Performance & Promo Card */}
+                    <div className="space-y-8">
+                         <motion.div 
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm"
+                        >
+                            <h3 className="font-bold text-slate-800 mb-6 flex items-center justify-between">
+                                Top Locations
+                                <button className="text-[12px] font-bold text-[#0a66c2] hover:underline">View All</button>
                             </h3>
                             <div className="space-y-4">
                                 <InfoRow
                                     icon={<MapPin size={18} className="text-[#0a66c2]" />}
                                     label="Dhaka Central"
-                                    value="124"
+                                    value="124 Units"
                                     bgColor="bg-blue-50"
                                 />
                                 <InfoRow
                                     icon={<MapPin size={18} className="text-emerald-500" />}
                                     label="Chittagong Port"
-                                    value="86"
+                                    value="86 Units"
                                     bgColor="bg-emerald-50"
                                 />
                                 <InfoRow
-                                    icon={<MapPin size={18} className="text-amber-500" />}
-                                    label="Sylhet Hub"
-                                    value="45"
-                                    bgColor="bg-amber-50"
+                                    icon={<MapPin size={18} className="text-indigo-500" />}
+                                    label="Sylhet Gateway"
+                                    value="45 Units"
+                                    bgColor="bg-indigo-50"
                                 />
                             </div>
-                        </div>
+                        </motion.div>
 
-                        {/* Recent Activity Mini Widget */}
-                        <div className="bg-[#0a66c2] p-6 rounded-lg shadow-lg relative overflow-hidden group">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="bg-slate-900 p-8 rounded-2xl shadow-xl relative overflow-hidden group"
+                        >
                             <div className="relative z-10">
-                                <h4 className="text-white font-bold mb-2">Upgrade to Fleet Plus</h4>
-                                <p className="text-blue-100 text-xs mb-4">Get advanced analytics and real-time GPS tracking for all vehicles.</p>
-                                <button className="bg-white text-[#0a66c2] px-4 py-2 rounded font-bold text-xs flex items-center gap-2 group-hover:gap-3 transition-all">
-                                    Learn More <ArrowRight size={14} />
+                                <div className="flex items-center gap-2 mb-4">
+                                    <ShieldCheck size={18} className="text-emerald-400" />
+                                    <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest">Premium Features</span>
+                                </div>
+                                <h4 className="text-white font-bold text-xl mb-2">Fleet Analytics Pro</h4>
+                                <p className="text-slate-400 text-[14px] mb-6 font-medium leading-relaxed">Upgrade to unlock predictive analytics and real-time GPS tracking for your fleet.</p>
+                                <button className="w-full bg-[#0a66c2] text-white px-5 py-3 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 group-hover:gap-3 transition-all shadow-lg shadow-[#0a66c2]/30">
+                                    Get Pro Access <ArrowRight size={16} />
                                 </button>
                             </div>
-                            <Package size={80} className="absolute -right-4 -bottom-4 text-white/10 rotate-12 transition-transform group-hover:scale-110" />
-                        </div>
+                            <Globe size={180} className="absolute -right-10 -bottom-10 text-white/[0.04] rotate-12 transition-transform duration-1000 group-hover:scale-110" />
+                        </motion.div>
                     </div>
                 </div>
 
-                {/* Secondary Info Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {/* --- ADDITIONAL FINANCIAL INSIGHTS --- */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pb-8">
                     <SmallInfoCard
-                        title="Net Profit"
+                        title="Net Operating Income"
                         value="৳845,798"
-                        change="+35%"
+                        change="+35% this period"
                     />
                     <SmallInfoCard
-                        title="Booking Dues"
+                        title="Outstanding Payments"
                         value="৳48,988"
-                        change="+5%"
+                        change="+5% from last month"
                     />
                     <SmallInfoCard
-                        title="Maintenance Cost"
+                        title="Maintenance Costs"
                         value="৳8,980"
-                        change="+41%"
+                        change="+4% this month"
                         isNegative
                     />
                     <SmallInfoCard
-                        title="Total Refunds"
-                        value="৳7,458"
-                        change="-20%"
-                        isNegative
+                        title="User Trust Score"
+                        value="98.2%"
+                        change="+2.4% vs last period"
+                        icon={<ShieldCheck size={16} />}
                     />
                 </div>
             </div>

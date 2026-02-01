@@ -1,28 +1,52 @@
+/**
+ * Admin - Institutional Layout
+ * 
+ * Provides the core structural framework for the administrative domain, 
+ * orchestrating the navigational sidebar, header console, and main operational 
+ * scroll-view.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import React, { useState } from "react";
 import Header from "../Components/Navigation/Admin/Header";
 import Sidebar from "../Components/Navigation/Admin/Sidebar";
-import { ChevronLeft } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
+/**
+ * AdminLayout Component
+ * 
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Operational page content
+ * @returns {JSX.Element}
+ */
 export default function AdminLayout({ children }) {
-    // -- Fixed Sidebar (No collapse)
+    // --- State: Navigational Topology ---
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     return (
         <div className="flex h-screen bg-[#f3f2ef] overflow-hidden font-sans selection:bg-[#0a66c2]/10 selection:text-[#0a66c2]">
-            {/* Mobile Overlay - Glassmorphism */}
-            {isMobileOpen && (
-                <div
-                    className="fixed inset-0 bg-slate-900/40 z-[155] lg:hidden transition-all duration-500 ease-in-out backdrop-blur-[3px] animate-in fade-in"
-                    onClick={() => setIsMobileOpen(false)}
-                />
-            )}
+            
+            {/* --- MOBILE OVERLAY: GLASSMORPHISM MATRIX --- */}
+            <AnimatePresence>
+                {isMobileOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-slate-900/40 z-[155] lg:hidden backdrop-blur-[3px]"
+                        onClick={() => setIsMobileOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
 
-            {/* Sidebar Container - Executive Elevation (Borderless) */}
+            {/* --- SIDEBAR CLUSTER: EXECUTIVE COMMAND CENTER --- */}
             <aside
-                className={`fixed inset-y-0 left-0 z-[160] bg-white transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1) flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05),0_8px_10px_-6px_rgba(0,0,0,0.05)]
+                className={`fixed inset-y-0 left-0 z-[160] bg-white transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1) flex flex-col border-r border-slate-100 shadow-[20px_0_25px_-5px_rgba(0,0,0,0.02)]
                     ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-                    ${isSidebarCollapsed ? "lg:w-[80px] hover:lg:w-[280px] group" : "lg:w-[280px]"}
+                    ${isSidebarCollapsed ? "lg:w-[80px]" : "lg:w-[280px]"}
                     `}
             >
                 <Sidebar
@@ -33,18 +57,25 @@ export default function AdminLayout({ children }) {
                 />
             </aside>
 
-            {/* Main Content Area - Professional Depth */}
+            {/* --- MAIN OPERATIONAL AREA --- */}
             <div
                 className={`flex-1 flex flex-col min-w-0 transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)
                     ${isSidebarCollapsed ? "lg:pl-[80px]" : "lg:pl-[280px]"}
                 `}
             >
-                {/* Header: Navigation Bar */}
+                {/* Header: Administrative Console */}
                 <Header onMenuClick={() => setIsMobileOpen(true)} />
 
-                {/* Main Scrollable Content */}
-                <main className="flex-1 overflow-y-auto p-4 md:p-5">
-                    <div className="max-w-full mx-auto">{children}</div>
+                {/* Main Scrollable Viewport */}
+                <main className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="max-w-full mx-auto"
+                    >
+                        {children}
+                    </motion.div>
                 </main>
             </div>
         </div>

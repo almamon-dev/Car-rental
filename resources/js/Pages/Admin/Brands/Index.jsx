@@ -1,24 +1,46 @@
+/**
+ * Admin - Car Brands Management
+ * 
+ * Manages the collection of car manufacturers and brands.
+ * Handles brand logos, operational status, and fleet integration details.
+ * 
+ * @author AL Mamon
+ * @version 1.2.0
+ */
+
 import React, { useState, useRef, useCallback } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, Link, router } from "@inertiajs/react";
 import Pagination from "@/Components/Pagination";
 import { TableManager } from "@/Hooks/TableManager";
-import { Plus, BadgeCheck } from "lucide-react";
+import { 
+    Plus, 
+    BadgeCheck, 
+    Search, 
+    Filter, 
+    Activity, 
+    Database, 
+    ShieldCheck, 
+    LayoutGrid,
+    MoreHorizontal
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Import Partials
+// Partials
 import BulkActionBanner from "./Partials/BulkActionBanner";
 import BrandTableRow from "./Partials/TableRow";
-import FilterBar from "./Partials/FilterBar";
 import StatusTabs from "./Partials/StatusTabs";
 import TableSkeleton from "./Partials/TableSkeleton";
 import EmptyState from "./Partials/EmptyState";
 
+/**
+ * BrandList Component
+ */
 export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const searchTimeoutRef = useRef(null);
 
-    // TableManager Hook logic
     const {
         search,
         handleSearch: originalHandleSearch,
@@ -33,9 +55,7 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
         isEffectivelySelected,
     } = TableManager("admin.brands.index", brands.data, filters);
 
-    // Page navigation and filtering logic
     const performVisit = useCallback((params, withLoading = true) => {
-        const scrollPosition = window.scrollY;
         if (withLoading) setIsLoading(true);
         router.get(route("admin.brands.index"), params, {
             preserveState: true,
@@ -44,18 +64,16 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
             onFinish: () => {
                 if (withLoading) setIsLoading(false);
                 setIsSearching(false);
-                window.scrollTo(0, scrollPosition);
             },
         });
     }, []);
 
-    // Debounced search logic
     const handleSearch = useCallback(
         (value) => {
-            if (searchTimeoutRef.current)
-                clearTimeout(searchTimeoutRef.current);
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
             originalHandleSearch(value);
             setIsSearching(true);
+            
             searchTimeoutRef.current = setTimeout(() => {
                 performVisit({ ...filters, search: value || null, page: 1 });
             }, 300);
@@ -63,7 +81,6 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
         [filters, originalHandleSearch, performVisit]
     );
 
-    // Handle delete success - clear selection
     const handleDeleteSuccess = useCallback(() => {
         clearSelection();
         setSelectAllGlobal(false);
@@ -71,38 +88,42 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
 
     return (
         <AdminLayout user={auth.user}>
-            <Head title="Manage Brands" />
+            <Head title="Car Brands | Admin Panel" />
 
-            <div className="max-w-full mx-auto space-y-4 font-sans antialiased selection:bg-[#0a66c2]/10 selection:text-[#0a66c2]">
+            <div className="max-w-full mx-auto space-y-6">
                 
-                {/* 1. Simplified LinkedIn Header (Flat & Clean) */}
-                <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm">
-                    <div className="px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-[#f3f6f8] rounded flex items-center justify-center text-[#0a66c2]">
-                                <BadgeCheck size={20} strokeWidth={2} />
+                {/* --- HEADER --- */}
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden text-[#191919]">
+                    <div className="px-8 py-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-[#0a66c2] shadow-sm border border-slate-100">
+                                <BadgeCheck size={28} strokeWidth={2} />
                             </div>
-                            <div>
-                                <h1 className="text-[18px] font-semibold text-[#000000e6]">
-                                    Brand Management
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-3 bg-[#0a66c2] rounded-full" />
+                                    <span className="text-[12px] font-bold text-[#0a66c2]">Inventory Setup</span>
+                                </div>
+                                <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+                                    Car Brands
                                 </h1>
-                                <p className="text-[12px] text-[#00000099] mt-0.5 font-medium">
-                                    Manage vehicle manufacturers and identities
+                                <p className="text-[14px] text-slate-500 font-medium italic">
+                                    Manage car manufacturers, brand logos, and their active status in your system.
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <Link href={route("admin.brands.create")}>
-                                <button className="h-8 px-5 bg-[#0a66c2] hover:bg-[#004182] text-white rounded-full font-bold text-[13px] transition-all flex items-center gap-2 shadow-sm active:scale-95">
-                                    <Plus size={14} strokeWidth={3} />
-                                    Add Brand
+                                <button className="h-11 px-6 bg-[#0a66c2] hover:bg-[#084d92] text-white rounded-xl font-bold text-[13px] transition-all flex items-center gap-2 shadow-md shadow-[#0a66c2]/10">
+                                    <Plus size={18} strokeWidth={2} />
+                                    Add New Brand
                                 </button>
                             </Link>
                         </div>
                     </div>
                     
-                    <div className="px-6 border-t border-[#f3f2ef]">
+                    <div className="px-6 border-t border-slate-50 bg-slate-50/20">
                         <StatusTabs
                             currentStatus={filters.status || "all"}
                             handleTabChange={(tab) =>
@@ -117,67 +138,78 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
                     </div>
                 </div>
 
-                {/* 2. Main Layout (Minimalist Clean Feed) */}
+                {/* --- MAIN CONTENT --- */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     
-                    {/* Left Section: Table Hub */}
                     <div className="lg:col-span-9 space-y-4">
                         
-                        {/* Compact Filter Bar */}
-                        <div className="bg-white rounded-lg border border-[#EBEBEB] p-2.5 flex items-center gap-3 shadow-sm">
+                        {/* Search & Filter */}
+                        <div className="bg-white rounded-xl border border-slate-200 p-3 flex items-center gap-3 shadow-sm">
                             <div className="flex-1 relative group">
-                                <BadgeCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0a66c2] transition-colors" size={14} />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                                 <input 
                                     type="text"
                                     value={search}
                                     onChange={(e) => handleSearch(e.target.value)}
-                                    placeholder="Search brands..."
-                                    className="w-full bg-[#f3f6f8] border-none rounded py-1.5 pl-9 pr-4 text-[13px] text-gray-700 outline-none transition-all"
+                                    placeholder="Search by brand name..."
+                                    className="w-full bg-slate-50 border-transparent focus:bg-white focus:border-[#0a66c2]/20 rounded-lg py-2.5 pl-12 pr-4 text-[13px] text-slate-700 outline-none transition-all font-semibold"
                                 />
                             </div>
+                            <button className="h-10 px-4 text-[12px] font-bold text-slate-500 hover:bg-slate-50 rounded-lg flex items-center gap-2 border border-transparent hover:border-slate-100">
+                                <Filter size={16} />
+                                Filter
+                            </button>
                         </div>
 
-                        {/* Selection Banner */}
-                        {(selectedIds.length > 0 || selectAllGlobal) && (
-                            <BulkActionBanner
-                                selectedIds={selectedIds}
-                                selectAllGlobal={selectAllGlobal}
-                                setSelectAllGlobal={setSelectAllGlobal}
-                                isAllPageSelected={isAllPageSelected}
-                                totalCount={brands.total}
-                                itemCount={brands.data.length}
-                                clearSelection={clearSelection}
-                                getEffectiveSelectedIds={getEffectiveSelectedIds}
-                                search={search}
-                                onDeleteSuccess={handleDeleteSuccess}
-                            />
-                        )}
+                        {/* Bulk Action Banner */}
+                        <AnimatePresence>
+                            {(selectedIds.length > 0 || selectAllGlobal) && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                >
+                                    <BulkActionBanner
+                                        selectedIds={selectedIds}
+                                        selectAllGlobal={selectAllGlobal}
+                                        setSelectAllGlobal={setSelectAllGlobal}
+                                        isAllPageSelected={isAllPageSelected}
+                                        totalCount={brands.total}
+                                        itemCount={brands.data.length}
+                                        clearSelection={clearSelection}
+                                        getEffectiveSelectedIds={getEffectiveSelectedIds}
+                                        search={search}
+                                        onDeleteSuccess={handleDeleteSuccess}
+                                    />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
-                        {/* Simplified Table Card */}
-                        <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm overflow-hidden h-auto min-h-[200px]">
+                        {/* Brands Table */}
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden min-h-[400px]">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
-                                    <thead className="bg-[#fbfeff] border-b border-[#f3f2ef]">
+                                    <thead className="bg-[#f8fbff] border-b border-slate-100">
                                         <tr>
-                                            <th className="py-3 px-6 w-12 text-center">
+                                            <th className="py-4 px-10 w-12 text-center">
                                                 <input
                                                     type="checkbox"
-                                                    checked={isAllPageSelected || selectAllGlobal}
+                                                    checked={isAllPageSelected}
                                                     onChange={toggleSelectAll}
-                                                    className="w-3.5 h-3.5 rounded border-gray-300 text-[#0a66c2] focus:ring-[#0a66c2]/10 cursor-pointer"
+                                                    className="w-4 h-4 rounded border-slate-300 text-[#0a66c2] focus:ring-[#0a66c2]/20 cursor-pointer"
                                                 />
                                             </th>
-                                            <th className="py-3 px-4 text-[11px] font-bold text-[#00000099] uppercase tracking-wider">Logo</th>
-                                            <th className="py-3 px-4 text-[11px] font-bold text-[#00000099] uppercase tracking-wider">Identity</th>
-                                            <th className="py-3 px-4 text-[11px] font-bold text-[#00000099] uppercase tracking-wider">Status</th>
-                                            <th className="py-3 px-4 text-[11px] font-bold text-[#00000099] uppercase tracking-wider">Created</th>
-                                            <th className="py-3 px-4 text-right pr-8 text-[11px] font-bold text-[#00000099] uppercase tracking-wider">Actions</th>
+                                            <th className="py-4 px-4 text-[12px] font-bold text-slate-500 uppercase tracking-wider">Logo</th>
+                                            <th className="py-4 px-4 text-[12px] font-bold text-slate-500 uppercase tracking-wider">Brand Name</th>
+                                            <th className="py-4 px-4 text-[12px] font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                            <th className="py-4 px-4 text-[12px] font-bold text-slate-500 uppercase tracking-wider">Added On</th>
+                                            <th className="py-4 px-4 text-right pr-10 text-[12px] font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
 
-                                    <tbody className="divide-y divide-[#f3f2ef]">
+                                    <tbody className="divide-y divide-slate-50">
                                         {isLoading && !isSearching ? (
-                                            <TableSkeleton rowCount={10} />
+                                            <TableSkeleton rowCount={8} />
                                         ) : brands.data.length === 0 ? (
                                             <tr>
                                                 <td colSpan="6">
@@ -188,13 +220,14 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
                                                 </td>
                                             </tr>
                                         ) : (
-                                            brands.data.map((item) => (
+                                            brands.data.map((item, index) => (
                                                 <BrandTableRow
                                                     key={item.id}
                                                     item={item}
                                                     isEffectivelySelected={isEffectivelySelected}
                                                     toggleSelect={toggleSelect}
                                                     onDeleteSuccess={handleDeleteSuccess}
+                                                    index={index}
                                                 />
                                             ))
                                         )}
@@ -203,7 +236,7 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
                             </div>
 
                             {brands.total > 0 && (
-                                <div className="px-5 py-3 border-t border-[#f3f2ef] bg-[#f8f9fa]/20">
+                                <div className="px-8 py-5 border-t border-slate-50 bg-slate-50/20">
                                     <Pagination
                                         meta={brands}
                                         onPageChange={(page) => performVisit({ ...filters, page })}
@@ -213,37 +246,55 @@ export default function BrandList({ auth, brands, filters = {}, counts = {} }) {
                         </div>
                     </div>
 
-                    {/* Right Section: Compact Stats Area */}
-                    <div className="lg:col-span-3 space-y-4 sticky top-4">
-                        <div className="bg-white rounded-lg border border-[#EBEBEB] shadow-sm p-4">
-                            <h3 className="text-[13px] font-bold text-[#000000e6] mb-3">Network Overview</h3>
-                            <div className="space-y-3">
+                    {/* Stats Sidebar */}
+                    <div className="lg:col-span-3 space-y-6 lg:sticky lg:top-24">
+                        <motion.div 
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5"
+                        >
+                            <h3 className="text-[14px] font-bold text-slate-800 flex items-center gap-2">
+                                <Activity size={16} className="text-[#0a66c2]" />
+                                Brand Statistics
+                            </h3>
+                            <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[12px] text-gray-500 font-medium">Total Brands</span>
-                                    <span className="text-[13px] font-bold text-gray-900">{counts.all || 0}</span>
+                                    <span className="text-[13px] text-slate-500 font-semibold">Total Brands</span>
+                                    <span className="text-[15px] font-bold text-slate-900">{counts.all || 0}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[12px] text-gray-500 font-medium">Active</span>
-                                    <span className="text-[13px] font-bold text-gray-900">{counts.active || 0}</span>
-                                </div>
-                                <div className="h-px bg-gray-50" />
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[12px] text-gray-500 font-medium">Health</span>
-                                    <span className="text-[11px] font-bold text-[#057642] px-2 py-0.5 bg-emerald-50 rounded">
-                                        Good
+                                    <span className="text-[13px] text-slate-500 font-semibold">Live Entities</span>
+                                    <span className="text-[15px] font-bold text-[#0a66c2] bg-blue-50 px-2 py-0.5 rounded-lg">
+                                        {counts.active || 0}
                                     </span>
                                 </div>
+                                <div className="h-px bg-slate-50" />
+                                <div className="pt-1 flex items-center gap-3">
+                                    <Database size={22} className="text-slate-200" />
+                                    <div className="space-y-0.5">
+                                        <p className="text-[11px] font-bold text-slate-400 uppercase">Database</p>
+                                        <p className="text-[13px] font-bold text-emerald-600">Sync Healthy</p>
+                                    </div>
+                                </div>
                             </div>
+                        </motion.div>
+
+                        <div className="bg-slate-900 rounded-xl shadow-lg p-6 relative overflow-hidden">
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <ShieldCheck size={18} className="text-[#0a66c2]" />
+                                    <span className="text-[11px] font-bold text-[#0a66c2]">Pro Tip</span>
+                                </div>
+                                <h4 className="text-white font-bold text-lg mb-2">Build Trust</h4>
+                                <p className="text-slate-400 text-[13px] mb-5 font-medium leading-relaxed italic">
+                                    "Using official brand logos makes your inventory look more professional and builds customer trust."
+                                </p>
+                            </div>
+                            <LayoutGrid size={120} className="absolute -right-10 -bottom-10 text-white/[0.03] rotate-12" />
                         </div>
 
-                        <div className="bg-[#f3f6f8] rounded-lg border border-[#EBEBEB] p-4">
-                             <p className="text-[11px] text-[#00000099] leading-relaxed">
-                                 <strong>Tip:</strong> Ensure accurate brand logos to enable correct vehicle filtering for customers.
-                             </p>
-                        </div>
-                        
-                         <div className="text-center opacity-40">
-                             <span className="text-[10px] font-bold text-gray-500">Fleet Network © 2026</span>
+                         <div className="pt-4 text-center">
+                             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest block border-t border-slate-50 pt-4">Fleet Registry © 2026</span>
                          </div>
                     </div>
                 </div>

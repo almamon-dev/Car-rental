@@ -1,20 +1,41 @@
+/**
+ * FAQ (Frequently Asked Questions) Component
+ * 
+ * Provides a searchable, categorized list of common questions and answers.
+ * Features an accordion-style interaction and real-time filtering.
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import React, { useState, useMemo } from "react";
 import { ArrowRight, Search, HelpCircle, ShieldCheck, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
 import { useLanguage } from "@/Contexts/LanguageContext";
 
+/**
+ * FAQ Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function FAQ() {
     const { t } = useLanguage();
+    
+    // --- State Management ---
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState(t.home.faq.categories.all);
     const [openId, setOpenId] = useState(null);
 
-    // Sync active category when language changes
+    /**
+     * Effect to synchronize active category when language changes
+     */
     React.useEffect(() => {
         setActiveCategory(t.home.faq.categories.all);
     }, [t.home.faq.categories.all]);
 
+    /**
+     * Categories list derived from translation context
+     */
     const categories = [
         t.home.faq.categories.all, 
         t.home.faq.categories.requirements, 
@@ -25,6 +46,9 @@ export default function FAQ() {
         t.home.faq.categories.account
     ];
 
+    /**
+     * Memoized calculation for filtered FAQs based on search query and active category
+     */
     const filteredFaqs = useMemo(() => {
         return t.home.faq.data.filter(faq => {
             const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -38,17 +62,21 @@ export default function FAQ() {
         <section className="py-6 bg-transparent overflow-hidden font-sans relative">
             <div className="max-w-7xl mx-auto px-6">
                 
+                {/* --- Section Header: Search & Branding --- */}
                 <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
                     <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-1 h-3 bg-[#0a66c2] rounded-full" />
-                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">{t.home.faq.support}</span>
+                            <span className="text-[10px] font-bold text-[#0a66c2] uppercase tracking-[0.2em]">
+                                {t.home.faq.support}
+                            </span>
                         </div>
                         <h2 className="text-[24px] font-bold text-[#000000e6] tracking-tight">
                             {t.home.faq.title}
                         </h2>
                     </div>
 
+                    {/* Real-time Search Input */}
                     <div className="relative w-full lg:w-[320px]">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                         <input 
@@ -61,6 +89,7 @@ export default function FAQ() {
                     </div>
                 </div>
 
+                {/* --- Category Switcher (Tabs) --- */}
                 <div className="flex flex-wrap gap-2 mb-8">
                      {categories.map(cat => (
                          <button
@@ -77,6 +106,7 @@ export default function FAQ() {
                      ))}
                 </div>
 
+                {/* --- FAQ Results Grid --- */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <AnimatePresence mode="popLayout">
                         {filteredFaqs.map((faq) => (
@@ -95,7 +125,9 @@ export default function FAQ() {
                             >
                                 <div className="flex flex-col h-full">
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="text-[9px] font-black text-[#0a66c2] uppercase tracking-widest">{faq.category}</span>
+                                        <span className="text-[9px] font-black text-[#0a66c2] uppercase tracking-widest">
+                                            {faq.category}
+                                        </span>
                                         <Info size={12} className="text-gray-300 group-hover:text-gray-400" />
                                     </div>
                                     
@@ -103,6 +135,7 @@ export default function FAQ() {
                                         {faq.question}
                                     </h3>
 
+                                    {/* Action Button: Expands the answer */}
                                     <div className="mt-auto pt-2">
                                         <button 
                                             onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
@@ -113,7 +146,7 @@ export default function FAQ() {
                                         </button>
                                     </div>
 
-                                    {/* Expansion Panel */}
+                                    {/* Expansion Panel Area */}
                                     <AnimatePresence>
                                         {openId === faq.id && (
                                             <motion.div
@@ -136,17 +169,23 @@ export default function FAQ() {
                     </AnimatePresence>
                 </div>
 
+                {/* Empty State: No search results found */}
                 {filteredFaqs.length === 0 && (
                     <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-[12px]">
                          <HelpCircle size={40} className="text-gray-200 mx-auto mb-4" />
-                         <p className="text-[13px] font-bold text-gray-400 uppercase tracking-widest">{t.home.faq.no_results}</p>
+                         <p className="text-[13px] font-bold text-gray-400 uppercase tracking-widest">
+                             {t.home.faq.no_results}
+                         </p>
                     </div>
                 )}
 
+                {/* --- Bottom Contact Banner --- */}
                 <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 py-4 px-6 bg-slate-50 border border-gray-100 rounded-[8px]">
                      <div className="flex items-center gap-3">
                          <ShieldCheck size={16} className="text-[#0a66c2]" />
-                         <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest leading-none">{t.home.faq.verification_level}</span>
+                         <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest leading-none">
+                             {t.home.faq.verification_level}
+                         </span>
                      </div>
                      <button className="py-1.5 px-6 rounded-full bg-[#0a66c2] text-white text-[12px] font-bold hover:bg-[#004182] transition-all shadow-sm">
                         {t.home.faq.contact_center}
@@ -157,3 +196,4 @@ export default function FAQ() {
         </section>
     );
 }
+

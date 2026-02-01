@@ -20,10 +20,10 @@ export default function StatusTabs({ currentStatus, handleTabChange, counts }) {
                         }`}
                 >
                     {tab.label}
-                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-black
+                    <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold
                         ${currentStatus === tab.id 
                             ? 'bg-[#0a66c2]/10 text-[#0a66c2]' 
-                            : 'bg-gray-100 text-gray-500'
+                            : 'bg-gray-100/80 text-gray-500'
                         }`}>
                         {tab.count}
                     </span>

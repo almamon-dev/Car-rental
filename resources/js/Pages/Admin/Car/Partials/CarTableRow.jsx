@@ -109,7 +109,7 @@ const CarTableRow = React.memo(function CarTableRow({
 
             <td className="py-4 px-4 min-w-[280px]">
                 <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center shadow-sm relative group/img">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden flex items-center justify-center shadow-sm relative group/img">
                         {item.images?.[0] ? (
                             <>
                                 {imageLoading && (
@@ -130,26 +130,26 @@ const CarTableRow = React.memo(function CarTableRow({
                             <ImageOff size={20} className="text-slate-300" />
                         )}
                         <div className="absolute inset-x-0 bottom-0 py-0.5 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover/img:opacity-100 transition-opacity">
-                            <span className="block text-center text-[8px] font-black text-white uppercase tracking-widest">View Gallery</span>
+                            <span className="block text-center text-[8px] font-bold text-white uppercase tracking-widest">Gallery</span>
                         </div>
                     </div>
 
                     <div className="flex flex-col min-w-0 pt-0.5">
                         <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[9px] font-black bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md uppercase tracking-[1px] border border-slate-200/50">
+                            <span className="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase tracking-wider border border-slate-200/50">
                                 {item.brand?.name || "No Brand"}
                             </span>
                         </div>
                         
                         <Link
                             href={route("admin.cars.show", item.id)}
-                            className="text-[14px] font-semibold text-[#0a66c2] hover:text-[#004182] transition-colors line-clamp-1 mb-0.5"
+                            className="text-[14px] font-bold text-[#0a66c2] hover:text-[#004182] transition-colors line-clamp-1 mb-0.5"
                         >
                             {item.make} {item.model}
                         </Link>
 
                         {item.description && (
-                            <p className="text-[12px] text-[#666666] line-clamp-2 max-w-[220px] leading-snug">
+                            <p className="text-[12px] text-slate-500 line-clamp-1 max-w-[220px] leading-snug italic">
                                 {item.description}
                             </p>
                         )}
@@ -160,10 +160,10 @@ const CarTableRow = React.memo(function CarTableRow({
 
             <td className="py-3 px-4">
                 <div className="flex flex-col">
-                    <span className="text-[14px] text-[#191919] font-medium truncate max-w-[120px]">
+                    <span className="text-[13px] text-slate-800 font-bold truncate max-w-[120px]">
                         {item.category?.name || "Uncategorized"}
                     </span>
-                    <span className="text-[12px] text-[#666666] uppercase tracking-normal">
+                    <span className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
                         {item.rental_type || "Daily"} Rental
                     </span>
                 </div>
@@ -178,7 +178,7 @@ const CarTableRow = React.memo(function CarTableRow({
                             item.specifications?.fuel_type,
                             item.specifications?.mileage ? `${Number(item.specifications.mileage).toFixed(0)} KM` : null,
                             item.specifications?.steering,
-                            `EY-${item.year}`
+                            item.year
                         ].filter(Boolean);
                         
                         const displaySpecs = specs.slice(0, 2);
@@ -187,13 +187,13 @@ const CarTableRow = React.memo(function CarTableRow({
                         return (
                             <>
                                 {displaySpecs.map((spec, idx) => (
-                                    <span key={idx} className="px-2 py-0.5 bg-gray-50 text-gray-700 text-[11px] font-medium rounded border border-gray-200">
+                                    <span key={idx} className="px-2 py-0.5 bg-slate-50 text-slate-600 text-[11px] font-bold rounded-lg border border-slate-100">
                                         {spec}
                                     </span>
                                 ))}
                                 {moreCount > 0 && (
-                                    <span className="px-2 py-0.5 bg-blue-50 text-[#0a66c2] text-[11px] font-medium rounded border border-blue-100">
-                                        +{moreCount} more
+                                    <span className="px-2 py-0.5 bg-blue-50 text-[#0a66c2] text-[11px] font-bold rounded-lg border border-blue-100">
+                                        +{moreCount}
                                     </span>
                                 )}
                             </>
@@ -206,28 +206,28 @@ const CarTableRow = React.memo(function CarTableRow({
 
             <td className="py-3 px-4">
                 <div className="flex flex-col">
-                    <span className="text-[14px] font-semibold text-[#191919]">
-                        {item.price_details?.currency || '$'}
+                    <span className="text-[14px] font-bold text-slate-900">
+                        {item.price_details?.currency || '৳'}
                         {Number(item.price_details?.daily_rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
-                    <span className="text-[12px] text-[#666666]">per day</span>
+                    <span className="text-[11px] text-slate-400 font-semibold uppercase">per {item.rental_type?.toLowerCase() || 'day'}</span>
                 </div>
             </td>
 
             <td className="py-3 px-4">
                 {item.status === "available" ? (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full shadow-sm">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                        Active
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                        Available
                     </div>
                 ) : item.status === "reserved" || item.status === "sold" ? (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full shadow-sm">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm">
+                        <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
                         Reserved
                     </div>
                 ) : (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-400 text-white text-[10px] font-black uppercase tracking-wider rounded-full shadow-sm">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full opacity-60" />
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-500 border border-slate-100 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full opacity-60" />
                         {item.status || "Draft"}
                     </div>
                 )}
@@ -251,7 +251,7 @@ const CarTableRow = React.memo(function CarTableRow({
                         <div
                             ref={menuRef}
                             style={menuStyles}
-                            className="w-32 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
+                            className="w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
                         >
                             <Link
                                 href={route("admin.cars.show", item.id)}

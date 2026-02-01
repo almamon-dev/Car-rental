@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link, router } from "@inertiajs/react";
-import { MoreVertical, Eye, Pencil, Trash2, MapPin } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, MapPin } from "lucide-react";
 import DeleteAction from "@/Components/modals/ConfirmDelete";
 
 const LocationTableRow = React.memo(function LocationTableRow({
@@ -102,40 +102,41 @@ const LocationTableRow = React.memo(function LocationTableRow({
                 </div>
             </td>
 
-            <td className="py-4 px-4">
-                <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center border border-gray-200 overflow-hidden shadow-sm group-hover:border-gray-300 transition-colors p-2 text-[#0a66c2]">
-                    <MapPin size={20} />
+            <td className="py-4 px-4 min-w-[200px]">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 p-2 text-[#0a66c2] shrink-0">
+                        <MapPin size={18} strokeWidth={2.5} />
+                    </div>
+                    <div>
+                        <div className="font-bold text-gray-900 text-[14px] leading-tight mb-0.5">{item.name}</div>
+                        <div className="text-[11px] text-gray-400 font-semibold tracking-wider uppercase">
+                            ID: #B{String(item.id).padStart(4, "0")}
+                        </div>
+                    </div>
                 </div>
             </td>
 
-            <td className="py-4 px-4 min-w-[180px]">
-                <div className="font-bold text-gray-900 text-[15px] mb-0.5">{item.name}</div>
-                <div className="text-[11px] text-gray-400 font-bold tracking-[0.5px] uppercase">
-                    ID: #B{String(item.id).padStart(4, "0")}
-                </div>
-            </td>
-
-            <td className="py-4 px-4 text-[13px] text-gray-500 font-medium max-w-[200px] truncate italic">
+            <td className="py-4 px-4 text-[13px] text-gray-600 font-medium italic">
                 {item.city || "—"}
             </td>
 
             <td className="py-4 px-4">
                 <button
                     onClick={handleStatusToggle}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border ${
                         item.status 
-                        ? "bg-emerald-500 text-white" 
-                        : "bg-slate-400 text-white"
+                        ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                        : "bg-slate-50 text-slate-500 border-slate-100"
                     }`}
                 >
-                    <div className={`w-1.5 h-1.5 rounded-full bg-white ${item.status ? "animate-pulse" : "opacity-60"}`} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${item.status ? "bg-emerald-500" : "bg-slate-400"}`} />
                     {item.status ? "Active" : "Inactive"}
                 </button>
             </td>
 
             <td className="py-4 px-4 truncate">
-                <span className="px-3 py-1 bg-gray-50 text-gray-700 text-[12px] font-bold rounded-md border border-gray-200/60 whitespace-nowrap inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                <span className="px-3 py-1 bg-gray-50 text-gray-600 text-[12px] font-semibold rounded-lg border border-gray-100 whitespace-nowrap inline-flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-gray-400" />
                     {new Date(item.created_at).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
@@ -162,7 +163,7 @@ const LocationTableRow = React.memo(function LocationTableRow({
                         <div
                             ref={menuRef}
                             style={menuStyles}
-                            className="w-32 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
+                            className="w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
                         >
                             <Link
                                 href={route("admin.locations.edit", item.id)}
@@ -201,4 +202,3 @@ const LocationTableRow = React.memo(function LocationTableRow({
 });
 
 export default LocationTableRow;
-

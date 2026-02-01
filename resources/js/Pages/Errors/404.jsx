@@ -1,8 +1,27 @@
+/**
+ * Error - 404 Page Not Found
+ * 
+ * Institutional-grade error boundary for non-existent routes, 
+ * providing navigation recovery and support redirection.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import React from "react";
 import { Head, Link, router } from "@inertiajs/react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Home, MessageSquare, ShieldAlert, ChevronRight, Activity } from "lucide-react";
 
+/**
+ * Error404 Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function Error404() {
-    // Back function using Inertia's router
+    /**
+     * Recovery Protocol: Logic to return to previous state or home
+     */
     const handleGoBack = () => {
         if (window.history.length > 1) {
             window.history.back();
@@ -13,81 +32,101 @@ export default function Error404() {
 
     return (
         <>
-            <Head title="404 - Page Not Found" />
+            <Head title="404 - Resource Not Found | EliteFleet" />
 
-            <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-6 font-sans">
-                <div className="max-w-md w-full text-center">
-                    {/* Hero Section: 404 Text with Overlay */}
-                    <div className="relative mb-12 flex justify-center items-center">
-                        <h1 className="text-[10rem] md:text-[13rem] font-black text-gray-200/60 leading-none select-none tracking-tighter">
-                            404
-                        </h1>
-                        <div className="absolute">
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-lg shadow-sm">
-                                Page not found
-                            </h2>
+            <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-6 font-sans overflow-hidden">
+                <div className="max-w-xl w-full text-center relative">
+                    
+                    {/* --- DECORATIVE BACKGROUND ASSET --- */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 opacity-[0.03] select-none pointer-events-none">
+                        <h1 className="text-[25rem] font-black tracking-tighter">404</h1>
+                    </div>
+
+                    {/* --- ERROR IDENTIFIER --- */}
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="mb-12 inline-flex flex-col items-center"
+                    >
+                        <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-[#0a66c2] mb-6">
+                            <ShieldAlert size={32} strokeWidth={1.5} />
                         </div>
-                    </div>
+                        <div className="space-y-2">
+                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-none">
+                                Resource <span className="text-[#0a66c2]">Not Found</span>
+                            </h2>
+                            <div className="flex items-center justify-center gap-2">
+                                <Activity size={12} className="text-[#0a66c2]" />
+                                <span className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">Error Code: 404_DEPLOYMENT_FAILURE</span>
+                            </div>
+                        </div>
+                    </motion.div>
 
-                    {/* Description */}
-                    <div className="space-y-3 mb-10">
+                    {/* --- NARRATIVE --- */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="space-y-4 mb-12"
+                    >
                         <p className="text-lg text-gray-600 font-medium">
-                            Oops! You’ve wandered into the unknown.
+                            The requested tactical resource could not be localized.
                         </p>
-                        <p className="text-gray-400 max-w-sm mx-auto">
-                            The page you are looking for doesn't exist or has
-                            been moved to another galaxy.
+                        <p className="text-gray-400 max-w-md mx-auto leading-relaxed">
+                            It appears the path you're attempting to access has been decommissioned 
+                            or resides outside our current operational parameters.
                         </p>
-                    </div>
+                    </motion.div>
 
-                    {/* Action Buttons */}
-                    <div className="flex  flex-col space-y-4">
-                        {/* Primary Button: Go Back */}
+                    {/* --- RECOVERY ACTIONS --- */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12"
+                    >
                         <button
                             onClick={handleGoBack}
-                            className="group relative bg-secondary w-full inline-flex items-center justify-center px-8 py-4 text-secondary-foreground font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:bg-black hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] active:scale-[0.98]"
+                            className="flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-700 font-bold py-4 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-[0.98] shadow-sm group"
                         >
-                            {/* Arrow Animation */}
-                            <svg
-                                className="w-5 h-5 mr-3 transform group-hover:-translate-x-1.5 transition-transform duration-300 ease-out"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2.5"
-                                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                                />
-                            </svg>
-                            <span>Take Me Back</span>
+                            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                            Return to Previous
                         </button>
-
-                        {/* Secondary Button: Home Link */}
                         <Link
                             href="/"
-                            className="inline-flex items-center justify-center text-sm font-bold text-gray-400 hover:text-primary transition-all duration-200 py-2 group"
+                            className="flex items-center justify-center gap-3 bg-[#0a66c2] text-white font-bold py-4 rounded-xl hover:bg-[#084d92] transition-all active:scale-[0.98] shadow-md shadow-[#0a66c2]/20"
                         >
-                            Or return to
-                            <span className="ml-1 border-b-2 border-transparent group-hover:border-primary transition-all">
-                                Homepage
-                            </span>
-                            <svg
-                                className="w-4 h-4 ml-1 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2.5"
-                                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                                />
-                            </svg>
+                            <Home size={18} />
+                            Base Dashboard
                         </Link>
-                    </div>
+                    </motion.div>
+
+                    {/* --- SUPPORT REDIRECTS --- */}
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="pt-8 border-t border-gray-100 flex flex-wrap justify-center gap-x-8 gap-y-4"
+                    >
+                        <Link 
+                            href={route('help.center')} 
+                            className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-[#0a66c2] transition-colors group"
+                        >
+                            <MessageSquare size={14} />
+                            Help Center
+                            <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                        </Link>
+                        <Link 
+                            href={route('contact')} 
+                            className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-[#0a66c2] transition-colors group"
+                        >
+                            <ShieldAlert size={14} />
+                            Report Breach
+                            <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                        </Link>
+                    </motion.div>
+
                 </div>
             </div>
         </>

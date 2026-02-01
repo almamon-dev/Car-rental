@@ -1,3 +1,13 @@
+/**
+ * Car Details - Booking Widget
+ * 
+ * Provides the primary transactional interface for asset acquisition,
+ * including date selection, rate mode configuration, and availability verification.
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import { motion } from "framer-motion";
 import {
     MapPin,
@@ -21,6 +31,11 @@ import { useLanguage } from "@/Contexts/LanguageContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+/**
+ * BookingWidget Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function BookingWidget({
     car,
     locations = [],
@@ -37,9 +52,14 @@ export default function BookingWidget({
     rateMode,
     onRateModeChange
 }) {
+    // --- Context & Initialization ---
     const { t, locale } = useLanguage();
     const currency = car.price_details?.currency || '৳';
+    
+    // --- State: Transactional ---
     const [error, setError] = useState(null);
+
+    // --- Logic: Availability Verification ---
 
     const checkAvailability = async () => {
         setAvailability('checking');
@@ -76,7 +96,7 @@ export default function BookingWidget({
                 <div className="flex flex-col leading-none">
                     <div className="text-[10px] font-bold text-gray-400 mb-0.5 uppercase tracking-tighter">{t.details.daily_rate_label}</div>
                     <div className="flex items-center gap-1.5">
-                        <span className="text-[18px] font-bold text-[#3749bb]">{currency}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
+                        <span className="text-[18px] font-bold text-[#0a66c2]">{currency}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
                         <span className="text-[12px] text-gray-400 line-through font-medium">{currency}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
                     </div>
                 </div>
@@ -103,7 +123,7 @@ export default function BookingWidget({
                                 onClick={() => onRateModeChange(type.id)}
                                 className={`py-1.5 px-1 rounded-[4px] border transition-all flex flex-col items-center gap-0 ${
                                     rateMode === type.id
-                                        ? "bg-blue-50 border-[#3749bb] text-[#3749bb] shadow-sm"
+                                        ? "bg-blue-50 border-[#0a66c2] text-[#0a66c2] shadow-sm"
                                         : "bg-white border-gray-200 text-gray-700 hover:border-gray-200"
                                 }`}
                             >
@@ -132,11 +152,10 @@ export default function BookingWidget({
                                         }));
                                         setAvailability(null);
                                     }}
-                                    className="w-full h-9 pl-2 pr-6 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer appearance-none shadow-sm"
+                                    className="w-full h-9 pl-2 pr-6 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#0a66c2] focus:ring-1 focus:ring-[#0a66c2] outline-none transition-all cursor-pointer appearance-none shadow-sm"
                                 >
                                     {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
                                 </select>
-                               
                             </div>
                          </div>
                          
@@ -153,12 +172,11 @@ export default function BookingWidget({
                                             dropoff: e.target.value,
                                         }))
                                     }
-                                    className="w-full h-9 pl-2 pr-6 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer appearance-none shadow-sm"
+                                    className="w-full h-9 pl-2 pr-6 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#0a66c2] focus:ring-1 focus:ring-[#0a66c2] outline-none transition-all cursor-pointer appearance-none shadow-sm"
                                 >
                                     {locations.map(loc => <option key={loc.id} value={loc.name}>{loc.name}</option>)}
                                     <option value="Custom Drop-off">{t.details.custom_dropoff_label}</option>
                                 </select>
-                              
                             </div>
                          </div>
                     </div>
@@ -183,7 +201,7 @@ export default function BookingWidget({
                                     dateFormat="MMM d, HH:mm"
                                     minDate={new Date()}
                                     placeholderText={t.details.pickup_placeholder}
-                                    className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer shadow-sm"
+                                    className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#0a66c2] focus:ring-1 focus:ring-[#0a66c2] outline-none transition-all cursor-pointer shadow-sm"
                                     wrapperClassName="w-full"
                                     popperClassName="!z-[9999]"
                                 />
@@ -207,7 +225,7 @@ export default function BookingWidget({
                                     dateFormat="MMM d, HH:mm"
                                     minDate={new Date()}
                                     placeholderText={t.details.return_placeholder}
-                                    className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none transition-all cursor-pointer shadow-sm"
+                                    className="w-full h-9 pl-8 pr-2 bg-white border border-gray-200 rounded-[4px] text-[12px] font-medium text-gray-900 focus:border-[#0a66c2] focus:ring-1 focus:ring-[#0a66c2] outline-none transition-all cursor-pointer shadow-sm"
                                     wrapperClassName="w-full"
                                     popperClassName="!z-[9999]"
                                 />
@@ -237,7 +255,7 @@ export default function BookingWidget({
                         
                         <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
                             <span className="text-[15px] font-bold text-gray-900">{t.details.total_price}</span>
-                            <span className="text-[22px] font-bold text-[#3749bb]">{currency}{priceSummary.total.toLocaleString()}</span>
+                            <span className="text-[22px] font-bold text-[#0a66c2]">{currency}{priceSummary.total.toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
@@ -267,12 +285,12 @@ export default function BookingWidget({
                             className={`w-full py-2.5 rounded-[4px] text-[14px] font-bold transition-all flex items-center justify-center gap-2 ${
                                 availability === 'checking'
                                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                : "bg-white border border-[#3749bb] text-[#3749bb] hover:bg-[#3749bb] hover:text-white transition-all active:scale-[0.98]"
+                                : "bg-white border border-[#0a66c2] text-[#0a66c2] hover:bg-[#0a66c2] hover:text-white transition-all active:scale-[0.98]"
                             }`}
                         >
                             {availability === 'checking' ? (
                                 <>
-                                    <div className="w-3 h-3 border-2 border-[#3749bb]/30 border-t-[#3749bb] rounded-full animate-spin" />
+                                    <div className="w-3 h-3 border-2 border-[#0a66c2]/30 border-t-[#0a66c2] rounded-full animate-spin" />
                                     {t.details.analyzing_status}
                                 </>
                             ) : (
@@ -288,7 +306,7 @@ export default function BookingWidget({
                         disabled={availability !== 'available'}
                         className={`w-full py-3 text-white text-[15px] font-bold rounded-[4px] transition-all flex items-center justify-center gap-2 ${
                             availability === 'available' 
-                            ? "bg-[#3749bb] hover:bg-[#2b3a95] shadow-md hover:shadow-lg" 
+                            ? "bg-[#0a66c2] hover:bg-[#084d92] shadow-md hover:shadow-lg" 
                             : "bg-gray-200 cursor-not-allowed text-gray-400"
                         }`}
                     >
@@ -359,7 +377,7 @@ export default function BookingWidget({
 
                         .react-datepicker__day--selected, 
                         .react-datepicker__day--keyboard-selected {
-                            background-color: #3749bb !important;
+                            background-color: #0a66c2 !important;
                             color: white !important;
                             font-weight: 700 !important;
                         }
@@ -367,13 +385,13 @@ export default function BookingWidget({
                         /* Fix: Keep selected state blue on hover */
                         .react-datepicker__day--selected:hover,
                         .react-datepicker__day--keyboard-selected:hover {
-                            background-color: #2b3a95 !important;
+                            background-color: #084d92 !important;
                             color: white !important;
                         }
                         
                         .react-datepicker__day--today {
                             font-weight: 900 !important;
-                            color: #3749bb !important;
+                            color: #0a66c2 !important;
                             position: relative;
                         }
                         .react-datepicker__day--today::after {
@@ -450,7 +468,7 @@ export default function BookingWidget({
                         }
 
                         .react-datepicker__time-list-item--selected {
-                            background-color: #3749bb !important;
+                            background-color: #0a66c2 !important;
                             color: white !important;
                             font-weight: 700 !important;
                         }
@@ -572,4 +590,3 @@ const MetricItem = ({ Icon, label }) => (
         <span className="text-[9px] font-bold text-gray-500">{label}</span>
     </div>
 );
-

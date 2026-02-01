@@ -1,3 +1,13 @@
+/**
+ * Executive Asset Details Page
+ * 
+ * Provides a comprehensive view of a single vehicle asset, including technical specifications,
+ * price scheduling, location context, and interactive booking management.
+ * 
+ * @author AL Mamon
+ * @version 1.2.0
+ */
+
 import React, { useState, useEffect } from "react";
 import GuestLayout from "@/Layouts/GuestLayout";
 import HeroSection from "./CarDetails/HeroSection";
@@ -8,15 +18,6 @@ import SimilarCars from "./CarDetails/SimilarCars";
 import BookingModal from "./CarDetails/BookingModal";
 import { Skeleton } from "@/Components/ui/Skeleton";
 import { router, usePage, Head } from "@inertiajs/react";
-
-/**
- * EXECUTIVE ASSET DETAILS (STAR TECH INSPIRED / LINKEDIN SYNC)
- * 
- * Philosophy:
- * - High Density Tech (Star Tech Inspired): Extreme vertical/horizontal efficiency.
- * - Sharp Modular Content: Information in high-contrast containers with minimal rounding.
- * - Palette: Pure White (#ffffff) background, #084c8d primary accents, deep black text.
- */
 
 const CarDetailsSkeleton = () => (
     <div className="bg-[#f0f2f5] min-h-screen font-sans pt-4 pb-8">
@@ -95,8 +96,20 @@ const CarDetailsSkeleton = () => (
     </div>
 );
 
-export default function CarDetails({ car, locations }) {
+/**
+ * CarDetails Component
+ * 
+ * @param {Object} props
+ * @param {Object} props.car - Main car data object from backend
+ * @param {Array} props.locations - Available service locations
+ * @param {Array} props.similarCars - Related vehicle assets
+ * @returns {JSX.Element}
+ */
+export default function CarDetails({ car, locations, similarCars = [] }) {
+    // --- Context & Initialization ---
     const { auth } = usePage().props;
+
+    // --- State: UI Management ---
     const [isLoading, setIsLoading] = useState(true);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [activeFaqIndex, setActiveFaqIndex] = useState(null);
@@ -104,6 +117,8 @@ export default function CarDetails({ car, locations }) {
     const [isBookmarked, setIsBookmarked] = useState(car.is_favorited || false);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
+
+    // --- State: Transactional Management ---
     const [availability, setAvailability] = useState(null); // null, 'checking', 'available', 'busy'
     const [rateMode, setRateMode] = useState("Daily"); // Daily, Weekly, Monthly
 
@@ -295,7 +310,7 @@ export default function CarDetails({ car, locations }) {
 
                 {/* Recommendations Footer */}
                 <div className="bg-white py-12">
-                    <SimilarCars />
+                    <SimilarCars cars={similarCars} />
                 </div>
 
                 <BookingModal

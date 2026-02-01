@@ -1,15 +1,37 @@
+/**
+ * Car Details - Extra Services
+ * 
+ * Manages the selection of supplementary asset enhancements (GPS, child seats, etc.)
+ * for inclusion in the final deployment manifest.
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import { useState } from "react";
 import { Check, Settings2, ShieldCheck, Zap } from "lucide-react";
 import { extraServices } from "./data";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
-
+/**
+ * ExtraServices Component
+ * 
+ * @param {Object} props
+ * @param {Array} props.selectedExtras - Currently active asset enhancements
+ * @param {Function} props.handleExtraServiceToggle - Toggle logic for services
+ * @returns {JSX.Element}
+ */
 export default function ExtraServices({
     selectedExtras,
     handleExtraServiceToggle,
 }) {
+    // --- Context & Initialization ---
     const { t } = useLanguage();
+
+    // --- State: Visibility ---
     const [isOpen, setIsOpen] = useState(false);
+
+    // --- Mapping: Localized Service Identities ---
 
     const serviceNameMap = {
         1: t.details.extra_services.gps,

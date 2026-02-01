@@ -1,8 +1,23 @@
+/**
+ * Terms of Service Page
+ * 
+ * Defines the legal framework, member responsibilities, and 
+ * operational protocols for using the mobility matrix.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import { Head, usePage } from '@inertiajs/react';
 import UserLayout from '@/Layouts/UserLayout';
 import { Scale, ShieldCheck, Clock, Shield } from 'lucide-react';
 import 'react-quill/dist/quill.snow.css';
 
+/**
+ * Terms Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function Terms() {
     const { settings } = usePage().props;
     const siteName = settings?.company_name || settings?.site_name || "EliteFleet";

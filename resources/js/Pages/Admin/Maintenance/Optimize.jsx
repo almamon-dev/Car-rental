@@ -1,9 +1,35 @@
-import React, { useState, useEffect } from "react";
+/**
+ * Admin - System Performance
+ * 
+ * Provides tools for clearing caches and optimizing application speed.
+ * 
+ * @author AL Mamon
+ * @version 1.2.0
+ */
+
+import React, { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, router, usePage } from "@inertiajs/react";
-import { Zap, Trash2, RefreshCw, Layers, Map, FileCode, Terminal, CheckCircle2, AlertCircle } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { 
+    Zap, 
+    Trash2, 
+    RefreshCw, 
+    Layers, 
+    Map, 
+    FileCode, 
+    Terminal, 
+    CheckCircle2, 
+    AlertCircle,
+    Cpu,
+    Activity,
+    ShieldCheck,
+    Lock
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
+/**
+ * Optimize Component
+ */
 export default function Optimize({ auth }) {
     const { flash } = usePage().props;
     const [running, setRunning] = useState(null);
@@ -22,125 +48,168 @@ export default function Optimize({ auth }) {
     const tools = [
         {
             id: 'optimize',
-            title: 'Full Platform Optimization',
-            description: 'Hyper-optimize configuration, routes, and compiled views for maximum production velocity.',
-            icon: <Zap size={20} />,
-            action: 'Run Optimize',
-            color: 'text-[#0a66c2] bg-blue-50'
+            title: 'Full Optimization',
+            description: 'Optimizes configuration, routes, and views all at once for maximum website speed.',
+            icon: Zap,
+            action: 'Run All',
+            color: 'text-amber-500 bg-amber-50',
+            border: 'border-amber-100 shadow-amber-100/20'
         },
         {
             id: 'cache_clear',
-            title: 'Application Cache',
-            description: 'Purge all cached application data, including custom tags and database query results.',
-            icon: <Trash2 size={20} />,
+            title: 'Clear Cache',
+            description: 'Clears the application cache, including your custom data and database results.',
+            icon: Trash2,
             action: 'Clear Cache',
-            color: 'text-slate-600 bg-slate-50'
+            color: 'text-rose-500 bg-rose-50',
+            border: 'border-rose-100 shadow-rose-100/20'
         },
         {
             id: 'config_cache',
-            title: 'Configuration Cache',
-            description: 'Compile all config files into a single high-performance file for faster bootstrapping.',
-            icon: <Layers size={20} />,
-            action: 'Rebuild Config',
-            color: 'text-slate-600 bg-slate-50'
+            title: 'Cache Config',
+            description: 'Speeds up the loading of configuration files by combining them into one file.',
+            icon: Layers,
+            action: 'Cache Config',
+            color: 'text-[#0a66c2] bg-blue-50',
+            border: 'border-blue-100 shadow-blue-100/20'
         },
         {
             id: 'route_cache',
-            title: 'Route Cache',
-            description: 'Pre-compile the entire URL routing table to eliminate runtime route registration overhead.',
-            icon: <Map size={20} />,
-            action: 'Rebuild Routes',
-            color: 'text-slate-600 bg-slate-50'
+            title: 'Cache Routes',
+            description: 'Creates a pre-compiled list of all website URLs to make page changes faster.',
+            icon: Map,
+            action: 'Cache Routes',
+            color: 'text-emerald-500 bg-emerald-50',
+            border: 'border-emerald-100 shadow-emerald-100/20'
         },
         {
             id: 'view_clear',
-            title: 'Compiled Views',
-            description: 'Wipe all pre-rendered PHP view templates to resolve stale UI issues or structural changes.',
-            icon: <FileCode size={20} />,
+            title: 'Clear Views',
+            description: 'Clears pre-rendered page templates. Useful if you see old design changes.',
+            icon: FileCode,
             action: 'Clear Views',
-            color: 'text-slate-600 bg-slate-50'
+            color: 'text-slate-500 bg-slate-50',
+            border: 'border-slate-100'
         }
     ];
 
     return (
         <AdminLayout user={auth.user}>
-            <Head title="System Optimization" />
+            <Head title="Performance | Admin Panel" />
 
-            <div className="max-w-9xl mx-auto space-y-6 font-sans antialiased text-slate-900 pb-12">
-                {/* Header Section - LinkedIn Style Top Card */}
-                <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
-                    <div className="px-6 py-4 flex items-center justify-between border-b border-slate-100">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center text-[#0a66c2]">
-                                <Terminal size={24} strokeWidth={2} />
+            <div className="max-w-full mx-auto space-y-6">
+                
+                {/* --- HEADER --- */}
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden text-[#191919]">
+                    <div className="px-8 py-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-[#0a66c2] shadow-sm border border-slate-100">
+                                <Cpu size={28} strokeWidth={2} />
                             </div>
-                            <div>
-                                <h1 className="text-[20px] font-bold text-slate-900 tracking-tight leading-tight">System Performance & Cache</h1>
-                                <p className="text-[13px] text-slate-500 mt-0.5 font-medium">Platform maintenance, latency reduction and object-cache management.</p>
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-3 bg-[#0a66c2] rounded-full" />
+                                    <span className="text-[12px] font-bold text-[#0a66c2]">Platform Health</span>
+                                </div>
+                                <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+                                    Optimize Performance
+                                </h1>
+                                <p className="text-[14px] text-slate-500 font-medium italic">
+                                    Improve speed and clear temporary data to keep your platform running smoothly.
+                                </p>
                             </div>
                         </div>
-                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[11px] font-bold uppercase tracking-wider">
-                            <CheckCircle2 size={12} /> System Healthy
+
+                        <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 text-[11px] font-bold uppercase tracking-widest">
+                            <Activity size={12} strokeWidth={3} className="animate-pulse" />
+                            System Active
                         </div>
                     </div>
                 </div>
 
-                {/* Maintenance Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {tools.map((tool) => (
-                        <div 
-                            key={tool.id} 
-                            className="bg-white rounded-lg border border-slate-200 shadow-sm transition-all hover:shadow-md flex flex-col h-full"
-                        >
-                            <div className="p-6 flex-1">
-                                <div className={`w-10 h-10 ${tool.color} rounded-lg flex items-center justify-center mb-4 border border-current border-opacity-10`}>
-                                    {tool.icon}
+                {/* --- TOOLS GRID --- */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+                    <AnimatePresence mode="popLayout">
+                        {tools.map((tool, index) => {
+                            const Icon = tool.icon;
+                            return (
+                                <motion.div 
+                                    key={tool.id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col h-full group overflow-hidden"
+                                >
+                                    <div className="p-8 flex-1 space-y-5">
+                                        <div className={`w-12 h-12 ${tool.color} ${tool.border} rounded-xl flex items-center justify-center border transition-transform duration-500`}>
+                                            <Icon size={22} strokeWidth={2} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h3 className="text-[16px] font-bold text-slate-800">{tool.title}</h3>
+                                            <p className="text-[13px] text-slate-500 leading-relaxed font-medium">
+                                                {tool.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="px-8 py-5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                                        <button 
+                                            onClick={() => handleRunOptimize(tool.id)}
+                                            disabled={running}
+                                            className={`h-11 px-6 rounded-xl font-bold text-[12px] transition-all flex items-center gap-2 group-active:scale-95
+                                                ${running === tool.id 
+                                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                                                    : 'bg-slate-900 text-white shadow-md hover:bg-black'}`}
+                                        >
+                                            {running === tool.id ? (
+                                                <RefreshCw size={14} className="animate-spin" />
+                                            ) : (
+                                                <Zap size={14} />
+                                            )}
+                                            {running === tool.id ? 'Loading...' : tool.action}
+                                        </button>
+                                        
+                                        {tool.id === 'optimize' && (
+                                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#0a66c2] uppercase tracking-wider">
+                                                <ShieldCheck size={12} />
+                                                Suggested
+                                            </div>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
+
+                    {/* Tip Card */}
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-slate-900 rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden group shadow-xl h-full"
+                    >
+                         <div className="relative z-10 space-y-6">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-[#0a66c2] rounded-xl text-white shadow-lg shadow-[#0a66c2]/20 border border-white/10">
+                                    <Lock size={20} strokeWidth={2} />
                                 </div>
-                                <h3 className="text-[16px] font-bold text-slate-900 mb-2">{tool.title}</h3>
-                                <p className="text-[13px] text-slate-500 leading-relaxed font-medium">
-                                    {tool.description}
-                                </p>
+                                <h4 className="text-[15px] font-bold text-white">Performance Tip</h4>
                             </div>
                             
-                            <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-                                <button 
-                                    onClick={() => handleRunOptimize(tool.id)}
-                                    disabled={running}
-                                    className={`px-6 py-2 rounded-full font-bold text-[13px] transition-all flex items-center gap-2 
-                                        ${running === tool.id 
-                                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
-                                            : 'bg-[#0a66c2] hover:bg-[#004182] text-white shadow-sm'}`}
-                                >
-                                    {running === tool.id ? (
-                                        <RefreshCw size={14} className="animate-spin" />
-                                    ) : (
-                                        <Zap size={14} />
-                                    )}
-                                    {running === tool.id ? 'Running...' : tool.action}
-                                </button>
-                                
-                                {tool.id === 'optimize' && (
-                                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Recommended</span>
-                                )}
+                            <p className="text-[14px] text-slate-400 leading-relaxed font-medium italic border-l-2 border-[#0a66c2] pl-4">
+                                "Clearing caches after an update or code change ensures that your customers always see the latest version of your website without any glitches."
+                            </p>
+                            
+                            <div className="pt-4">
+                                <span className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                                    System Core v1.2
+                                </span>
                             </div>
-                        </div>
-                    ))}
+                         </div>
 
-                    {/* Info Card - Help Center Style */}
-                    <div className="bg-[#f3f6f8] rounded-lg border border-slate-200 p-6 flex flex-col justify-center">
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 bg-white rounded-md text-[#0a66c2] border border-slate-100 shadow-sm">
-                                <AlertCircle size={20} />
-                            </div>
-                            <div className="space-y-2">
-                                <h4 className="text-[15px] font-bold text-slate-900">Optimization Protocol</h4>
-                                <p className="text-[12px] text-slate-500 leading-relaxed font-medium">
-                                    Running these commands will flush internal buffers and pre-compile core logic. This is essential after environment changes or code updates to ensure low-latency response times.
-                                </p>
-                                <a href="#" className="text-[13px] font-bold text-[#0a66c2] hover:underline inline-block">Learn more about system latency →</a>
-                            </div>
-                        </div>
-                    </div>
+                         <div className="pt-8 text-center">
+                             <span className="text-[9px] font-bold text-slate-700 uppercase tracking-[0.2em] block border-t border-slate-800 pt-6">Last optimized Oct 2026</span>
+                         </div>
+                    </motion.div>
                 </div>
             </div>
         </AdminLayout>

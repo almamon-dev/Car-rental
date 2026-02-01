@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     Activity,
     Facebook,
@@ -11,19 +11,40 @@ import {
     MapPin,
     Globe,
     ChevronDown,
+    Check,
 } from "lucide-react";
 import { usePage, Link } from "@inertiajs/react";
 import { useLanguage } from "@/Contexts/LanguageContext";
+import { languageNames } from "@/Locales/index";
+import { AnimatePresence, motion } from "framer-motion";
 
 /**
  * EXECUTIVE GLOBAL FOOTER (LINKEDIN LIGHT MODE SYNC)
  */
 
 export default function Footer() {
-    const { t } = useLanguage();
+    const { t, locale, setLanguage } = useLanguage();
     const { settings } = usePage().props;
+    const [isLangOpen, setIsLangOpen] = useState(false);
+    const langRef = useRef(null);
 
     const siteName = settings?.company_name || settings?.site_name || "EliteFleet";
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (langRef.current && !langRef.current.contains(e.target)) {
+                setIsLangOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const languages = Object.entries(languageNames).map(([code, label]) => ({
+        code,
+        label
+    }));
 
     return (
         <footer className="footer bg-white border-t border-gray-200 py-10 lg:py-14 px-6 relative overflow-hidden font-sans">
@@ -106,16 +127,48 @@ export default function Footer() {
                         { label: t.footer.privacy, href: route('privacy.index') },
                     ]} />
                     
-                    {/* Control Panel / Language */}
-                    <div className="col-span-1">
-                         <h4 className="text-gray-900 font-bold mb-4 text-[11px] uppercase tracking-[0.15em]">{t.footer.rights}</h4>
-                         <button className="w-full flex items-center justify-between px-3 py-1.5 border border-gray-300 rounded-[4px] text-[12px] font-bold text-gray-600 hover:bg-gray-50 transition-all mb-4">
-                             <div className="flex items-center gap-2">
-                                <Globe size={14} className="text-[#0a66c2]" />
-                                <span>{t.nav.language}</span>
-                             </div>
-                             <ChevronDown size={14} />
-                         </button>
+                    {/* Language Selector */}
+                    <div className="col-span-1" ref={langRef}>
+                         <h4 className="text-gray-900 font-bold mb-4 text-[11px] uppercase tracking-[0.15em]">{t.nav.language}</h4>
+                         <div className="relative">
+                             <button 
+                                 onClick={() => setIsLangOpen(!isLangOpen)}
+                                 className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-[4px] text-[13px] font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all w-full"
+                             >
+                                 <Globe size={16} className="text-[#0a66c2]" strokeWidth={2} />
+                                 <span className="uppercase tracking-wider">{locale.slice(0, 2)}</span>
+                                 <ChevronDown size={14} className={`transition-transform duration-300 ml-auto ${isLangOpen ? 'rotate-180' : ''}`} />
+                             </button>
+
+                             {/* Language Dropdown */}
+                             <AnimatePresence>
+                                 {isLangOpen && (
+                                     <motion.div
+                                         initial={{ opacity: 0, scale: 0.95, y: 5 }}
+                                         animate={{ opacity: 1, scale: 1, y: 0 }}
+                                         exit={{ opacity: 0, scale: 0.95, y: 5 }}
+                                         transition={{ duration: 0.15 }}
+                                         className="absolute top-full mt-2 left-0 right-0 bg-white rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.2)] border-2 border-gray-200 overflow-hidden py-1.5 z-[9999]"
+                                     >
+                                         {languages.map(({ code, label }) => (
+                                             <button
+                                                 key={code}
+                                                 onClick={() => {
+                                                     setLanguage(code);
+                                                     setIsLangOpen(false);
+                                                 }}
+                                                 className={`w-full text-left px-4 py-2.5 text-[13px] hover:bg-gray-50 flex justify-between items-center transition-colors ${
+                                                     locale === code ? "bg-blue-50/70 font-black text-[#0a66c2]" : "text-gray-700 font-bold"
+                                                 }`}
+                                             >
+                                                 {label}
+                                                 {locale === code && <Check size={14} strokeWidth={4} className="text-[#0a66c2]" />}
+                                             </button>
+                                         ))}
+                                     </motion.div>
+                                 )}
+                             </AnimatePresence>
+                         </div>
                     </div>
                 </div>
 

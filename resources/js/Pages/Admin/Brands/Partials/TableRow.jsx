@@ -23,7 +23,7 @@ const BrandTableRow = React.memo(function BrandTableRow({
         if (isMenuOpen && buttonRef.current) {
             const rect = buttonRef.current.getBoundingClientRect();
             const spaceBelow = window.innerHeight - rect.bottom;
-            const menuHeight = 160; 
+            const menuHeight = 120; 
             
             let topPosition, leftPosition;
             
@@ -55,7 +55,6 @@ const BrandTableRow = React.memo(function BrandTableRow({
         
         if (isMenuOpen) {
             document.addEventListener("mousedown", handleClickOutside);
-            // Use capture phase to catch scroll events from any container (including the horizontal table scroll)
             window.addEventListener("scroll", () => setIsMenuOpen(false), { once: true, capture: true });
         }
         
@@ -99,22 +98,22 @@ const BrandTableRow = React.memo(function BrandTableRow({
             </td>
 
             <td className="py-4 px-4">
-                <div className="h-12 w-16 bg-white rounded-xl border border-gray-200 overflow-hidden flex items-center justify-center shadow-sm group-hover:border-gray-300 transition-colors">
+                <div className="h-10 w-14 bg-white rounded-xl border border-slate-100 overflow-hidden flex items-center justify-center shadow-sm group-hover:border-slate-200 transition-colors">
                     {item.logo ? (
                         <img
                             src={`/${item.logo}`}
                             alt={item.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain p-1"
                         />
                     ) : (
-                        <div className="text-[10px] font-black text-gray-300 uppercase letter-tracking-widest">No Logo</div>
+                        <div className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">No Logo</div>
                     )}
                 </div>
             </td>
 
             <td className="py-4 px-4 min-w-[180px]">
-                <div className="font-black text-gray-900 text-[15px] mb-0.5">{item.name}</div>
-                <div className="text-[11px] text-gray-400 font-bold tracking-[0.5px] uppercase">
+                <div className="font-bold text-slate-800 text-[14px] leading-tight mb-0.5">{item.name}</div>
+                <div className="text-[11px] text-gray-400 font-semibold tracking-wider uppercase">
                     /{item.slug}
                 </div>
             </td>
@@ -122,20 +121,20 @@ const BrandTableRow = React.memo(function BrandTableRow({
             <td className="py-4 px-4">
                 <button
                     onClick={handleStatusToggle}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all border ${
                         item.is_active 
-                        ? "bg-emerald-500 text-white" 
-                        : "bg-slate-400 text-white"
+                        ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                        : "bg-slate-50 text-slate-500 border-slate-100"
                     }`}
                 >
-                    <div className={`w-1.5 h-1.5 rounded-full bg-white ${item.is_active ? "animate-pulse" : "opacity-60"}`} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${item.is_active ? "bg-emerald-500" : "bg-slate-400"}`} />
                     {item.is_active ? "Active" : "Inactive"}
                 </button>
             </td>
 
             <td className="py-4 px-4 truncate">
-                <span className="px-3 py-1 bg-gray-50 text-gray-700 text-[12px] font-bold rounded-md border border-gray-200/60 whitespace-nowrap inline-flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+                <span className="px-3 py-1 bg-gray-50 text-gray-600 text-[12px] font-semibold rounded-lg border border-gray-100 whitespace-nowrap inline-flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-gray-400" />
                     {new Date(item.created_at).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
@@ -162,17 +161,8 @@ const BrandTableRow = React.memo(function BrandTableRow({
                         <div
                             ref={menuRef}
                             style={menuStyles}
-                            className="w-32 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
+                            className="w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
                         >
-                            <Link
-                                href={route("admin.brands.edit", item.id)}
-                                className="flex items-center px-4 py-2 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#0a66c2]"
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                <Eye size={16} className="mr-3 text-gray-400" />
-                                View
-                            </Link>
-
                             <Link
                                 href={route("admin.brands.edit", item.id)}
                                 className="flex items-center px-4 py-2 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#0a66c2]"

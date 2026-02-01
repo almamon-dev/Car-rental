@@ -1,3 +1,14 @@
+/**
+ * Car Listing Page Component
+ * 
+ * The primary interface for browsing and filtering the vehicle fleet.
+ * Features a dynamic responsive layout with a mobile drawer-style filter system,
+ * sophisticated search parameters, and an interactive asset grid.
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import React, { useState, useEffect, useRef } from "react";
 import GuestLayout from "@/Layouts/GuestLayout";
 import { Link, router, usePage, Head } from "@inertiajs/react";
@@ -13,12 +24,24 @@ import {
     Fuel,
     Shield,
     MapPin,
-    Users
+    Users,
+    X,
+    SlidersHorizontal
 } from "lucide-react";
 import { Skeleton } from "@/Components/ui/Skeleton";
-
 import { useLanguage } from "@/Contexts/LanguageContext";
 
+/**
+ * CarListingPage Component
+ * 
+ * @param {Object} props
+ * @param {Object} props.cars - Paginated car data from Inertia
+ * @param {Array} props.categories - List of available car categories
+ * @param {Array} props.brands - List of vehicle brands
+ * @param {Array} props.locations - Available pickup locations
+ * @param {number} props.maxPrice - Maximum price context for range slider
+ * @returns {JSX.Element}
+ */
 export default function CarListingPage({ cars, categories = [], brands = [], locations = [], maxPrice = 2500000 }) {
     const { t } = useLanguage();
     const queryParams = new URLSearchParams(window.location.search);
@@ -26,6 +49,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
 
     // --- STATE ---
     const [isLoading, setIsLoading] = useState(true);
+    const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     const [openMenus, setOpenMenus] = useState({
         price: true,
         availability: true,
@@ -140,6 +164,18 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
         filters.max_price < maxPrice || 
         filters.search !== '';
 
+    // Handle body scroll locking for mobile filter
+    useEffect(() => {
+        if (isMobileFilterOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isMobileFilterOpen]);
+
     const clearAllFilters = () => {
         setFilters(prev => ({
             ...prev,
@@ -186,13 +222,38 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     
 
-                    <div className="lg:grid lg:grid-cols-12 gap-5 items-start">
+                    <div className="lg:grid lg:grid-cols-12 gap-5 items-start relative">
                         
-                        {/* --- SIDEBAR --- */}
-                        <aside className="lg:col-span-3 space-y-4 order-1 sticky top-6">
+                        {/* --- MOBILE FILTER BACKDROP --- */}
+                        {isMobileFilterOpen && (
+                            <div 
+                                className="fixed inset-0 bg-black/50 z-[100] lg:hidden backdrop-blur-sm transition-opacity duration-300"
+                                onClick={() => setIsMobileFilterOpen(false)}
+                            />
+                        )}
+
+                        {/* --- SIDEBAR (FILTER) --- */}
+                        <aside className={`
+                            fixed lg:relative inset-y-0 left-0 w-[280px] lg:w-auto bg-white lg:bg-transparent z-[101] lg:z-0
+                            transform lg:transform-none transition-transform duration-300 ease-in-out
+                            ${isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                            lg:col-span-3 space-y-4 order-1 lg:sticky lg:top-0 overflow-y-auto lg:overflow-visible p-4 lg:p-0
+                        `}>
+                            {/* Mobile Sidebar Close Button */}
+                            <div className="flex lg:hidden items-center justify-between mb-4 border-b pb-3">
+                                <h4 className="text-[16px] font-bold text-[#3749bb] flex items-center gap-2">
+                                    <SlidersHorizontal size={18} /> {t.listing.filters}
+                                </h4>
+                                <button 
+                                    onClick={() => setIsMobileFilterOpen(false)}
+                                    className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                                >
+                                    <X size={20} className="text-gray-500" />
+                                </button>
+                            </div>
                             
                             {/* Filter Header with Clear Link */}
-                            <div className="bg-white rounded border border-gray-200 p-3 transition-all duration-300">
+                            <div className="bg-white rounded border border-gray-200 px-3 py-2 transition-all duration-300">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-[15px] font-bold text-[#000000e6]">{t.listing.filters}</h4>
                                     {hasActiveFilters && (
@@ -383,47 +444,51 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
 
                         {/* --- LISTING --- */}
                         <main className="w-full lg:col-span-9 order-2 relative min-h-[400px]">
-                            {/* --- REFERENCE STYLE TOOLBAR --- */}
-                            <div className="flex flex-row justify-between items-center mb-4 bg-white p-3 rounded-[4px] border border-gray-100">
-                                <div className="px-1 flex flex-col">
-                                    <h2 className="text-[15px] font-bold text-gray-800">
+                            {/* --- PREMIUM RESPONSIVE TOOLBAR --- */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 bg-white p-4 rounded-[4px] border border-gray-100 shadow-sm">
+                                <div className="flex flex-col">
+                                    <h2 className="text-[18px] font-bold text-gray-900 leading-tight">
                                         {filters.categories.length > 0 ? filters.categories[0].replace(/-/g, ' ') : t.listing.title}
                                     </h2>
-                                    <span className="text-[11px] font-bold text-gray-400 mt-0.5">
-                                        {t.listing.showing} {from || 0} – {to || 0} {t.listing.of} {total} {t.listing.assets}
-                                    </span>
+                                    <p className="text-[12px] font-bold text-gray-400 mt-1">
+                                        {t.listing.showing} {from || 0} – {to || 0} {t.listing.of} <span className="text-gray-600">{total}</span> {t.listing.assets}
+                                    </p>
                                 </div>
                                 
-                                <div className="flex items-center gap-4 sm:gap-6">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[13px] text-gray-400 font-bold">{t.listing.show}:</span>
-                                        <div className="relative group/sel">
-                                            <select 
-                                                value={filters.per_page}
-                                                onChange={(e) => setFilters(prev => ({ ...prev, per_page: e.target.value }))}
-                                                className="appearance-none bg-[#f0f2f5] border border-transparent text-gray-700 text-[13px] rounded pl-3 pr-7 py-1 outline-none font-bold hover:bg-gray-200 transition-all cursor-pointer min-w-[60px]"
-                                            >
-                                                <option value="12">12</option>
-                                                <option value="24">24</option>
-                                                <option value="48">48</option>
-                                                <option value="72">72</option>
-                                            </select>
-                                        </div>
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                    {/* Mobile Filter Toggle */}
+                                    <button 
+                                        onClick={() => setIsMobileFilterOpen(true)}
+                                        className="lg:hidden flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#3749bb] text-white px-4 py-2 rounded-[4px] text-[13px] font-bold hover:bg-[#2c3a96] transition-all active:scale-95"
+                                    >
+                                        <Filter size={16} />
+                                        {t.listing.filter_btn || 'Filter'}
+                                    </button>
+
+                                    {/* Sort Dropdown - Startech Style */}
+                                    <div className="relative flex-1 sm:flex-none group/sel bg-[#f0f2f5] rounded-[4px]">
+                                        <select 
+                                            value={filters.sort}
+                                            onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value }))}
+                                            className="w-full appearance-none bg-transparent border-none text-gray-700 text-[13px] rounded pl-3 pr-10 py-2 outline-none font-bold cursor-pointer"
+                                        >
+                                            <option value="latest">{t.listing.default}</option>
+                                            <option value="price_low">{t.listing.price_low_high}</option>
+                                            <option value="price_high">{t.listing.price_high_low}</option>
+                                        </select>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[13px] text-gray-400 font-bold whitespace-nowrap hidden sm:inline">{t.listing.sort_by}:</span>
-                                        <div className="relative group/sel">
-                                            <select 
-                                                value={filters.sort}
-                                                onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value }))}
-                                                className="appearance-none bg-[#f0f2f5] border border-transparent text-gray-700 text-[13px] rounded pl-3 pr-8 py-1 outline-none font-bold hover:bg-gray-200 transition-all cursor-pointer"
-                                            >
-                                                <option value="latest">{t.listing.default}</option>
-                                                <option value="price_low">{t.listing.price_low_high}</option>
-                                                <option value="price_high">{t.listing.price_high_low}</option>
-                                            </select>
-                                        </div>
+                                    {/* Per Page Dropdown */}
+                                    <div className="flex items-center bg-[#f0f2f5] rounded-[4px] flex-1 sm:flex-none">
+                                        <select 
+                                            value={filters.per_page}
+                                            onChange={(e) => setFilters(prev => ({ ...prev, per_page: e.target.value }))}
+                                            className="appearance-none bg-transparent border-none text-gray-700 text-[13px] rounded px-3 py-2 outline-none font-bold hover:bg-gray-200 transition-all cursor-pointer w-full sm:min-w-[60px]"
+                                        >
+                                            <option value="12">12</option>
+                                            <option value="24">24</option>
+                                            <option value="48">48</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -438,7 +503,7 @@ export default function CarListingPage({ cars, categories = [], brands = [], loc
                                     <button onClick={clearAllFilters} className="px-6 py-2 bg-[#3749bb] text-white text-[13px] font-bold rounded hover:bg-[#004182] transition-colors">{t.listing.reset_filters}</button>
                                 </div>
                             ) : (
-                                <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ${isLoading ? 'opacity-70 grayscale-[50%]' : 'opacity-100'}`}>
+                                <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-300 ${isLoading ? 'opacity-70 grayscale-[50%]' : 'opacity-100'}`}>
                                     {isLoading 
                                         ? [...Array(parseInt(filters.per_page) || 12)].map((_, i) => (
                                             <CarCardSkeleton key={`skel-${i}`} />
@@ -588,20 +653,28 @@ function CarCardSkeleton() {
 function CarCard({ car, toggleFavorite }) {
     const { t } = useLanguage();
     return (
-        <div className="bg-white rounded-[4px] border border-gray-200 group transition-all flex flex-col h-full relative">
-            {/* --- SAVE BADGE (STAR TECH CHIP STYLE) --- */}
-            <div className="absolute top-2 left-2 z-10">
-                <div className="bg-[#3749bb] text-white px-2 py-0.5 text-[10px] font-black rounded-[2px] shadow-sm uppercase">
+        <div className="bg-white rounded-[4px] border border-gray-200 group transition-all flex flex-col h-full relative overflow-hidden">
+            {/* --- SAVING BADGE (STAR TECH STYLE) --- */}
+            <div className="absolute top-3 left-3 z-10">
+                <div className="bg-[#3749bb] text-white px-2 py-0.5 text-[10px] font-black rounded-[2px] shadow-sm uppercase tracking-tighter">
                     {t.listing.save}: {car.price_details?.currency || '৳'}{Math.floor(Number(car.price_details?.daily_rate || 0) * 0.2).toLocaleString()}
                 </div>
             </div>
 
-            <div className="relative overflow-hidden aspect-[16/10] bg-gray-50/30">
-                <img src={car.images?.[0] ? `/${car.images[0].file_path}` : "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+            {/* Media Container: Larger on mobile list? No, stick to grid but polished */}
+            <div className="relative overflow-hidden aspect-[16/10] bg-gray-100">
+                <img 
+                    src={car.images?.[0] ? `/${car.images[0].file_path}` : "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800"} 
+                    alt={`${car.make} ${car.model}`}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                />
                 
+                {/* Visual Overlay Detail */}
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                 <button 
                     onClick={(e) => toggleFavorite(e, car.id)}
-                    className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center transition-all shadow-sm opacity-0 group-hover:opacity-100 translate-y-[-5px] group-hover:translate-y-0 duration-300 ${
+                    className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all shadow-md active:scale-90 ${
                         car.is_favorited ? "text-red-500" : "text-gray-400 hover:text-red-500"
                     }`}
                 >
@@ -609,50 +682,42 @@ function CarCard({ car, toggleFavorite }) {
                 </button>
             </div>
 
-            <div className="p-4 flex flex-col flex-1 border-gray-50 text-left">
-                <h3 className="text-[14px] font-bold text-gray-900 group-hover:text-[#3749bb] transition-colors leading-tight mb-4 line-clamp-2">
+            <div className="p-4 flex flex-col flex-1 text-left">
+                <h3 className="text-[14px] font-bold text-gray-900 group-hover:text-[#3749bb] transition-colors leading-snug mb-3 line-clamp-2 min-h-[40px]">
                     {car.brand?.name || car.make} {car.model} {car.year}
                 </h3>
                 
-                {/* Startech Style Vertical List */}
-                <div className="space-y-1.5 mb-5 border-t border-gray-100 pt-3">
+                {/* Technical Specs: Improved Grid for Mobile */}
+                <div className="space-y-1.5 mb-5 border-t border-gray-50 pt-3">
                     <ListSpec Icon={Activity} label={t.listing.ops_range} val={car.specifications?.mileage || 'N/A'} />
                     <ListSpec Icon={Settings} label={t.listing.transmission} val={car.specifications?.transmission || car.transmission || 'Auto'} />
-                    <ListSpec Icon={Fuel} label={car.specifications?.fuel_type || car.fuel_type || t.listing.energy_arch} val={car.specifications?.fuel_type || car.fuel_type || 'N/A'} />
-                    <ListSpec Icon={Users} label="Seats" val={`${car.seats || 5} Seats`} />
+                    <ListSpec Icon={Fuel} label={t.listing.fuel_type} val={car.specifications?.fuel_type || car.fuel_type || 'N/A'} />
                     <ListSpec Icon={MapPin} label="Branch" val={car.location?.name || 'Main Hub'} />
                 </div>
 
-                {/* Key Highlights */}
-                {car.features && car.features.length > 0 && (
-                    <div className="mb-5">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter block mb-2 leading-none">{t.listing.key_highlights}</span>
-                        <div className="grid grid-cols-1 gap-1">
-                            {car.features.slice(0, 3).map((feat, idx) => (
-                                <div key={idx} className="flex items-center gap-1.5">
-                                     <div className="w-1 h-1 rounded-full bg-[#3749bb]" />
-                                     <span className="text-[11px] font-bold text-gray-600 line-clamp-1">{feat.feature_name}</span>
-                                </div>
-                            ))}
+                <div className="mt-auto border-t border-gray-50 pt-4 flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="text-[11px] font-bold text-gray-400 line-through">
+                                {car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}
+                            </span>
+                            <span className="text-[18px] font-black text-[#3749bb]">
+                                {car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}
+                            </span>
+                        </div>
+                        
+                        <div className="bg-green-50 px-2 py-1 rounded text-[10px] font-bold text-green-600 border border-green-100 uppercase">
+                            {t.listing.available || 'Online'}
                         </div>
                     </div>
-                )}
 
-                <div className="mt-auto border-t border-gray-100 pt-3 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-3">
-                        <span className="text-[16px] font-black text-[#3749bb]">{car.price_details?.currency || '৳'}{Number(car.price_details?.daily_rate || 0).toLocaleString()}</span>
-                        <span className="text-[12px] text-gray-400 line-through font-bold leading-none">{car.price_details?.currency || '৳'}{(Number(car.price_details?.daily_rate || 0) * 1.25).toFixed(0).toLocaleString()}</span>
-                    </div>
+                    <Link 
+                        href={car.slug ? `${route('car.details', car.slug)}` : '#'}
+                        className={`w-full py-2 flex items-center justify-center gap-2 rounded-[4px] border border-[#3749bb] text-[#3749bb] text-[13px] font-bold hover:bg-[#3749bb] hover:text-white transition-all duration-300 active:scale-[0.98] ${!car.slug ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                    >
+                        {t.listing.view_details}
+                    </Link>
                 </div>
-            </div>
-            
-            <div className="px-4 pb-4">
-                <Link 
-                    href={car.slug ? `${route('car.details', car.slug)}#${Array.from({length:250}, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('')}` : '#'}
-                    className={`w-full py-1.5 inline-block text-center rounded-[4px] border border-[#3749bb] text-[#3749bb] text-[13px] font-bold hover:bg-[#3749bb] hover:text-white transition-all duration-200 active:scale-[0.98] ${!car.slug ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
-                >
-                    {t.listing.view_details}
-                </Link>
             </div>
         </div>
     );

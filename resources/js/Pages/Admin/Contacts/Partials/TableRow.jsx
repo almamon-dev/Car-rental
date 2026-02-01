@@ -89,14 +89,14 @@ const ContactTableRow = React.memo(function ContactTableRow({
 
             <td className="py-4 px-4 min-w-[200px]">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#f3f6f8] flex items-center justify-center text-[#0a66c2] flex-shrink-0 border-2 border-white shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-[#0a66c2] flex-shrink-0 border border-slate-100 shadow-sm">
                         <User size={18} strokeWidth={2} />
                     </div>
                     <div className="flex flex-col min-w-0">
-                        <span className="text-[14px] font-black text-gray-900 leading-tight mb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                        <span className="text-[14px] font-bold text-slate-800 leading-tight mb-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
                             {item.name}
                         </span>
-                        <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider whitespace-nowrap overflow-hidden text-ellipsis">
+                        <span className="text-[11px] text-gray-400 font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
                             {item.email}
                         </span>
                     </div>
@@ -105,17 +105,17 @@ const ContactTableRow = React.memo(function ContactTableRow({
 
             <td className="py-4 px-4 max-w-[400px]">
                 <div className="flex flex-col min-w-0">
-                    <span className="text-[13px] font-bold text-gray-800 line-clamp-1">
+                    <span className="text-[13px] font-bold text-slate-700 line-clamp-1">
                         {item.subject}
                     </span>
-                    <p className="text-[11px] text-gray-500 line-clamp-1 italic font-medium">
+                    <p className="text-[12px] text-gray-500 line-clamp-1 italic font-medium mt-0.5 leading-relaxed">
                         "{item.message}"
                     </p>
                 </div>
             </td>
 
             <td className="py-4 px-4 whitespace-nowrap">
-                <span className="px-3 py-1 bg-gray-50 text-gray-700 text-[12px] font-bold rounded-md border border-gray-200/60 inline-flex items-center">
+                <span className="px-3 py-1 bg-gray-50 text-gray-600 text-[12px] font-bold rounded-lg border border-gray-100 inline-flex items-center">
                     {new Date(item.created_at).toLocaleDateString("en-US", {
                         month: 'short',
                         day: 'numeric',
@@ -141,7 +141,7 @@ const ContactTableRow = React.memo(function ContactTableRow({
                         <div
                             ref={menuRef}
                             style={menuStyles}
-                            className="w-40 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
+                            className="w-40 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
                         >
                             <Link
                                 href={route("admin.contacts.show", item.id)}

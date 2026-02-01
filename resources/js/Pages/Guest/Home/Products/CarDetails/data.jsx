@@ -1,3 +1,13 @@
+/**
+ * Car Details - Mock Data & Technical Configurations
+ * 
+ * Provides structural definitions, mock assets, and UI configuration constants
+ * for the car details domain. Includes specifications, features, and animation variants.
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import React from "react";
 import {
     Gauge,
@@ -24,12 +34,13 @@ import {
     BatteryCharging,
 } from "lucide-react";
 
-// --- Stats Section ---
+// --- State: Global Statistics ---
+
 export const stats = [
     {
         value: "450+",
         label: "Premium Fleet",
-        color: "from-blue-500 to-cyan-400",
+        color: "from-[#0a66c2] to-[#00a0dc]",
     },
     { value: "99.8%", label: "Uptime", color: "from-emerald-500 to-green-400" },
     {
@@ -44,7 +55,8 @@ export const stats = [
     },
 ];
 
-// --- Car Image Gallery ---
+// --- Assets: Visual Gallery ---
+
 export const carImages = [
     "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=1200",
     "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&q=80&w=1200",
@@ -52,7 +64,8 @@ export const carImages = [
     "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1200",
 ];
 
-// --- Hero Stats (Main Specs) ---
+// --- Technical: Core Performance Metrics ---
+
 export const heroStats = [
     {
         icon: <Zap size={20} />,
@@ -64,7 +77,7 @@ export const heroStats = [
         icon: <Gauge size={20} />,
         value: "4.2s",
         label: "0-60 MPH",
-        color: "from-blue-500 to-cyan-500",
+        color: "from-[#0a66c2] to-[#00a0dc]",
     },
     {
         icon: <Fuel size={20} />,
@@ -92,7 +105,8 @@ export const heroStats = [
     },
 ];
 
-// --- Features List ---
+// --- Features: High-Fidelity Add-ons ---
+
 export const features = [
     { icon: <Camera size={18} />, label: "360° Camera", category: "Safety" },
     {
@@ -129,7 +143,8 @@ export const features = [
     },
 ];
 
-// --- Specifications Table Data ---
+// --- Specifications: Technical Manifest ---
+
 export const specifications = [
     {
         category: "Performance",
@@ -171,7 +186,8 @@ export const specifications = [
     },
 ];
 
-// --- Extra Services ---
+// --- Transactional: Asset Enhancements ---
+
 export const extraServices = [
     {
         id: 1,
@@ -217,7 +233,8 @@ export const extraServices = [
     },
 ];
 
-// --- Similar Cars ---
+// --- Marketplace: Similar Asset Proxies ---
+
 export const similarCars = [
     {
         id: 101,
@@ -269,6 +286,8 @@ export const similarCars = [
     },
 ];
 
+// --- Auditing: Client FAQ & Feedback ---
+
 export const faqs = [
     { q: "Cancellation policy?", a: "48 hours lead time for full refund." },
 ];
@@ -285,7 +304,8 @@ export const reviews = [
     },
 ];
 
-// --- Animations ---
+// --- UI: Motion Variants ---
+
 export const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },

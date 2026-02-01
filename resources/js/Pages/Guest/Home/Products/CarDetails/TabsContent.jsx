@@ -1,3 +1,13 @@
+/**
+ * Car Details - Content Tabs
+ * 
+ * Manages the multi-layered information architecture of the asset, including
+ * technical specifications, high-fidelity features, and client auditing (reviews).
+ * 
+ * @author AL Mamon
+ * @version 1.1.0
+ */
+
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Star,
@@ -23,6 +33,11 @@ import {
 import { useLanguage } from "@/Contexts/LanguageContext";
 import { router, usePage, useForm } from "@inertiajs/react";
 
+/**
+ * TabsContent Component
+ * 
+ * @returns {JSX.Element}
+ */
 export default function TabsContent({
     car,
     activeTab,
@@ -30,7 +45,10 @@ export default function TabsContent({
     activeFaqIndex,
     setActiveFaqIndex,
 }) {
+    // --- Context & Initialization ---
     const { t } = useLanguage();
+
+    // --- Tab Configuration ---
     const tabs = [
         { id: "overview", label: t.details.tabs.overview },
         { id: "specs", label: t.details.tabs.specs },
@@ -74,9 +92,9 @@ export default function TabsContent({
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-5 py-3 text-[14px] font-bold transition-all relative whitespace-nowrap border-b-2 ${
-                                activeTab === tab.id
-                                    ? "border-[#3749bb] text-[#3749bb]"
-                                    : "border-transparent text-gray-500 hover:text-[#3749bb]"
+                                 activeTab === tab.id
+                                     ? "border-[#0a66c2] text-[#0a66c2]"
+                                     : "border-transparent text-gray-500 hover:text-[#0a66c2]"
                             }`}
                         >
                              {tab.label}
@@ -122,7 +140,7 @@ export default function TabsContent({
                             {specSections.map((section, index) => (
                                 <div key={index} className="overflow-hidden border border-gray-100 rounded-lg shadow-sm">
                                     <div className="bg-[#f2f4f8] px-4 py-2.5 border-b border-gray-100">
-                                        <h4 className="text-[14px] font-bold text-[#3749bb]">
+                                        <h4 className="text-[14px] font-bold text-[#0a66c2]">
                                             {section.category}
                                         </h4>
                                     </div>
@@ -152,8 +170,8 @@ export default function TabsContent({
                             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
                         >
                             {car.features && car.features.length > 0 ? car.features.map((feature, index) => (
-                                <div key={index} className="flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-lg hover:border-[#3749bb]/30 transition-all group shadow-sm">
-                                    <div className="p-2 bg-blue-50 text-[#3749bb] rounded-lg group-hover:bg-[#3749bb] group-hover:text-white transition-all">
+                                <div key={index} className="flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-lg hover:border-[#0a66c2]/30 transition-all group shadow-sm">
+                                    <div className="p-2 bg-blue-50 text-[#0a66c2] rounded-lg group-hover:bg-[#0a66c2] group-hover:text-white transition-all">
                                         <CheckCircle2 size={16} />
                                     </div>
                                     <div>
@@ -224,7 +242,7 @@ export default function TabsContent({
                                 </div>
                                 <button 
                                     onClick={() => document.getElementById('review-form')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="bg-[#3749bb] text-white px-5 py-2 rounded-lg text-[13px] font-bold hover:bg-[#2b3a95] transition-all shadow-md active:scale-95"
+                                    className="bg-[#0a66c2] text-white px-5 py-2 rounded-lg text-[13px] font-bold hover:bg-[#084d92] transition-all shadow-md active:scale-95"
                                 >
                                     Write a Review
                                 </button>
@@ -262,9 +280,9 @@ export default function TabsContent({
                                             
                                             <button 
                                                 onClick={() => router.post(route('user.reviews.like', review.id), {}, { preserveScroll: true })}
-                                                className={`flex items-center gap-1.5 px-4 py-2 rounded-full border transition-all ${review.is_liked ? 'bg-blue-50 border-blue-200 text-[#3749bb]' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'}`}
+                                                className={`flex items-center gap-1.5 px-4 py-2 rounded-full border transition-all ${review.is_liked ? 'bg-blue-50 border-blue-200 text-[#0a66c2]' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300'}`}
                                             >
-                                                <TrendingUp size={14} className={review.is_liked ? "fill-[#3749bb]" : ""} />
+                                                <TrendingUp size={14} className={review.is_liked ? "fill-[#0a66c2]" : ""} />
                                                 <span className="text-[13px] font-bold">{review.likes_count || 0}</span>
                                             </button>
                                         </div>
@@ -365,7 +383,7 @@ function ReviewForm({ carId }) {
                 <textarea
                     value={data.comment}
                     onChange={(e) => setData('comment', e.target.value)}
-                    className="w-full bg-white border border-gray-200 rounded-lg p-4 text-[14px] font-medium focus:border-[#3749bb] focus:ring-1 focus:ring-[#3749bb] outline-none min-h-[120px] transition-all shadow-sm"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-4 text-[14px] font-medium focus:border-[#0a66c2] focus:ring-1 focus:ring-[#0a66c2] outline-none min-h-[120px] transition-all shadow-sm"
                     placeholder="Tell us about your experience with this vehicle..."
                 />
                 {errors.comment && <p className="text-red-500 text-[11px] mt-1 font-bold">{errors.comment}</p>}
@@ -374,7 +392,7 @@ function ReviewForm({ carId }) {
             <button
                 type="submit"
                 disabled={processing}
-                className="w-full sm:w-auto bg-[#3749bb] text-white px-8 py-3 rounded-lg text-[14px] font-bold hover:bg-[#2b3a95] transition-all shadow-md disabled:opacity-50 active:scale-95"
+                className="w-full sm:w-auto bg-[#0a66c2] text-white px-8 py-3 rounded-lg text-[14px] font-bold hover:bg-[#084d92] transition-all shadow-md disabled:opacity-50 active:scale-95"
             >
                 {processing ? 'Submitting...' : 'Post Review'}
             </button>
@@ -384,7 +402,7 @@ function ReviewForm({ carId }) {
 
 const HighlightItem = ({ Icon, label, value }) => (
     <div className="flex items-center gap-4 p-4 bg-[#f2f4f8] border border-gray-100 rounded-[4px]">
-        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#3749bb] shadow-sm">
+        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0a66c2] shadow-sm">
             <Icon size={20} />
         </div>
         <div>
@@ -396,27 +414,27 @@ const HighlightItem = ({ Icon, label, value }) => (
 
 const OverviewModule = ({ Icon, title, sub, badge }) => (
     <div className="flex items-center gap-3 p-4 bg-[#f8fafc] border border-gray-100 rounded-[6px] transition-all">
-        <div className="p-2 bg-white text-[#3749bb] rounded-full shadow-sm border border-gray-50">
+        <div className="p-2 bg-white text-[#0a66c2] rounded-full shadow-sm border border-gray-50">
             <Icon size={18} />
         </div>
         <div>
             <div className="text-[14px] font-bold text-gray-900 leading-tight">{title}</div>
             <div className="text-[11px] font-semibold text-gray-400 uppercase">{sub}</div>
         </div>
-        {badge && <div className="ml-auto text-[10px] font-bold text-[#3749bb] border border-[#3749bb]/20 px-2 py-0.5 rounded-[4px] bg-white uppercase tracking-tight">{badge}</div>}
+        {badge && <div className="ml-auto text-[10px] font-bold text-[#0a66c2] border border-[#0a66c2]/20 px-2 py-0.5 rounded-[4px] bg-white uppercase tracking-tight">{badge}</div>}
     </div>
 );
 
 const ProtocolBox = ({ Icon, title, items, variant }) => (
     <div className={`rounded-xl p-5 border ${variant === "blue" ? "bg-blue-50/50 border-blue-100" : "bg-[#f9f9f9] border-gray-200 shadow-sm"}`}>
         <h4 className="font-bold text-gray-900 text-[15px] mb-4 flex items-center gap-2">
-            <Icon size={16} className={variant === "blue" ? "text-[#3749bb]" : "text-gray-400"} /> 
+            <Icon size={16} className={variant === "blue" ? "text-[#0a66c2]" : "text-gray-400"} /> 
             {title}
         </h4>
         <ul className="space-y-3">
             {items.map((item, i) => (
                 <li key={i} className="flex items-center gap-2.5 text-[14px] font-medium text-gray-600">
-                    <CheckCircle2 size={14} className="text-[#3749bb]" /> {item}
+                    <CheckCircle2 size={14} className="text-[#0a66c2]" /> {item}
                 </li>
             ))}
         </ul>

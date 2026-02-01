@@ -281,6 +281,14 @@ export const en = {
                 { title: "Tier 1 Fleet", description: "50-point technical safety and hygiene audit." }
             ]
         },
+        brand_narrative: {
+            main_title: "Premium Car Rental Service In Bangladesh",
+            main_desc: "We at our Car Rental service love driving. Therefore, we aim to provide a huge fleet of premium, luxury, and economy cars for your journeys. Whether it's a corporate event, a family trip, or an individual need, we offer the best vehicle solutions with precision and care. Our commitment to quality and customer satisfaction makes us the leading car rental platform in the country. Explore our wide range of categories and experience the joy of seamless travel.",
+            fleet_title: "Wide Fleet Of Modern Vehicles",
+            fleet_desc: "From sleek sedans to powerful SUVs, our inventory is curated to meet diverse travel needs. Each vehicle undergoes rigorous maintenance checks to ensure safety and comfort. We believe in transparency and reliability, which is why our booking process is straightforward and efficient.",
+            experience_title: "Unmatched Customer Experience",
+            experience_desc: "Our dedicated support team is always ready to assist you. From choosing the right car to navigating through your journey, we are here every step of the way. Experience the premium treatment that sets us apart in the logistics and rental market."
+        },
     },
     // Car Listing
     listing: {

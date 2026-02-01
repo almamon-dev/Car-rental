@@ -1,3 +1,13 @@
+/**
+ * Hero Section Component
+ * 
+ * Displays the main banner of the home page including title, subtitle,
+ * search functionality for vehicles, and location selection.
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import React, { useState } from "react";
 import { Link, router } from "@inertiajs/react";
 import { motion } from "framer-motion";
@@ -17,12 +27,25 @@ import {
 
 import { useLanguage } from "@/Contexts/LanguageContext";
 
+/**
+ * Hero Component
+ * 
+ * @param {Object} props
+ * @param {Array} props.locations - Available rental locations for the dropdown
+ * @returns {JSX.Element}
+ */
 export default function Hero({ locations }) {
     const { t } = useLanguage();
+    
+    // --- State Management ---
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedLocation, setSelectedLocation] = useState(null);
 
+    /**
+     * Handles the search submission
+     * Redirects to the car listing page with search parameters
+     */
     const handleSearch = () => {
         const params = {};
         if (searchQuery) params.search = searchQuery;
@@ -36,19 +59,22 @@ export default function Hero({ locations }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
                     
-                    {/* --- LEFT: Narrative, Search & Brands --- */}
+                    {/* --- LEFT COLUMN: Narrative & Search --- */}
                     <div className="w-full lg:w-[620px] shrink-0 text-center lg:text-left">
                         
-                        {/* Status Line */}
+                        {/* Status/Availability Badge */}
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             className="flex items-center justify-center lg:justify-start gap-2 mb-4"
                         >
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                            <span className="text-[12px] font-bold text-gray-500 uppercase tracking-wider">{t.hero.status}</span>
+                            <span className="text-[12px] font-bold text-gray-500 uppercase tracking-wider">
+                                {t.hero.status}
+                            </span>
                         </motion.div>
 
+                        {/* Main Heading */}
                         <motion.h1 
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -57,6 +83,7 @@ export default function Hero({ locations }) {
                             {t.hero.title}
                         </motion.h1>
 
+                        {/* Sub-heading/Description */}
                         <motion.p 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -66,7 +93,7 @@ export default function Hero({ locations }) {
                             {t.hero.subtitle}
                         </motion.p>
 
-                        {/* --- MASTER-GRADE LINKEDIN SEARCH BAR --- */}
+                        {/* --- ADVANCED SEARCH BAR (LinkedIn Inspired) --- */}
                         <motion.div 
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -77,14 +104,16 @@ export default function Hero({ locations }) {
                                 isSearchFocused ? "bg-white !border-[#0a66c2] ring-[4px] ring-blue-100 shadow-xl scale-[1.01]" : ""
                             }`}>
                                 <div className="flex-1 flex items-stretch min-w-0">
-                                    {/* Brand Search Component */}
+                                    {/* 1. Vehicle Brand/Model Search */}
                                     <div className="flex-1 flex items-center gap-3 px-5 py-4 cursor-text border-b sm:border-b-0 sm:border-r border-gray-300/40">
                                         <Search 
                                             size={20} 
                                             className={`transition-colors duration-300 ${isSearchFocused ? "text-[#0a66c2]" : "text-gray-500"}`} 
                                         />
                                         <div className="flex flex-col flex-1 min-w-0">
-                                            <label className="text-[10px] font-black text-[#0a66c2] leading-none mb-1.5 uppercase tracking-widest opacity-80">{t.hero.find_vehicle}</label>
+                                            <label className="text-[10px] font-black text-[#0a66c2] leading-none mb-1.5 uppercase tracking-widest opacity-80">
+                                                {t.hero.find_vehicle}
+                                            </label>
                                             <input 
                                                 type="text" 
                                                 value={searchQuery}
@@ -97,11 +126,13 @@ export default function Hero({ locations }) {
                                         </div>
                                     </div>
 
-                                    {/* Location Search Component */}
+                                    {/* 2. Location Selection Dropdown */}
                                     <div className="flex-1 flex items-center gap-3 px-5 py-4">
                                         <MapPin size={20} className="text-gray-400" />
                                         <div className="flex flex-col flex-1 min-w-0 text-left">
-                                            <label className="text-[10px] font-black text-gray-400 leading-none mb-1.5 uppercase tracking-widest opacity-80">{t.hero.pickup_location}</label>
+                                            <label className="text-[10px] font-black text-gray-400 leading-none mb-1.5 uppercase tracking-widest opacity-80">
+                                                {t.hero.pickup_location}
+                                            </label>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger className="h-auto p-0 border-none bg-transparent flex items-center justify-between w-full hover:bg-transparent focus:ring-0">
                                                     <span className={`text-[15px] font-bold truncate ${selectedLocation ? "text-gray-900" : "text-gray-400"}`}>
@@ -133,7 +164,7 @@ export default function Hero({ locations }) {
                                     </div>
                                 </div>
 
-                                {/* LinkedIn Primary Button Sync */}
+                                {/* 3. Search Action Button */}
                                 <div className="p-2 sm:pr-2 sm:pl-1">
                                     <button 
                                         onClick={handleSearch}
@@ -146,7 +177,7 @@ export default function Hero({ locations }) {
                         </motion.div>
 
 
-                        {/* --- MINI BRAND TAGS (TABS) --- */}
+                        {/* --- QUICK LINKS / BRAND TAGS --- */}
                         <motion.div 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -169,7 +200,7 @@ export default function Hero({ locations }) {
                         </motion.div>
                     </div>
 
-                    {/* --- RIGHT: PURE IMAGE MINIMALISM --- */}
+                    {/* --- RIGHT COLUMN: IMAGE SHOWCASE --- */}
                     <div className="w-full lg:flex-1 relative">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.98 }}
@@ -185,10 +216,12 @@ export default function Hero({ locations }) {
                                 />
                             </div>
                             
-                            {/* Minimalism: Just one very discreet car label */}
+                            {/* Floating Information Badge */}
                             <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-gray-100 shadow-sm flex items-center gap-2">
                                 <Car size={14} className="text-[#0a66c2]" />
-                                <span className="text-[11px] font-bold text-gray-900">{t.hero.featured}: BMW M8</span>
+                                <span className="text-[11px] font-bold text-gray-900">
+                                    {t.hero.featured}: BMW M8
+                                </span>
                             </div>
                         </motion.div>
                     </div>
@@ -198,3 +231,4 @@ export default function Hero({ locations }) {
         </section>
     );
 }
+

@@ -1,14 +1,39 @@
+/**
+ * Car Details - Asset Gallery
+ * 
+ * Provides a high-fidelity visual interface for inspecting the vehicle, 
+ * including a thumbnail rail, interactive main stage with hover-zoom, 
+ * and an institutional-grade lightbox for deep observation.
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Maximize2, Camera, X, ZoomIn, ZoomOut } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
+/**
+ * Gallery Component
+ * 
+ * @param {Object} props
+ * @param {Array} props.images - Collection of image objects
+ * @param {number} props.activeImageIndex - Current focus index
+ * @param {Function} props.setActiveImageIndex - Focus state setter
+ * @returns {JSX.Element}
+ */
 export default function Gallery({ images = [], activeImageIndex, setActiveImageIndex }) {
+    // --- Context & Initialization ---
     const { t } = useLanguage();
+
+    // --- State: UI & Exploration ---
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [zoomScale, setZoomScale] = useState(1);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
+
+    // --- Logic: Image Processing ---
 
     const displayImages = useMemo(() => {
         if (!images || images.length === 0) {

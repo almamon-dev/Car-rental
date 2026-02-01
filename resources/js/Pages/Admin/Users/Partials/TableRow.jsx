@@ -100,31 +100,34 @@ const UserTableRow = React.memo(function UserTableRow({
                         />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[14px] font-black text-gray-900 leading-tight mb-0.5">{item.name}</span>
-                        <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                            <Mail size={10} strokeWidth={3} />
+                        <span className="text-[14px] font-bold text-gray-900 leading-tight mb-0.5">{item.name}</span>
+                        <span className="text-[11px] text-gray-400 font-semibold flex items-center gap-1">
+                            <Mail size={10} strokeWidth={2} />
                             {item.email}
                         </span>
                     </div>
+                    {item.is_admin && (
+                         <span className="ml-2 px-1.5 py-0.5 bg-blue-50 text-[#0a66c2] text-[9px] font-bold rounded uppercase tracking-wider border border-blue-100">Admin</span>
+                    )}
                 </div>
             </td>
 
             <td className="py-4 px-4">
                 {item.email_verified_at ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500 text-white rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm">
-                        <ShieldCheck size={12} strokeWidth={2.5} />
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold uppercase tracking-wider border border-emerald-100">
+                        <ShieldCheck size={12} strokeWidth={2} />
                         Verified
                     </span>
                 ) : (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm">
-                        <ShieldAlert size={12} strokeWidth={2.5} />
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-100">
+                        <ShieldAlert size={12} strokeWidth={2} />
                         Unverified
                     </span>
                 )}
             </td>
 
             <td className="py-4 px-4 truncate">
-                <span className="px-3 py-1 bg-gray-50 text-gray-700 text-[12px] font-bold rounded-md border border-gray-200/60 whitespace-nowrap inline-flex items-center gap-1.5">
+                <span className="px-3 py-1 bg-gray-50 text-gray-600 text-[12px] font-semibold rounded-lg border border-gray-100 whitespace-nowrap inline-flex items-center gap-1.5">
                     <Calendar size={13} strokeWidth={2} className="text-gray-400" />
                     {new Date(item.created_at).toLocaleDateString("en-US", {
                         day: "numeric",
@@ -151,7 +154,7 @@ const UserTableRow = React.memo(function UserTableRow({
                         <div
                             ref={menuRef}
                             style={menuStyles}
-                            className="w-32 bg-white rounded-lg shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
+                            className="w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 animate-in fade-in zoom-in-95 duration-100 z-[9999]"
                         >
                             <button
                                 onClick={handleDelete}

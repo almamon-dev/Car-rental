@@ -1,3 +1,13 @@
+/**
+ * Car Details - Booking Modal
+ * 
+ * Handles the final transactional confirmation and redirection to the 
+ * secure payment gateway (SSLCommerz).
+ * 
+ * @author AL Mamon
+ * @version 1.0.0
+ */
+
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShieldCheck, CheckCircle2, CreditCard, Lock, Loader2 } from "lucide-react";
 import React, { useState } from "react";
@@ -6,9 +16,16 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 
 /**
- * DIRECT SSLCOMMERZ CHECKOUT (NO MIDDLE STEP)
+ * BookingModal Component
+ * 
+ * @param {Object} props
+ * @param {boolean} props.showBookingModal - Visibility state
+ * @param {Function} props.setShowBookingModal - Visibility setter
+ * @param {Object} props.priceSummary - Total charge calculated
+ * @param {Object} props.car - Asset data model
+ * @param {Object} props.bookingDates - Selected pickup/dropoff
+ * @returns {JSX.Element}
  */
-
 export default function BookingModal({
     showBookingModal,
     setShowBookingModal,
@@ -16,9 +33,12 @@ export default function BookingModal({
     car,
     bookingDates
 }) {
+    // --- State: UI & Redirect ---
     const [step, setStep] = useState('summary'); // summary, success
     const [isSuccess, setIsSuccess] = useState(false);
     const [isInitiating, setIsInitiating] = useState(false);
+
+    // --- Logic: Payment Initiation ---
 
     if (!car) return null;
     const currency = car.price_details?.currency || '৳';
@@ -113,7 +133,7 @@ const handleConfirmBooking = () => {
                                     <button 
                                         onClick={handleConfirmBooking}
                                         disabled={isInitiating}
-                                        className="w-full py-2.5 bg-[#ff7a00] text-white text-[14px] font-bold rounded-full hover:bg-[#e66e00] transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                                        className="w-full py-2.5 bg-[#0a66c2] text-white text-[14px] font-bold rounded-full hover:bg-[#084d92] transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
                                         {isInitiating ? (
                                             <>
